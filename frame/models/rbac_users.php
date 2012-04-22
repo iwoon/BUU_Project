@@ -40,7 +40,13 @@ class Rbac_users extends CI_Model{
             );
         }
     }
-    public function addUser(){
+    public function add(){
+        
+    }
+    public function delete(){
+        
+    }
+    public function update(){
         
     }
 }
