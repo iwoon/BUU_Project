@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0"> 
+
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' /></head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+History
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>History</h1>
+
+<ul>
+
+	<li>
+	<b>2.0.1</b> as of 11/27/11
+	<ul>
+		<li>fixed bug where label prefix/suffix would be added twice
+		<li>removed example model from spark version
+	</ul>
+	</li>
+	
+	<li>
+	<b>2.0.0</b> as of 11/25/11
+	<p class="important">Version 2.0.0 drops support for CodeIgniter &lt; 2.0.0. Please upgrade your CI installations before using this version.</p>
+	<ul>
+		<li>fixed checkbox/radio button error
+		<li>fixed re-population of checkboxes and radiobuttons
+		<li>fixed re-population of (multiple) selects
+		<li>fixed set_value method bug with empty values
+		<li>fixed bug where check/radio groups with only single option do not open with group_prefix
+	</ul>
+	</li>
+
+	<li>
+	<b>1.0.4</b> as of 03/01/11
+	<ul>
+		<li>fixed set_value for textarea elements</li>
+		<li>completed the <a href="../">user guide</a></li>
+	</ul>
+	</li>
+	
+	<li>
+	<b>1.0.3</b> as of 02/28/11
+	<ul>
+		<li>fixed set_value for hidden elements</li>
+	</ul>
+	</li>
+	
+	<li>
+	<b>1.0.2</b> as of 02/25/11
+	<ul>
+		<li>added possibility to provide <a href="../general/attributes.html">attributes for both the label and the element</a></li>
+		<li>added error class to labels</li>
+		<li>added $this->form->error_array containing all errors as an associative array with element name and error message</li>
+		<li>added various new attributes to the $_valid_atts array</li>
+		<li>fixed a bug where NULL value in textares would produce an empty 'value' attribute</li>
+		<li>fixed label_prefix / label_suffix display for label elements</li>
+		<li>fixed rendering issue in spans with empty attributes</li>
+		<li>fixed name/id rendering issue in form_open method</li>
+		<li>fixed open/close fieldset count</li>
+		<li>removed value from $_valid_atts in textarea</li>
+		<li>improved _check_post() method</li>
+	</ul>
+	</li>
+	
+	<li>
+	<b>1.0.1</b> as of 02/18/10
+	<ul>
+		<li>fixed a bug where radiogroup and checkgroup labels didn't format correctly when required</li>
+		<li>fixed a bug where individual labels generated with ->label() received double prefixes and suffixes</li>
+		<li>Updated form.css with predefined label 'after' class</li>
+	</ul>
+	</li>
+	
+	<li>
+	<b>1.0</b> as of 12/29/09
+	<ul>
+		<li>Modified config(key) so that it overwrites only default values from config(1) so not all values have to be re-declared</li>
+		<li>Added new trigger() method</li>
+		<li>Added support for calling multiple models</li>
+		<li>Added support for defining rules in $config['globals'] and $config['defaults']</li>
+		<li>Added $config['xss_clean_post'] config setting</li>
+		<li>Added 'file_name' attribute for uploads</li>
+		<li>Fixed a bug where the form was considered valid even though the upload wasn't valid</li>
+		<li>Fixed a bug where if the upload was the only invalid element the form didn't re-populate other valid fields</li>
+	</ul>
+	</li>
+	
+	<li>
+	<b>0.2.2</b> as of 12/10/09
+	<ul>
+		<li>model() now gets correct $data passed (when changed by callback functions)</li>
+		<li>open() tag can now be omitted if the form is sent to the same url
+		<li>fieldset(FALSE) will close the fieldset last added
+		<li>Method clear() added to clear form data (when multiple forms are being used in a single controller)
+		<li>Added possibility to define prefixes and suffixes for labels, groups and elements</li>
+		<li>Added captcha() method to use with CI's captcha plug-in</li>
+		<li>Fixed set_value() to be able to set the values of selects, checkboxes and radios</li>
+		<li>Fixed a bug in private _el_get_unique() function</li>
+		<li>Fixed a bug with error classes
+		<li>Replaced 'split' with 'explode'</li>
+	</ul>
+	</li>
+	
+	<li>
+	<b>0.2.0</b> as of 8/27/09
+	<ul>
+		<li>added get_post() method to retrieve validated and xss_cleaned post data</li>
+		<li>changed button() method when used as 'submit' or 'image' type (now creates &lt;button&gt; instead of &lt;input&gt;)</li>
+		<li>improved stylesheet style.css (e.g. vertical alignment of checkboxes)</li>
+		<li>improved source code to validate XHTML 1.0 Transitional when reCAPTCHA is being used</li>
+	</ul>
+	</li>
+
+	<li>
+	<b>0.1.5</b> as of 8/13/09
+	<ul>
+		<li>Changed config file to match CI standards</li>
+		<li>New recaptcha() element</li>
+		<li>error_message() method replaced by set_error()</li>
+		<li>error_label() method replaced by set_error_label()</li>
+	</ul>
+	</li>
+	
+	<li>
+	<b>0.1.4</b> as of 7/24/09
+	<ul>
+		<li>Major overhaul to eliminate PHP notices</li>
+		<li>Added line breaks to HTML output</li>
+		<li>Fixed a bug that occured with 0.1.3 and "nameasid"</li>
+	</ul>
+	</li>
+
+	<li>
+	<b>0.1.3</b> as of 7/14/09
+	<ul>
+		<li>Got rid of some more PHP notices</li>
+	</ul>
+	</li>
+	
+	<li>
+	<b>0.1.2</b> as of 5/28/09
+	<ul>
+		<li>Added all $_POST data to the model() function's $data array</li>
+		<li>Fixed a bug in margin() function</li>
+		<li>Got rid of some PHP notices</li>
+	</ul>
+	</li>
+
+	<li>
+	<b>0.1.1</b> as of 5/19/09
+	<ul>
+		<li>Fixed a bug in upload() function</li>
+		<li>Fixed a bug in iupload() function</li>
+	</ul>
+	</li>
+
+	<li>
+	<b>0.1.0</b> as of 4/4/09
+	<ul>
+		<li>First public release of the Form Generation Library</li>
+	</ul>
+	</li>
+</ul>
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

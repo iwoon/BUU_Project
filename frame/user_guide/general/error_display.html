@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' />
+</head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Error Display
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Error Display</h1>
+
+<p> If <a href="validation.html">validation</a> fails you can access the error messages via:</p>
+<h3>$this-&gt;form-&gt;errors</h3>
+<p>This string will contain all errors  wrapped by the strings you have set-up in the <a href="configuration.html">configuration file</a>.</p>
+<h3>$this-&gt;form-&gt;error_array</h3>
+<p>This array will contain all errors in an associative array with the element name as key and its error message as value.</p>
+
+<p class="note"><b>Note:</b> All error messages will be generated with the element's <b>label</b> or <b>name</b> (if no label is available). However, you can change the error message output with the following methods: <a href="../methods/set_error.html">set_error()</a> and <a href="../methods/set_error_label.html">set_error_label()</a>.</p>
+
+<h2>Inline Errors</h2>
+<p>Instead of fetching the errors as a string and displaying them somewhere on top of your form you can also display errors right next to the elements. In order to do this you need to set the respective attributes in the <a href="configuration.html">configuration file</a>.</p>
+<h2>Error Order</h2>
+<p>Errors are being displayed in the order of the <a href="validation.html">validation</a> process order:</p>
+<p>1. Form Element errors<br />
+2. Captcha / Recaptcha errors<br />
+3. File Upload errors<br />
+4. Model errors</p>
+<p class="important"><strong>Note</strong>: Models are only called if all validation before has passed.</p>
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

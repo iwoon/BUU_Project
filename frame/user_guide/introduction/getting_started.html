@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' /></head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Getting Started
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Getting Started</h1>
+
+<p>Please look at this simple form example to see how the Form Generation Library works and how easy it is to set-up a form in just a couple of minutes. To gain more insight on all features please continue to read through the Introduction as well as the <a href="../general/automation.html">General Topics</a>. You will also find valuable information in the <a href="../elements/open.html">Form Elements</a> and <a href="../methods/action.html">Methods</a> sections of this User Guide.</p>
+
+<h4>Controller</h4>
+<pre>
+class Login extends Controller {
+
+	function Login()
+	{
+		parent::Controller();
+	}
+	
+	function index()
+	{	
+		$this->load->library('<kbd>form</kbd>'); <dfn>// first of all we have to load the library</dfn>
+		
+		$this->form <dfn>// then we fill the form with elements</dfn>
+		-><kbd>open</kbd>('<var>login</var>')
+		-><kbd>text</kbd>('<var>username</var>', '<var>Your Username</var>', '<var>trim|alpha_numeric|max_length[30]|xss_clean</var>')
+		-><kbd>pass</kbd>('<var>password</var>', '<var>Your Password</var>', '<var>trim|alpha_numeric|max_length[20]|xss_clean</var>')
+		-><kbd>indent</kbd>(<var>200</var>)
+		-><kbd>checkbox</kbd>('<var>loggedin</var>', '<var>yes</var>', '<var>I want to stay logged-in</var>')
+		-><kbd>submit</kbd>()
+		-><kbd>reset</kbd>()
+		-><kbd>onsuccess</kbd>('<var>redirect</var>', '<var>login/success</var>');
+		
+		$data['<var>form</var>'] = $this->form-><kbd>get</kbd>(); <dfn>// this returns the validated form as a string</dfn>
+		$data['<var>errors</var>'] = $this->form-><kbd>errors</kbd>;  <dfn>// this returns validation errors as a string</dfn>
+		
+		$this->load->view('<var>login_view</var>', <kbd>$data</kbd>);
+	}
+	
+	function success() 
+	{
+		$this->load->view('<var>login_success</var>');
+	}
+}
+</pre>
+
+<h4>View</h4>
+<pre>
+<dfn><i>&lt;!-- HTML --&gt;</i></dfn>
+
+&lt;h1&gt;Login Form&lt;/h1&gt;
+<kbd>&lt;?=$errors?&gt;
+&lt;?=$form?&gt;</kbd>
+
+<dfn><i>&lt;!-- MORE HTML --&gt;</i></dfn>
+</pre>
+
+With these few lines you can add a complete form including validation and error handling. Now let's take a look at the form code output after the view was loaded and echoed to the browser:
+
+<code>
+&lt;form action=&quot;http://localhost/dev/formgenlib/login&quot; method=&quot;post&quot;&gt;<br />
+&lt;label for=&quot;username&quot;&gt;Your Username&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot; value=&quot;&quot; maxlength=&quot;30&quot; id=&quot;username&quot; /&gt;&lt;br /&gt;<br />
+&lt;label for=&quot;password&quot;&gt;Your Password&lt;/label&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot; value=&quot;&quot; maxlength=&quot;20&quot; id=&quot;password&quot; /&gt;&lt;br /&gt;<br />
+&lt;div style=&quot;float:left;width:200px&quot;&gt;&nbsp;&lt;/div&gt;<br />
+&lt;div style=&quot;float:left&quot;&gt;<br />
+&lt;input type=&quot;checkbox&quot; name=&quot;loggedin[]&quot; value=&quot;yes&quot; class=&quot;check&quot; id=&quot;bae2b&quot; /&gt;&lt;label for=&quot;bae2b&quot; class=&quot;check&quot;&gt;I want to stay logged-in&lt;/label&gt;&lt;br /&gt;&lt;br /&gt;<br />
+&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;Submit&quot; class=&quot;button&quot; id=&quot;submit&quot; /&gt;&lt;input type=&quot;reset&quot; name=&quot;reset&quot; value=&quot;Reset&quot; class=&quot;button&quot; id=&quot;reset&quot; style=&quot;margin-left:10px&quot; /&gt;<br />
+&lt;/div&gt;<br />
+&lt;div style=&quot;clear:both&quot;&gt;&lt;/div&gt;<br />
+&lt;/form&gt;<br />
+</code>
+
+And with some smart <a href="../general/stylesheet.html">stylesheet</a> and <a href="../general/configuration.html">config file</a> settings this is how it would look like in your browser:<br /><br />
+
+<img src="../img/example.png" />
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

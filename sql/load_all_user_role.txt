@@ -1,0 +1,9 @@
+SELECT u.username, ur.user_id, r.role_id, r.name, p.name, op . * , obj . * 
+FROM prj_rbac_users AS u
+INNER JOIN prj_rbac_user_role AS ur ON ( u.user_id = ur.user_id ) 
+INNER JOIN prj_rbac_roles AS r ON ( ur.role_id = r.role_id ) 
+INNER JOIN prj_rbac_role_permission AS rp ON ( r.role_id = rp.role_id ) 
+INNER JOIN prj_rbac_permissions AS p ON ( rp.permission_id = p.permission_id ) 
+INNER JOIN prj_rbac_objects AS obj ON ( p.object_id = obj.object_id ) 
+INNER JOIN prj_rbac_operations AS op ON ( p.operation_id = op.operation_id ) 
+WHERE u.user_id =0

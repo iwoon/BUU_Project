@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' />
+</head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Prefixes and Suffixes</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Prefixes and Suffixes</h1>
+
+<p>The prefix and suffix settings in the configuration file allow you to easily format your form output. Please note that the behaviour for fieldsets is a little different from all other elements.<br />
+</p>
+<h4>Config File</h4>
+<code>
+  $config['group_prefix'] 	= '';<br />
+  $config['group_suffix'] 	= '';<br />
+  $config['element_prefix'] 	= '';<br />
+  $config['element_suffix'] 	= '';<br />
+  $config['label_prefix'] 	= '';<br />
+  $config['label_suffix'] 	= '';<br />
+  $config['field_prefix'] 	= '';<br />
+  $config['field_suffix'] 	= '';</code>
+<h4>Controller</h4>
+<code><dfn>// let's create a set of radiobuttons for example</dfn><br />
+  $radios[] = array('m', 'male');<br />
+  $radios[] = array('f', 'female');<br />
+  <br />
+  $this-&gt;form-&gt;radiogroup('gender', $radios, 'Your gender', 'm');</code>
+<p class="note">Prefixes and suffixes can always be overwritten via $config['defaults'] or by supplying them with the element's attributes.</p>
+<h2>Examples</h2>
+<h3>group_prefix / group_suffix</h3>
+These values will be wrapped around all checkgroups and radiogroups.<code><dfn>// config file</dfn><br />
+    $config['group_prefix'] 	= '<var>&lt;div&gt;</var>';<br />
+    $config['group_suffix'] 	= '<var>&lt;/div&gt;</var>';<br />
+    <br />
+    <dfn>// output</dfn><br />
+    <var>&lt;div&gt;</var><br />
+  &lt;label class=&quot;left&quot;&gt;Your gender&lt;/label&gt;
+    <br />
+  &lt;input type=&quot;radio&quot; name=&quot;gender[]&quot; value=&quot;m&quot; checked=&quot;checked&quot; class=&quot;check&quot; id=&quot;cc7c2&quot;  /&gt;&lt;label for=&quot;cc7c2&quot; class=&quot;check&quot;&gt;male&lt;/label&gt;
+    <br />
+  &lt;input type=&quot;radio&quot; name=&quot;gender[]&quot; value=&quot;f&quot; class=&quot;check&quot; id=&quot;db279&quot;  /&gt;&lt;label for=&quot;db279&quot; class=&quot;check&quot;&gt;female&lt;/label&gt;
+    <br />
+    <var>&lt;/div&gt;</var> </code>
+<h3>element_prefix / element_suffix</h3>
+	
+	These values will be wrapped around all elements (outside labels and fields). <code><dfn>// config file</dfn><br />
+    $config['element_prefix'] 	= '<var>&lt;p&gt;</var>';<br />
+    $config['element_suffix'] 	= '<var>&lt;/p&gt;</var>';<br />
+  <br />
+  <dfn>// output</dfn><br />
+  &lt;label class=&quot;left&quot;&gt;Your gender&lt;/label&gt; <br />
+  <var>&lt;p&gt;</var>&lt;input type=&quot;radio&quot; name=&quot;gender[]&quot; value=&quot;m&quot; checked=&quot;checked&quot; class=&quot;check&quot; id=&quot;cc7c2&quot;  /&gt;&lt;label for=&quot;cc7c2&quot; class=&quot;check&quot;&gt;male&lt;/label&gt;<var>&lt;/p&gt;</var> <br />
+  <var>&lt;p&gt;</var>&lt;input type=&quot;radio&quot; name=&quot;gender[]&quot; value=&quot;f&quot; class=&quot;check&quot; id=&quot;db279&quot;  /&gt;&lt;label for=&quot;db279&quot; class=&quot;check&quot;&gt;female&lt;/label&gt;<var>&lt;/p&gt;</var><br />
+    </code>  
+  <h3>label_prefix / label_suffix</h3>
+	These values will be wrapped around all labels. <code><dfn>// config file</dfn><br />
+    $config['label_prefix'] 	= '';<br />
+	  $config['label_suffix'] 	= '<var>&lt;br /&gt;</var>';<br />
+  <br />
+  <dfn>// output</dfn><br />
+  &lt;label class=&quot;left&quot;&gt;Your gender&lt;/label&gt;<var>&lt;br /&gt;</var><br />
+  &lt;input type=&quot;radio&quot; name=&quot;gender[]&quot; value=&quot;m&quot; checked=&quot;checked&quot; class=&quot;check&quot; id=&quot;cc7c2&quot;  /&gt;&lt;label for=&quot;cc7c2&quot; class=&quot;check&quot;&gt;male&lt;/label&gt;<var>&lt;br /&gt;</var> <br />  
+  &lt;input type=&quot;radio&quot; name=&quot;gender[]&quot; value=&quot;f&quot; class=&quot;check&quot; id=&quot;db279&quot;  /&gt;&lt;label for=&quot;db279&quot; class=&quot;check&quot;&gt;female&lt;/label&gt;<var>&lt;br /&gt;</var><br />
+    </code> 
+  <h3>field_prefix / field_suffix</h3>
+	These values will be wrapped around all element fields.<code><dfn>// config file</dfn><br />
+	  $config['field_prefix'] 	= '<var>&lt;br /&gt;</var>';<br />
+	  $config['field_suffix'] 	= '';<br />
+  <br />
+  <dfn>// output</dfn><br />
+  &lt;label class=&quot;left&quot;&gt;Your gender&lt;/label&gt; <br />
+  <var>&lt;br /&gt;</var>&lt;input type=&quot;radio&quot; name=&quot;gender[]&quot; value=&quot;m&quot; checked=&quot;checked&quot; class=&quot;check&quot; id=&quot;cc7c2&quot;  /&gt;&lt;label for=&quot;cc7c2&quot; class=&quot;check&quot;&gt;male&lt;/label&gt;<br />
+  <var>&lt;br /&gt;</var>&lt;input type=&quot;radio&quot; name=&quot;gender[]&quot; value=&quot;f&quot; class=&quot;check&quot; id=&quot;db279&quot;  /&gt;&lt;label for=&quot;db279&quot; class=&quot;check&quot;&gt;female&lt;/label&gt;<br />
+    </code> 
+  <h2>General Usage</h2>
+	<p>The following form will show how the prefixes and suffixes will be applied in general:</p>
+    <code> &lt;form&gt;
+      
+    <br />
+      {element_prefix}
+      <br />
+  &lt;fieldset&gt;
+      <br />
+      {label_prefix}&lt;legend&gt;Fieldset&lt;/legend&gt;{label_suffix} <br />
+      {field_prefix}
+      
+      <br />
+    <br />
+      {element_prefix}
+      <br />
+      {label_prefix}&lt;label&gt;Input&lt;/label&gt;{label_suffix}		       <dfn>// with label position = 'before' (default)</dfn><br />
+      {field_prefix}&lt;input type=&quot;&quot; /&gt;{field_suffix} <br />
+      {element_suffix}
+      
+      <br />
+    <br />
+      {element_prefix}
+      <br />
+      {label_prefix}&lt;label&gt;Textarea&lt;/label&gt;{label_suffix} <br />
+      {field_prefix}&lt;textarea&gt;&lt;/textarea&gt;{field_suffix} <br />
+      {element_suffix}
+      
+      <br />
+    <br />
+      {group_prefix}
+      
+      <br />
+      <br />
+      {element_prefix}
+      <br />
+      {field_prefix}&lt;input type=&quot;radio&quot; /&gt;{field_suffix} <br />
+      {label_prefix}&lt;label&gt;Radio #1&lt;/label&gt;{label_suffix} <dfn>        // with label position = 'after' for radio</dfn><br />
+      {element_suffix}
+      
+      <br />
+    <br />
+      {element_prefix}
+      <br />
+      {field_prefix}&lt;input type=&quot;radio&quot; /&gt;{field_suffix} <br />
+      {label_prefix}&lt;label&gt;Radio #2&lt;/label&gt;{label_suffix} <br />
+      {element_suffix}
+      
+      <br />
+    <br />
+      {group_suffix}
+      
+      <br />
+    <br />
+      {field_suffix}
+      <br />
+  &lt;/fieldset&gt;
+    <br />
+      {element_suffix}
+      
+      <br />
+      <br />
+  &lt;/form&gt;    </code>
+  <p class="important"><strong>Note:</strong> Fieldset's element_prefix and element_suffix are wrapped <strong>outside</strong> of the &lt;fieldset&gt;&lt;/fieldset&gt; tags whereas field_prefix and field_suffix are wrapped inside (between &lt;/legend&gt; and &lt;/fieldset&gt;). Also label_prefix and label_suffix are wrapped around the &lt;legend&gt;&lt;/legend&gt; tags.</p>
+</div>
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

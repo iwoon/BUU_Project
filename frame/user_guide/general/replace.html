@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' /></head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Replace vs. Combine
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Replace vs. Combine</h1>
+
+<p>Multi-value attributes (<b>class</b>, <b>style</b> and javascript events starting with <b>on...</b>) can be either replaced or combined with the <b>$config['defaults']</b> and <b>$config['globals']</b> values provided in the <a href="configuration.html">Config File</a>. Replacement will be performed in the following hierarchical order:<br /><br />
+
+<div style="width: 200px; text-align: center">
+<p class="note" style="width: 200px; margin-bottom: 10px">value set in element tag</p>
+will replace
+<p class="note" style="width: 200px; margin-bottom: 10px">value set in $config['defaults'] for specific element <u>name</u></p> 
+will replace
+<p class="note" style="width: 200px; margin-bottom: 10px">value set in $config['defaults'] for general element <u>type</u></p> 
+will replace
+<p class="note" style="width: 200px">value set in $config['globals']</p>
+</div>
+
+</p>
+
+<h2>Class</h2>
+
+If $config['replace'] is set to TRUE for classes, they will be replaced in hierarchical order. If it is set to FALSE all classes will be combined.
+
+<h4>Controller</h4>
+<code>
+$this->form->text('city', 'City', '', '', '<var>class=d</var>');
+</code>
+
+<h4>Config File</h4>
+<code>
+$config['globals'] = array('<var>class</var>' => '<var>a</var>');<br />
+$config['defaults'] = array(<br />
+&nbsp;&nbsp;&nbsp;'text' => array('<var>class</var>' => '<var>b</var>'),<br />
+&nbsp;&nbsp;&nbsp;'city' => array('<var>class</var>' => '<var>c</var>')<br />
+);
+</code>
+
+<h4>Output</h4>
+<code>
+<dfn>// $config['replace'] = FALSE</dfn><br />
+&lt;input type=&quot;text&quot; name=&quot;city&quot; class=&quot;<var>a b c d</var>&quot; /&gt; <dfn>// all values are being combined</dfn><br /><br />
+
+<dfn>// $config['replace'] = TRUE</dfn><br />
+&lt;input type=&quot;text&quot; name=&quot;city&quot; class=&quot;<var>d</var>&quot; /&gt; <dfn>// values are being replaced in hierarchical order</dfn>
+</code>
+
+<h2>Style</h2>
+
+If $config['replace'] is set to TRUE for styles, values for the same style will be replaced in hierarchical order. If set to FALSE previously set values will be preserved.
+
+<h4>Controller</h4>
+<code>
+$this->form->text('city', 'City', '', '', '<var>style=margin:10px</var>');
+</code>
+
+<h4>Config File</h4>
+<code>
+$config['globals'] = array('<var>style</var>' => '<var>color:#666</var>');<br />
+$config['defaults'] = array(<br />
+&nbsp;&nbsp;&nbsp;'text' => array('<var>style</var>' => '<var>margin:20px; padding:10px</var>'),<br />
+&nbsp;&nbsp;&nbsp;'city' => array('<var>style</var>' => '<var>padding:30px</var>')<br />
+);
+</code>
+
+<h4>Output</h4>
+<code>
+<dfn>// $config['replace'] = FALSE</dfn><br />
+&lt;input type=&quot;text&quot; name=&quot;city&quot; style=&quot;<var>margin:20px; padding:10px; color:#666</var>&quot; /&gt; <dfn>// margin supplied with defaults, padding supplied with defaults, color from globals</dfn><br /><br />
+
+<dfn>// $config['replace'] = TRUE</dfn><br />
+&lt;input type=&quot;text&quot; name=&quot;city&quot; style=&quot;<var>margin:10px; padding:30px; color:#666</var>&quot; /&gt; <dfn>// margin replaced in element, padding replaced in speficic default, color from globals</dfn>
+</code>
+
+<h2>JavaScript</h2>
+
+If replace is set to TRUE for scripts, values for the same event will be replaced in hierarchical order. If it is set to FALSE all values will be combined.
+
+<h4>Controller</h4>
+<code>
+$this->form->text('city', 'City', '', '', "<var>onmouseover=alert('element')</var>");
+</code>
+
+<h4>Config File</h4>
+<code>
+$config['defaults'] = array(<br />
+&nbsp;&nbsp;&nbsp;'text' => array('<var>onmouseover</var>' => "<var>alert('default > type')</var>"),<br />
+&nbsp;&nbsp;&nbsp;'city' => array('<var>onmouseover</var>' => "<var>alert('default > element')</var>")<br />
+);
+</code>
+
+<h4>Output</h4>
+<code>
+<dfn>// $config['replace'] = FALSE</dfn><br />
+&lt;input type=&quot;text&quot; name=&quot;city&quot; onmouseover=&quot;<var>alert('default &gt; type'); alert('default &gt; element'); alert('element');</var>&quot; /&gt; <dfn>// all values are being combined</dfn><br /><br />
+
+<dfn>// $config['replace'] = TRUE</dfn><br />
+&lt;input type=&quot;text&quot; name=&quot;city&quot; onmouseover=&quot;<var>alert('element')</var>&quot; /&gt; <dfn>// values are being replaced in hierarchical order
+</code>
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

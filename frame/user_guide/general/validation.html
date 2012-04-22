@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' /></head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Validation
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Validation</h1>
+
+<p>After the form was submit, all  elements will be validated with the rules you have set in the <a href="#default">configuration file</a> or supplied with the elements.</p>
+<p>The validation is being called automatically when outputting the (submitted) form via <a href="../methods/get.html">get()</a> or <a href="../methods/get_array.html">get_array()</a>:</p>
+<pre>$this-&gt;form-&gt;<kbd>get()</kbd>;
+<br /><dfn>// or</dfn>
+<br />$this-&gt;form-&gt;<kbd>get_array()</kbd>;</pre>
+<p>In order to do some additional stuff after the form was validated but before the form was output you can use the following syntax:</p>
+<pre>$this-&gt;form<br />-&gt;open()
+-&gt;...;<br />
+<dfn>// only validate the form</dfn>
+$this-&gt;form-&gt;<kbd>validate()</kbd>;<br /><br />if ($this-&gt;form-&gt;<kbd>valid</kbd>) <br />{ <br />    <dfn>// do stuff</dfn><br />}<br />
+<dfn>// return the generated form html</dfn>
+$data['form'] = $this-&gt;form-&gt;get();<br /></pre>
+<h2>Process Order</h2>
+Validation is processed (and therefore<a href="error_display.html"> errors</a> are sorted) in the following order:
+<p>1. Form Elements<br />
+  2. Captcha / Recaptcha<br />
+  3. File Uploads</p>
+<p>If all of the above elements passed validation, models are being called - otherwise errors will be generated and the form will be re-populated.</p>
+<p>4. Model(s)</p>
+<p>If none of the models flags an error via </p>
+<pre><dfn>// in the model the form is accessed via $form (instead of $this-&gt;form)</dfn><br />$form-&gt;add_error('element', 'Error Message');</pre>
+<p> the entire form is considered valid - otherwise (model) errors  will be generated and the form will be re-populated.</p>
+
+<a name="default"></a>
+<h2>Default Validation Rules</h2>
+
+<p>You can set default rules in the <a href="configuration.html">configuration file</a> and use  ^ as a placeholder that will be substituted with any rules defined subsequently in the <a href="replace.html">replacement hierarchy</a>.</p>
+
+<h4>Example</h4>
+<pre>$config['default'] = array(
+   'text' =&gt; array(
+       'rules' =&gt; 'trim^xss_clean'
+   )
+);</pre>
+<p>with</p>
+<pre>$this-&gt;form-&gt;text('Username', 'username', 'required|min_length[6]');</pre>
+<p>will produce the following validation rules</p>
+<pre>trim|required|min_length[6]|xss_clean</pre>
+<p>because ^ was substituted with 'required|min_length[6]'</p>
+<p class="note">If you don't use the ^ placeholder rules will be appended to subsequent rules by default. In order to prepend subsequent rules you need to use the placeholer like this: '^rules'</p>
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

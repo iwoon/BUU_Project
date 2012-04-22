@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' /></head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Label Display
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Label Display</h1>
+
+<p>In order to control how labels will be displayed you need to define some values in the configuration file:</p>
+<code> $config['defaults'] = array(<br />
+  &nbsp;&nbsp;&nbsp;'<var>label</var>' =&gt; array(                  // this will be applied to ALL labels<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'position' =&gt; 'before',<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'class' =&gt; 'left',<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'required_class' =&gt; 'req',<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'required_flag' =&gt; '*'<br />
+  &nbsp;&nbsp;&nbsp;),<br />
+  &nbsp;&nbsp;&nbsp;'<var>checkbox</var>' =&gt; array(<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'<var>label</var>' =&gt; array(               // these settings will overwrite general settings above for all checkbox labels<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'position' =&gt; 'after',<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'class' =&gt; 'right'<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br />
+  &nbsp;&nbsp;&nbsp;),<br />
+  ); </code>
+<h3>position</h3>
+<p>The label tag can be inserted either<strong> </strong><b>before</b> or <b>after</b> the element tag.</p>
+<h3>class</h3>
+<p>If set, this class will be added to the &lt;label&gt; tag. This is very useful to apply the correct CSS style for labels in different positions.</p>
+<h3>required_class</h3>
+<p>If set, this class will be added to the &lt;label&gt; tag for all elements (except labels of checkboxes and radiobuttons) that are <u>required</u> by the validation rules. For example you can use this to style all required labels in bold font. </p>
+<h3>required_flag</h3>
+<p>If set, this code will be added after the label text in all elements (except labels of checkboxes and radiobuttons) that are <u>required</u> by the validation rules. For example you can use this to add an asterisk to all labels of required fields.</p>
+<p class="note">Of course you can also supply additional valid attributes (like 'style' etc.) to labels.</p>
+<p>&nbsp;</p>
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

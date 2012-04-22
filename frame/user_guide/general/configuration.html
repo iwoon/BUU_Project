@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' /></head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Config File
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Config File</h1>
+
+<p>The configuration file contains various settings for the form code output. A detailed explanation of all settings will follow this config file code example.</p>
+
+<code>
+$config[nameasid] = TRUE;<br />
+$config['replace'] = 'FALSE|TRUE|TRUE';<br />
+$config['xss_clean_post'] = TRUE;<br />
+<br />
+$config['group_prefix'] 	= '';<br />
+$config['group_suffix'] 	= '';<br />
+$config['element_prefix'] 	= '';<br />
+$config['element_suffix'] 	= '&lt;br /&gt;';<br />
+$config['label_prefix'] 	= '';<br />
+$config['label_suffix'] 	= '';<br />
+$config['field_prefix'] 	= '';<br />
+$config['field_suffix'] 	= '';<br /><br />
+$config['error_open'] = '&lt;div&gt;- ';<br />
+$config['error_close'] = '&lt;/div&gt;';<br />
+$config['error_string_open'] = '&lt;div id=&quot;errors&quot;&gt;';<br />
+$config['error_string_close'] = '&lt;/div&gt;';<br />
+$config['error_class'] = 'error';<br />
+$config['error_inline'] = FALSE;<br />
+$config['error_inline_open'] = '';<br />
+$config['error_inline_close'] = '';<br />
+$config['error_flag'] = '&lt;img src=&quot;'.base_url().'images/error.png&quot; /&gt;';<br /><br />
+$config['globals'] = array();<br />
+$config['defaults'] = array();<br />
+<br />
+$config['recaptcha_api_server']			= 'http://api.recaptcha.net';<br />
+$config['recaptcha_api_secure_server']	= 'https://api-secure.recaptcha.net';<br />
+$config['recaptcha_ssl']				= 'FALSE';<br />
+$config['recaptcha_verify_server']		= 'api-verify.recaptcha.net';<br />
+$config['recaptcha_key_public']			= '';<br />
+$config['recaptcha_key_private']		= '';<br />
+$config['recaptcha_theme']				= 'white';<br />
+$config['recaptcha_lang']				= 'en';</code>
+
+<p class="important"><b>Note:</b> The config file must be named <b>form.php</b> and saved to <b>/applications/config</b></p>
+
+<h2>General Settings</h2>
+
+<h3>$config['nameasid'] = BOOL</h3>
+	
+	If set to TRUE the library will add an id attribute with the value of the name attribute for all appropriate elements.
+
+	<code>
+	$form->text('<var>city|city</var>', 'City');<br /><br />
+	<dfn>// equals</dfn><br /><br />
+	$form->text('<var>city</var>', 'City');<dfn> // with $config['nameasid'] = TRUE in the config file</dfn>
+	</code>
+
+<h3>$config['replace'] = 'BOOL|BOOL|BOOL'</h3>
+	
+	If set to TRUE all multi-value attributes for classes, styles and scripts set in <b>$config['globals']</b> and <b>$config['defaults']</b> will be replaced in hierarchical order. Please see <a href="replace.html">Replace vs. Combine</a> for further details.
+	
+  <code>
+  $config['overwrite'] = 'FALSE|TRUE|TRUE'; <dfn>// combine classes, overwrite styles and javascript events</dfn>	</code>
+  <h3>$config['xss_clean_post'] = BOOL</h3>
+	<p>If set to TRUE all post variables fetched via $this-&gt;form-&gt;get_post() will be XSS cleaned.</p>
+	<h2>Prefix/Suffix Settings</h2>
+    <p>These settings allow to automatically add prefixes and suffixes for groups (checkgroup/radiogroup), elements as well as the element's label and field.</p>
+    <p class="note">To learn more about how to use this setting please read the <a href="prefix_suffix.html">Prefixes/Suffixes</a> section of the user guide.<br />
+    </p>
+  <h2>Error Settings</h2>
+
+<h3>$config['error_open'] = '&lt;div&gt;- '<br />$config['error_close'] = '&lt;/div&gt;'</h3>
+
+	Sets the opening and closing tags for each error message.
+
+<h3>$config['error_string_open'] = '&lt;div class=&quot;error&quot;&gt;'<br />$config['error_string_close'] = '&lt;/div&gt;'</h3>
+
+	Sets the opening and closing tags to wrap all errors returned by $form->error after the form was validated.
+
+<h4>Example</h4>
+
+<code>
+<dfn>// echo $form->errors outputs:</dfn><br /><br />
+&lt;div class=&quot;error&quot;&gt;<br />
+&lt;div&gt;- The Zip code must only contain numbers&lt;/div&gt;<br />
+&lt;div&gt;- The password field is required&lt;/div&gt;<br />
+&lt;/div&gt;
+</code>
+
+<h3>$config['error_class'] = 'error'</h3>
+
+	If set, will add this class to all elements that did not pass their validation rules. Very useful if you want to change the border color of text inputs to red upon errors.
+
+<h3>$config['error_inline'] = BOOL</h3>
+
+	If set to TRUE, error messages will be displayed inline after the element.
+
+<h3>$config['error_inline_open'] = '&lt;span class=&quot;red&quot;&gt;'<br />$config['error_inline_close'] = '&lt;/span&gt;'</h3>
+
+	Sets the opening and closing tags for inline error messages.
+
+<h3>$config['error_inline_flag'] = '&lt;img src=&quot;../images/error.png&quot; alt=&quot;{error}&quot; title=&quot;{error}&quot; /&gt;'</h3>
+
+	If set, this code will be added after the element instead of the error message. Very useful if you want to indicate an error with an image.<br />You can use the placeholder {error} to include the actual error message in your code.
+
+
+<h2>Global Values</h2>
+With this setting you can define attributes that will be added to every element in the form.
+
+<code>
+$config['globals'] = array(<br />
+&nbsp;&nbsp;&nbsp;'style' => 'background-color: #bbb'<br />
+);
+</code>
+
+<p class="important"><b>Note:</b> Before using this you should consider making global changes in your CSS file rather than in the config file.</p>
+
+<h2>Default Values</h2>
+
+With this setting you can define attributes that will be added to elements in the form. You can define them by either specifying an <b>element type</b> (text, radiogroup, etc) or by providing a <b>specific element name</b>. This reduces your code in the controller and makes your elements easily re-usable in other forms. Please do consider that for adding styles you should always use stylesheets over these settings in the config file.
+
+<code>
+$config['defaults'] = array(<br />
+<dfn>      // define default values for element types</dfn><br />
+&nbsp;&nbsp;&nbsp;'<var>text</var>' => array(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'class' => 'text',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'rules' =&gt; 'trim^xss_clean'<br />
+&nbsp;&nbsp;&nbsp;),<br />
+&nbsp;&nbsp;&nbsp;'<var>upload</var>' => array(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'upload_path' => './uploads',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'allowed_types' => 'pdf|doc|jpg|gif',<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'rules' => 'required'<br />
+&nbsp;&nbsp;&nbsp;),<br />
+<dfn>     // define default values for specific elements</dfn><br />
+&nbsp;&nbsp;&nbsp;'<var>file_upload</var>' => array(<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'err_message' => 'The File Upload is required and must be either pdf, doc, jpg or gif.'<br />
+&nbsp;&nbsp;&nbsp;)<br />
+);</code>
+
+<p class="important"><b>Note:</b> To preserve the <a href="replace.html">replacement hierarchy</a> you should always define $config['globals'] first, then $config['defaults'] for element types and then $config['defaults'] for specific elements.</p>
+<h2>Multiple Config File Settings</h2>
+
+<p>You can use multiple config file settings by simply providing  config variables as arrays. Please note that only ALL of the config values for $config[1] (= default configuration) must be defined. If  config values for other keys are missing the library will automatically use the corresponding  value of $config[1]. So you only need to configure differences to the default configuration.</p>
+
+<code>
+$config[<var>1</var>]['nameasid'] = FALSE;<br />
+$config[<var>1</var>]['overwrite'] = FALSE|TRUE|TRUE;<br />
+...<br /><br />
+$config[<var>2</var>]['nameasid'] = TRUE;<br />
+$config[<var>2</var>]['overwrite'] = FALSE;<br />
+...
+</code>
+
+<p>In the controller you will need to let the form know which config setting to load:</p>
+
+<code>
+$this->form<br />
+-><kbd>config</kbd>(<var>1</var>)<br />
+...
+</code>
+
+<p class="important"><b>Note:</b> The array index has to start with 1, then 2, 3 ...</p>
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

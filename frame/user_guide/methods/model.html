@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' /></head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Model
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Model</h1>
+
+<p>This method will call a function of a model. You can use this to further validate the form with custom rules or to run some database queries (or both).</p>
+
+<h2>model (<i>string</i> model, [<i>string</i> method, <i>array</i> data])</h2>
+
+<ul>
+	<li><b>model:</b> the name of the model</li>
+	<li><b>method:</b> the method that should be called ('index' by default)</li>
+	<li><b>data:</b> associative array to pass additional data to the method</li>
+</ul>
+
+<h2>Usage Example</h2>
+
+<h4>In the Controller:</h4>
+<code>
+	$this->form-><kbd>model</kbd>('<var>user</var>', '<var>checklogin</var>'); <dfn>// optionally additional data could be passed in the third parameter</dfn>
+</code>
+
+<h4>In the Model:</h4>
+<pre>
+class User extends Model {
+
+    function User()
+    {
+        parent::Model();
+    }
+    
+    function <kbd>checklogin</kbd>(<var>&$form</var>, <var>$data</var>)
+    {
+         <dfn>// this is where database queries or custom validation will go</dfn>
+    }
+}
+</pre>
+
+<p style="line-height: 22px">
+In the model function you will have access to:<br />
+- the validated form data via the <b>$data</b> array (e.g. $data['username'])<br />
+- the upload data via <b>$data['file']</b> (where 'file' is the name of the upload element)<br />
+- the form methods via <b>$form->some_method()</b>
+</p>
+
+<p class="note"><b>Note:</b> All form data in <b>$data</b> has been validated before the model is called.</p>
+
+<h2>Code Example</h2>
+
+A brief example of how to use the <a href="#">model()</a> and <a href="onsuccess.html">onsuccess()</a> method in a login form to verify a user.
+
+<h4>Controller</h4>
+
+<pre>
+$this->load->library('form');
+        
+$this->form->open('login')
+->fieldset('Enter Your Login Credentials')
+->text('username', 'User Name', 'required|trim|max_length[40]|callback_username_check') <dfn>// these callback methods will only verify valid characters</dfn>
+->password('password', 'Password', 'required|trim|max_length[40]|callback_password_check') <dfn>// these callback methods will only verify valid characters</dfn>
+->indent(150)
+->submit('Submit', 'sub')
+->reset('Reset', 'reset', "onclick=document.location.href='login'")
+->margin(10)
+-><kbd>model</kbd>('<var>users</var>', '<var>checklogin</var>') <dfn>// call the model function and do some db stuff</dfn>
+-><kbd>onsuccess</kbd>('<var>redirect</var>', '<var>member</var>'); <dfn>// redirect will only be executed if no errors have been flagged</dfn>
+
+$data['form'] = $this->form->get();
+</pre>
+
+<h4>Model</h4>
+
+<pre>
+function <kbd>checklogin</kbd>(<var>&$form</var>, <var>$data</var>) <dfn>// verify username and password</dfn>
+{
+    $username = $data['username'];
+    $password = $data['password'];
+	
+    $this->db->where('username', $username);
+    $this->db->select('password');
+    $query = $this->db->get('users');
+    
+    if ($query->num_rows() == 0)
+    {
+        $form-><kbd>add_error</kbd>('<var>username</var>', '<var>You entered a bad username.</var>'); <dfn>// by adding this error we make sure that onsuccess() is not being executed and an error message will be displayed</dfn>
+    }
+    else if ($password != $query->row()->password)
+    {
+        $form-><kbd>add_error</kbd>('<var>password</var>', '<var>You entered a bad password.</var>'); <dfn>// by adding this error we make sure that onsuccess() is not being executed and an error message will be displayed</dfn>
+    }
+    else
+    {
+    	<dfn>// this is where a login counter could be increased</dfn>
+    }
+}
+</pre>
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' /></head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Last Accessed Element
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Last Accessed Element</h1>
+
+<p>The form generation library remembers the last element you have added or altered. This way you don't have to specify the element name for methods that normally require the element's name.</p>
+
+<code>
+$this->form<br />
+-><kbd>text</kbd>('username', 'Your Username')<br />
+-><kbd>set_att</kbd>('onchange', 'check_username()') <dfn>// method altering the last accessed element ('username')</dfn>
+</code>
+
+is the same as
+
+<code>
+$this->form<br />
+-><kbd>text</kbd>('username', 'Your Username')<br />
+-><kbd>set_att</kbd>('<var>username</var>', 'onchange', 'check_username()') <dfn>// method altering a specific element ('username')</dfn>
+</code>
+
+<p class="note">Methods that allow usage of last accessed element: <a href="../methods/add_class.html">add_class</a>, <a href="../methods/add_error.html">add_error</a>, <a href="../methods/alias.html">alias</a>, <a href="../methods/margin.html">margin</a>, <a href="../methods/rem_att.html">rem_att</a>, <a href="../methods/rem_class.html">rem_class</a>, <a href="../methods/set_att.html">set_att</a>, <a href="../methods/set_error.html">set_error</a>, <a href="../methods/set_error_label.html">set_error_label</a>, <a href="../methods/set_rule.html">set_rule</a>, <a href="../methods/set_value.html">set_value</a></p>
+
+<h2>Proper Order</h2>
+
+Be careful when using methods with the last accessed element notation. You always need to write the method after the element you would like to alter (or any other method you have used on the same element) <u>before</u> any other element is created.
+
+<h4>Incorrect</h4>
+<code>
+$this->form<br />
+-><kbd>text</kbd>('username', 'Your Username')<br />
+-><kbd>text</kbd>('password', 'Your Password')<br />
+-><kbd>set_att</kbd>('onchange', '<var>check_username()</var>') <dfn>// method altering the last accessed element (in this case: 'password')</dfn>
+</code>
+
+<h4>Correct</h4>
+<code>
+$this->form<br />
+-><kbd>text</kbd>('username', 'Your Username')<br />
+-><kbd>add_class</kbd>('<var>user</var>') <dfn>// method altering the last accessed element ('username')</dfn><br />
+-><kbd>set_att</kbd>('onchange', '<var>check_username()</var>') <dfn>// method altering the last accessed element (still: 'username')</dfn><br />
+-><kbd>text</kbd>('password', 'Your Password')<br />
+</code>
+
+<p class="note">Multiple methods can be called after each other on the same last accessed element.</p>
+
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>

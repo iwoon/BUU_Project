@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Form Generation Library Documentation</title>
+
+<style type='text/css' media='all'>@import url('../userguide.css');</style>
+<link rel='stylesheet' type='text/css' media='all' href='../userguide.css' />
+
+<script type="text/javascript" src="../nav/nav.js"></script>
+<script type="text/javascript" src="../nav/prototype.lite.js"></script>
+<script type="text/javascript" src="../nav/moo.fx.js"></script>
+<script type="text/javascript" src="../nav/user_guide_menu.js"></script>
+
+
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+<meta name='author' content='Frank Michel' />
+<meta name='description' content='CodeIgniter Form Library' />
+</head>
+<body>
+
+<!-- START NAVIGATION -->
+<div id="nav"><div id="nav_inner"><script type="text/javascript">create_menu('../');</script></div></div>
+<div id="nav2"><a name="top"></a><a href="javascript:void(0);" onclick="myHeight.toggle();"><img src="../img/nav_toggle_darker.jpg" width="154" height="43" border="0" title="Toggle Table of Contents" alt="Toggle Table of Contents" /></a></div>
+<div id="masthead">
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td><h1>Form Generation Library</h1></td>
+<td id="breadcrumb_right"><a href="../index.html">Home</a></td>
+</tr>
+</table>
+</div>
+<!-- END NAVIGATION -->
+
+
+<!-- START BREADCRUMB -->
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+<tr>
+<td id="breadcrumb">
+<a href="http://frankmichel.com/formgenlib/">Form Generation Home</a> &nbsp;&#8250;&nbsp;
+<a href="../index.html">User Guide Home</a> &nbsp;&#8250;&nbsp;
+Get Post
+</td>
+<td id="searchbox"><form method="get" action="http://www.google.com/search"><input type="hidden" name="as_sitesearch" id="as_sitesearch" value="frankmichel.com/formgenlib/user_guide/" />Search Project User Guide&nbsp; <input type="text" class="input" style="width:200px;" name="q" id="q" size="31" maxlength="255" value="" />&nbsp;<input type="submit" class="submit" name="sa" value="Go" /></form></td>
+</tr>
+</table>
+<!-- END BREADCRUMB -->
+
+<br clear="all" />
+
+<!-- START CONTENT -->
+<div id="content">
+
+<h1>Get Post</h1>
+
+<p>The following method will allow you to retrieve the validated $_POST data of the submitted form.</p>
+<h2>get_post (<i>bool</i> xss_clean)</h2>
+<ul>
+  <li><b>xss_clean:</b> if set to TRUE, all post variables will be xss cleaned<br />
+  </li>
+  </ul>
+  <p class="note">You can set the <strong>xss_clean</strong> value globally in the <a href="../general/configuration.html">config file</a>.</p>
+  <p class="important"><strong>Note:</strong> Radiogroups will  be returned as <strong>string</strong> whereas checkgroups and selects will always be returned as <strong>arrays</strong>.</p>
+  <h2>
+  Usage Example</h2>
+  The following example is based on the <strong>welcome.php </strong> controller of the <a href="../installation/install.html">installation package</a>.
+  <pre>$data['form'] = $this-&gt;form-&gt;get();<br /><br />if ($this-&gt;form-&gt;valid)<br />{</span><br />    $post = $this-&gt;form-&gt;<kbd>get_post()</kbd>;<br />   
+    echo '&lt;pre&gt;'.print_r($post, TRUE).'&lt;/pre&gt;';<br />}<br /></pre>
+<p>will output</p>
+<pre>
+Array
+(
+    [name] => Frank
+    [pass] => pass123
+    [city] => Munich
+    [zip] => 80339
+    [file] => Array
+        (
+            [file_name] => logo.png
+            [file_type] => image/png
+            [file_path] => /formgenlib/uploads/
+            [full_path] => /formgenlib/uploads/logo.png
+            [raw_name] => logo
+            [orig_name] => logo.png
+            [file_ext] => .png
+            [file_size] => 4.78
+            [is_image] => 1
+            [image_width] => 500
+            [image_height] => 500
+            [image_type] => jpeg
+            [image_size_str] => width="500" height="500"
+        )
+
+    [notes] => This is some text in the textarea!
+    [gender] => m
+    [checks] => Array
+        (
+            [0] => 1
+            [1] => 3
+            [2] => 4
+        )
+
+    [privacy] => Array
+        (
+            [0] => yes
+        )
+
+    [single] => Array
+        (
+            [0] => 2
+        )
+
+    [multiple] => Array
+        (
+            [0] => 2
+            [1] => 4
+        )
+
+    [submit] => Submit
+    [reset] => 
+)
+</pre>
+</div>
+<!-- END CONTENT -->
+
+
+<div id="footer">
+<p>
+Previous Topic:&nbsp;&nbsp;<a href="#">Previous Class</a>
+&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="#top">Top of Page</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+<a href="../index.html">User Guide Home</a>&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+Next Topic:&nbsp;&nbsp;<a href="#">Next Class</a>
+</p>
+<p><a href="http://frankmichel.com/formgenlib/">Form Generation Library</a> &nbsp;&middot;&nbsp; Copyright &#169; 2009 &nbsp;&middot;&nbsp; <a href="http://frankmichel.com/">Frank Michel</a></p>
+</div>
+
+</body>
+</html>
