@@ -47,7 +47,7 @@ class Rbac_users extends CI_Model{
     private function _get($arg=array())
     {
         $this->_prepare_param($arg);
-        return $this->db->get_where(self::$TABLE_NAME,$this->_attr);
+        return $this->db->get_where(self::$TABLE_NAME,$this->_attr,$arg);
     }
     public function getdata($arg=array(),$result='object')
     {
@@ -55,6 +55,10 @@ class Rbac_users extends CI_Model{
         if($result=='array'){
         return (($ret->num_rows()>1)?$ret->result_array():$ret->row_array());
         }return (($ret->num_rows()>1)?$ret->result():$ret->row());
+    }
+    public function all($arg=array())
+    {
+        
     }
 }
 
