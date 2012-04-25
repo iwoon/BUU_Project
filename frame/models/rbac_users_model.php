@@ -1,6 +1,6 @@
 <?php if(!defined('BASEPATH')) exit('Not direct access script allowed');
-class Rbac_users extends CI_Model{
-    protected static $TABLE_NAME='rbac_users';
+class Rbac_users_model extends CI_Model{
+    public static $TABLE_NAME='rbac_users';
     public $user_id=-1;
     public $username=NULL;
     public $password=NULL;
@@ -8,7 +8,7 @@ class Rbac_users extends CI_Model{
     public $family_name=NULL;
     public $email=NULL;
     public $created=NULL;
-    
+    private $_attr=array();
     public function __construct($arg=array()){
         parent::__construct();
         $this->created=time();

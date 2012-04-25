@@ -1,6 +1,6 @@
 <?php if(!defined('BASEPATH')) exit('Not direct access script allowed');
 
-class Rbac_session{
+class Rbac_sessions{
     protected static $TABLE_NAME='rbac_sessions';
     public $session_id;
     public $user_id;
