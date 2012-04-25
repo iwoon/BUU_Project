@@ -34,7 +34,6 @@
 			$user=$this->login->CheckAuth($authen_params);
          
 			if(!empty($user)&&$user->user_id>-1){
-                                //if(!$this->load->library('rbac_session'))exit('can\'t load library rbac_session');
                                 $sess=new Rbac_session();
                                 if(!$sess->add(array('session_id'=>$this->session->get_session_id(),'user_id'=>$user->user_id)))exit('can\'t add user session');
 				$user_sess=array('USER'=>array('user_id'=>$user->user_id));

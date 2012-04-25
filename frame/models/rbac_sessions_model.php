@@ -1,5 +1,5 @@
 <?php if(!defined('BASEPATH')) exit('Not direct access script allowed');
-class Rbac_session_model extends CI_Model{
+class Rbac_sessions_model extends CI_Model{
     public static $TABLE_NAME='rbac_sessions';
     public $session_id;
     public $user_id='';

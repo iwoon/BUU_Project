@@ -14,7 +14,7 @@ class Rbac_sessions{
         $this->_ci->load->library('session');
         $this->session_id=$this->_ci->session->userdata('session_id');
         $this->user_id=$this->_ci->session->get_user_id();
-        $this->_ci->load->model('Rbac_session_model','rbac_sess_m');
+        $this->_ci->load->model('Rbac_sessions_model','rbac_sess_m');
         if(is_array($arg)){
             $this->add($arg);
         }

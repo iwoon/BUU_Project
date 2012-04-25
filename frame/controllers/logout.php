@@ -5,7 +5,6 @@ class Logout extends CI_Controller{
         }
     function index(){
         //$this->load->library('session');
-        //$this->load->library('rbac_session');
         if($this->session->Is_logout()){
             $sess=new Rbac_session();
             $sess->delete();
