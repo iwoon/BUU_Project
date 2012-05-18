@@ -5,12 +5,10 @@ class Logout extends CI_Controller{
         }
     function index(){
         //$this->load->library('session');
-        if($this->session->Is_logout()){
-            $sess=new Rbac_session();
-            $sess->delete();
-            $this->load->view('logout',array('time'=>3,'site'=>base_url()));
-            //redirect('login/',100);
+        if($this->frame->users()->logout()){
+            redirect(site_url());
         }
+        
     }
 }
 ?>

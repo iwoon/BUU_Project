@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title><?= $apptitle; ?></title>
+<? $this->jquery_ext->output();?>
+<link href="/frame/asset/css/template.css" rel="stylesheet" type="text/css" />
+<?
+echo $_scripts;
+echo $_styles;
+?>
+</head>
+<body>
+	<div id="header">
+        <div class="logo"><img src="images/buu_logo.jpg" alt="มหาวิทยาลัยบูรพา" width="100" height="100" /></div><p class="apptitle"> ระบบจัดการผู้ใช้</p>
+    </div>
+	<!-- top navigation start -->
+        <div id="topNav">
+            
+        </div>
+	<!-- top navigation end -->
+	<!-- body start -->
+	<div id="body">
+		<!-- top shadow start -->
+		<div id="topShadow"></div>
+		<!-- top shadow end -->
+		<!-- body pannel start -->
+        <div id="bodypanel">
+          
+        </div>
+		<!-- body pannel end -->
+		<!-- top shadow start -->		
+		<div id="bottomShadow"></div><br class="spacer" />
+		<!-- bottom shadow end -->
+	</div>
+	<!-- body end -->
+    
+	<!-- footer start -->
+  <div id="footer">
+    <p >คณะวิทยาการสารสนเทศ มหาวิทยาลัยบูรพา </p>
+    <p>169 ต.แสนสุข อ.เมือง จ.ชลบุรี 20131 โทรศัพท์ 038-103061 แฟกซ์ 038-393245</p>
+    <p class="tworld">Designed By Weerayut Plaharn</p>
+</div>
+	<!-- footer end -->	
+</body>
+</html>

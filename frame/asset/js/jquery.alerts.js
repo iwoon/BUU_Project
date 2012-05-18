@@ -1,10 +1,10 @@
 // jQuery Alert Dialogs Plugin
 //
-// Version 1.1
+// Version 1.0
 //
 // Cory S.N. LaViska
 // A Beautiful Site (http://abeautifulsite.net/)
-// 14 May 2009
+// 29 December 2008
 //
 // Visit http://abeautifulsite.net/notebook/87 for more information
 //
@@ -17,12 +17,9 @@
 //
 //		1.00 - Released (29 December 2008)
 //
-//		1.01 - Fixed bug where unbinding would destroy all resize events
-//
 // License:
 // 
-// This plugin is dual-licensed under the GNU General Public License and the MIT License and
-// is copyright 2008 A Beautiful Site, LLC. 
+//		This plugin is licensed under the GNU General Public License: http://www.gnu.org/licenses/gpl.html
 //
 (function($) {
 	
@@ -42,9 +39,9 @@
 		
 		// Public methods
 		
-		alert: function(message, title, callback) {
+		alert: function(type, message, title, callback) {
 			if( title == null ) title = 'Alert';
-			$.alerts._show(title, message, null, 'alert', function(result) {
+			$.alerts._show(title, message, null, type, function(result) {
 				if( callback ) callback(result);
 			});
 		},
@@ -102,9 +99,12 @@
 			
 			$.alerts._reposition();
 			$.alerts._maintainPosition(true);
-			
-			switch( type ) {
-				case 'alert':
+
+			switch (type) {
+			    case 'info':
+			    case 'warning':
+			    case 'success':
+				case 'error':
 					$("#popup_message").after('<div id="popup_panel"><input type="button" value="' + $.alerts.okButton + '" id="popup_ok" /></div>');
 					$("#popup_ok").click( function() {
 						$.alerts._hide();
@@ -177,7 +177,7 @@
 						top: '0px',
 						left: '0px',
 						width: '100%',
-						height: $(document).height(),
+						height: $(window).height() + 'px',
 						background: $.alerts.overlayColor,
 						opacity: $.alerts.overlayOpacity
 					});
@@ -208,10 +208,12 @@
 			if( $.alerts.repositionOnResize ) {
 				switch(status) {
 					case true:
-						$(window).bind('resize', $.alerts._reposition);
+						$(window).bind('resize', function() {
+							$.alerts._reposition();
+						});
 					break;
 					case false:
-						$(window).unbind('resize', $.alerts._reposition);
+						$(window).unbind('resize');
 					break;
 				}
 			}
@@ -220,8 +222,8 @@
 	}
 	
 	// Shortuct functions
-	jAlert = function(message, title, callback) {
-		$.alerts.alert(message, title, callback);
+	jAlert = function(type, message, title, callback) {
+		$.alerts.alert(type, message, title, callback);
 	}
 	
 	jConfirm = function(message, title, callback) {
