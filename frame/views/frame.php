@@ -1,15 +1,3 @@
-<html>
-    <head>  
-        <title>Application Frame
-        </title>
-        <? echo css('frame.css');
-           echo css('menu.css');
-           echo css('button.css');
-           $this->jquery_ext->output();
-        ?>
-    </head>
-    <body>
-        <div class="message"></div>
         <div class="nav">
             <? foreach($menu as $item):?>
             <a href="<?=$item['url'];?>" class="<?=$item['type'];?>">

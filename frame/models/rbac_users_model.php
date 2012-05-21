@@ -1,64 +1,47 @@
 <?php if(!defined('BASEPATH')) exit('Not direct access script allowed');
 class Rbac_users_model extends CI_Model{
     public static $TABLE_NAME='rbac_users';
-    public $user_id=-1;
-    public $username=NULL;
-    public $password=NULL;
-    public $first_name=NULL;
-    public $family_name=NULL;
-    public $email=NULL;
-    public $created=NULL;
-    private $_attr=array();
-    public function __construct($arg=array()){
+    private $_data;
+    public function __construct(){
         parent::__construct();
-        $this->created=time();
-        $this->_prepare_param($arg);
-        }
-    private function _required($required,$data){
-        foreach($required as $field){
-            return (isset($data[$field]));
-        }
+        $this->_data['username']=NULL;
+        $this->_data['password']=NULL;
+        $this->_data['user_id']=NULL;
     }
-    private function _default($defaults,$option){return array_merge($defaults,$option);}
-    private function _prepare_param($arg=array()){
-        if(is_array($arg)){
-            $this->user_id=$this->_attr['user_id']=($this->_required(array('user_id'),$arg))?$arg['user_id']:$this->user_id;
-            $this->username=$this->_attr['username']=($this->_required(array('username'),$arg))?$arg['username']:$this->username;
-            $this->password=$this->_attr['password']=($this->_required(array('password'),$arg))?$arg['password']:$this->password;
-            $this->first_name=$this->_attr['first_name']=($this->_required(array('first_name'),$arg))?$arg['first_name']:$this->first_name;
-            $this->family_name=$this->_attr['family_name']=($this->_required(array('family_name'),$arg))?$arg['family_name']:$this->family_name;
-            $this->email=$this->_attr['email']=($this->_required(array('email'),$arg))?$arg['email']:$this->email;
-            $this->created=$this->_attr['created']=($this->_required(array('created'),$arg))?$arg['created']:$this->created;
-        }
+    public function set($properties,$value){
+         $this->_data[$properties]=$value;
     }
-    public function add($arg=array()){
-        $this->_prepare_param($arg);
-        return $this->user_id=$this->db->insert(self::$TABLE_NAME,$this->_attr)->insert_id();
-    }
-    public function delete($arg=array())
+    public function get($properties){return $this->_data[$properties];}
+    public function save()
     {
-        $this->_prepare_param($arg);
-        return $this->db->delete(self::$TABLE_NAME,$this->_attr);
+        if($this->_get()->num_rows()>0){
+            //data already exists
+            $this->db->where('username',$this->_data['username'])->or_where('user_id',$this->_data['user_id'])->update(self::$TABLE_NAME,$this->_data);
+        }
+        $this->db->insert(self::$TABLE_NAME,$this->_data);
     }
-    public function update($arg=array()){
-        $this->_prepare_param($arg);
-        return $this->db->update(self::$TABLE_NAME,$this->_attr);
+    public function get_authen_type(){
+      $userdata=$this->_get();
+      if($userdata->num_rows()>0 && $userdata->num_rows()<2){
+          return (string) $userdata->row()->authen_type;
+      }
     }
-    private function _get($arg=array())
+    private function _get()
     {
-        $this->_prepare_param($arg);
-        return $this->db->get_where(self::$TABLE_NAME,$this->_attr,$arg);
+        //return $this->db->get_where(self::$TABLE_NAME,array('username'=>$this->_data['username']));
+         $this->db->select('usr.*,at.*');
+         $this->db->from(self::$TABLE_NAME.' usr');
+         $this->db->join('authen_type at','usr.authen_id=at.authen_id');
+         $this->db->where('usr.username',$this->_data['username']);
+         $this->db->or_where('usr.user_id',$this->_data['user_id']);
+         return $this->db->get();
     }
-    public function getdata($arg=array(),$result='object')
+    public function getdata($result='object')
     {
-        $ret=$this->_get($arg);
+        $ret=$this->_get();
         if($result=='array'){
         return (($ret->num_rows()>1)?$ret->result_array():$ret->row_array());
         }return (($ret->num_rows()>1)?$ret->result():$ret->row());
-    }
-    public function all($arg=array())
-    {
-        
     }
 }
 

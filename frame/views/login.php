@@ -1,8 +1,6 @@
-        <? /*echo css('frame.css');
-            echo css('messagebox.css');*/
-        ?>
-	
 
+
+<div><center>
 	<div id="loginpanel">
                 <? if($failure): ?>
 		<span id="message" name="message" style="color:red;font-size:14;"><?=$msgtitle;?><br/><?=$msg;?></span>
@@ -14,3 +12,4 @@
                     <?=$login_form;?>
 		</fieldset>
 	</div>
+    </center></div>

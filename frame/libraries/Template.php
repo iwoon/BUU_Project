@@ -585,7 +585,7 @@ class Partial {
 }
 
 class Widget extends Partial {
-    
+    public function __construct(){parent::__construct('ci');$this->load->library('jquery_ext');}
     /* (non-PHPdoc)
 	 * @see Partial::content()
 	 */

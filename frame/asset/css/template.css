@@ -3,7 +3,7 @@
 body{
 	/*background:url(images/bg.gif) repeat-x 0 0 #FDF9EE;*/ 
         color:#4E4628;
-	/*font:normal 14px/19px Arial, Helvetica, sans-serif;*/
+	font:normal 14px/19px Arial, Helvetica, sans-serif;
 	margin:0px; padding:0;}
 div, h1, h2, h3, h4, h5, h6, form, label, input, span, ul, li, p, a{
 	margin:0; padding:0;}
@@ -134,8 +134,13 @@ ul{
 	border:1px solid #dfdfdf;
 }
 #bodypannel #loginpanel{
-	background-color:#FFFFFF; color:#000000; /*border:#ECE8DB 1px solid;*/
-	width:248px; padding:7px 17px 27px 17px; float:left;}
+	background-color:#FFDDCC; color:#000000;border:#ECE8DB 1px solid;
+	width:290px; padding:7px 17px 27px 17px;}
+#bodypannel #loginpanel fieldset{
+	background-color:#FFFFFF; /*border:#ECE8DB 1px solid;*/
+	width:250px;
+        font:normal 14px/19px Arial, Helvetica, sans-serif;
+}
 #bodypannel form.search h2{
 	background:url(images/search_h2_bg.gif) no-repeat 0 0 #FFFFFF; color:#786E4E;
 	width:197px; padding:0 0 10px 50px; float:left;

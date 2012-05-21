@@ -1,12 +1,17 @@
 <?php if(!defined('BASEPATH')) exit('Not direct access script allowed');
 
-class Application extends CI_Controller{
+class Application extends CI_Model{
     private $_app_config;
+    protected static $TABLE_NAME='app_installed';
     public function __construct(){
         parent::__construct();
     }
+    public function get_enable_app()
+    {
+        return $this->db->select('*')->from(self::$TABLE_NAME)->where(array('lock !='=>1))->get();
+    }
     public function get_app_list(){
-        return $this->db->get('app_installed')->result();
+        return $this->db->select('*')->from(self::$TABLE_NAME)->where(array('app_id !='=>0))->get();
     }
     public function num_installed_app(){
         return $this->db->get('app_installed')->num_rows();

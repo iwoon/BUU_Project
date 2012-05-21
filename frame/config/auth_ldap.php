@@ -45,12 +45,12 @@
  * auditlog         - Location to log auditable events.
  */
 		
-$config['hosts'] = array('ldap.mycompany.com');
+$config['hosts'] = array('10.4.1.80');
 $config['ports'] = array(389);
-$config['basedn'] = 'dc=mycompany,dc=com';
+$config['basedn'] = 'ou=People,dc=buu,dc=ac,dc=th';
 $config['login_attribute'] = 'uid';
-$config['use_ad'] = false;
-$config['ad_domain'] = '';
+$config['use_ad'] = true;
+$config['ad_domain'] = 'buu.ac.th';
 $config['proxy_user'] = '';
 $config['proxy_pass'] = '';
 $config['roles'] = array(1 => 'User', 

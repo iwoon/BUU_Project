@@ -40,6 +40,8 @@
 
 $route['default_controller'] = "login";
 $route['404_override'] = '';
+$route['profiles/(:num)'] = "profiles/index/$1"; 
+$route['program/(:num)'] = "program/index/$1"; 
 
 
 /* End of file routes.php */

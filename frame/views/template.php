@@ -3,21 +3,21 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo $this->template->title->default("FRAME Applications"); ?></title>
-<link href="frame/asset/css/template.css" rel="stylesheet" type="text/css" />
+<link href="<? echo base_url().'frame/asset/css/template.css';?>" rel="stylesheet" type="text/css" />
 <? $this->jquery_ext->output();?>
 	<?php echo $this->template->meta; ?>
 	<?php echo $this->template->stylesheet; ?>
 </head>
 <body>
 	<div id="header">
-      <div class="logo"><img src="frame/asset/images/buu_logo.jpg" alt="มหาวิทยาลัยบูรพา" width="100px" height="100px" /></div><p class="apptitle"> ระบบจัดการผู้ใช้</p>
+      <div class="logo"><img src="<? echo base_url().'frame/asset/images/buu_logo.jpg';?>" alt="มหาวิทยาลัยบูรพา" width="100px" height="100px" /></div><p class="apptitle"> ระบบจัดการผู้ใช้</p>
     <div  class="profiles_pannel">
         <? echo $this->template->widget('profiles_widget',array('fullname'=>'คุณยังไม่ได้เข้าสู่ระบบ'));?>
     </div>
    </div>
 	<!-- top navigation start -->
 <div id="topNav">
-            Navigate
+            <? echo $this->template->widget('navigation_widget',array('หน้าหลัก'));?>
         </div>
 	<!-- top navigation end -->
 	<!-- body start -->

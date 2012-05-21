@@ -3,6 +3,7 @@ class Frame{
         private $_ci;
         private $_app=NULL;
         private $_user=NULL;
+        private $_nav=NULL;
         private $_data;
         private $app_rule_id;
 	public function __construct(){
@@ -40,6 +41,7 @@ class Frame{
         }
         public function __set($properties,$value)
         {
+            if(array_key_exists($properties,$this->_data))
             switch($properties)
             {
                 case 'users':
@@ -52,6 +54,11 @@ class Frame{
                     break;
                 case 'app':
                     if($this->_app!=NULL){$this->app()->$properties=$value;}
+                    else{$this->_app=new App();}
+                    break;
+                case 'nav':
+                    if($this->_nav!=NULL){$this->app()->$properties=$value;}
+                    else{$this->_nav=new Navigation();}
                     break;
                 default:
                     $this->_data[$properties]=$value;
@@ -73,23 +80,28 @@ class Frame{
                 case 'app':
                     return $this->app();
                     break;
+                case 'nav':
+                    return $this->nav();
+                    break;
                 default:
                     $this->_data[$properties]=$value;
             }
         }
         public function users(){return (($this->_user!=NULL)?$this->_user:new Users());}
         public function app(){return (($this->_app!=NULL)?$this->_app:new App());}
+        public function nav(){return (($this->_nav!=NULL)?$this->_nav:new Navigation());}
 }
 class Users{
     private $_ci;
    // private $_data=array();
+    private $_parent_sess='FRAME';
     protected static $user_sess='USERS';
     private $_user_sess_data;
     public function __construct()
     {
         $this->_ci=&get_instance();
         $this->_ci->load->library('session');
-        $this->_user_sess_data=$this->_ci->session->userdata(self::$user_sess);
+        $this->_getSess();
     }
     public function  __set($properties,$value)
     {
@@ -97,24 +109,35 @@ class Users{
         
     }
     public function save(){
-        $this->_ci->session->unset_userdata(self::$user_sess);
-        $this->_ci->session->set_userdata(self::$user_sess,$this->_user_sess_data);
+        //$this->_ci->session->unset_userdata(self::$user_sess);
+        $this->_getSess();
+        $usr=$this->_ci->session->userdata($this->_parent_sess);
+        $usr[self::$user_sess]=$this->_user_sess_data;
+        $this->_ci->session->set_userdata($this->_parent_sess,$usr);
         //unset($this->_data);
         log_message('debug',"User's session data was updated.");
         }
     public function __get($properties)
     {
+        //$this->_getSess();
+        //var_dump($this->_user_sess_data);
+        //$usr=$this->_ci->session->userdata($this->_parent_sess);
+        //return $usr[$properties];
         return ((array_key_exists($properties,$this->_user_sess_data))?$this->_user_sess_data[$properties]:NULL);
     }
     /***
      * @return  int user's id 
      */
-    public function get_user_id(){return ((array_key_exists('user_id',$this->user_sess_data))?$this->_user_session_data['user_id']:-1);}
+    public function get_user_id(){
+        $this->_getSess();
+        return $this->_user_sess_data['user_id'];
+    }
     /***
      * @return  boolean user's login status
      */
     public function is_authen()
     {
+        //var_dump($this->_user_sess_data);
         return (!empty($this->_user_sess_data)&&($this->_user_sess_data['is_logedin']))?true:false;
     }
     /***
@@ -134,14 +157,52 @@ class Users{
      * @return mixed[] user's session data
      */
     public function all_user_data(){return $this->_user_sess_data;}
+    private function _getSess(){ 
+        $usr=$this->_ci->session->userdata($this->_parent_sess);
+        if(!empty($usr[self::$user_sess])){foreach($usr[self::$user_sess] as $key=>$value){$this->_user_sess_data[$key]=$value;}}
+        }
 }
 class App{
     private $_ci;
     private $_data=array();
     private $_app_sess_data;
+    private $_parent_sess='FRAME';
     protected static $_app_sess='APP';
     public function __construct(){
-        
+        $this->_ci=&get_instance();
     }
+    
+}
+class Navigation{
+    private $_ci;
+    private $_data=array();
+    private $_parent_sess='FRAME';
+    protected static $_nav_sess='NAV';
+    public function __construct()
+    {
+        $this->_ci=&get_instance();
+        $this->_data=array();
+    }
+    public function add($page,$link)
+    {
+        $pa=$this->_ci->session->userdata($this->_parent_sess);
+        if(!empty($pa[self::$_nav_sess])){foreach($pa[self::$_nav_sess] as $item){$this->_data[]=$item;}}
+        $this->_data[]=array('page'=>$page,'link'=>$link);
+        //$nav=array(self::$_nav_sess=>$this->_data);
+        $pa[self::$_nav_sess]=$this->_data;
+        $this->_ci->session->set_userdata($this->_parent_sess,$pa);
+    }
+    public function get()
+    {
+        $nav=$this->_ci->session->userdata($this->_parent_sess);
+        return $nav[self::$_nav_sess];
+    }
+    public function reset(){
+        unset($this->_data);
+        $pa=$this->_ci->session->userdata($this->_parent_sess);
+        unset($pa[self::$_nav_sess]);
+        $this->_ci->session->set_userdata($this->_parent_sess,$pa);
+    }
+    
 }
 ?>
