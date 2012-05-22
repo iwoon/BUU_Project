@@ -39,6 +39,7 @@ class Rbac_users_model extends CI_Model{
     public function getdata($result='object')
     {
         $ret=$this->_get();
+        $this->_data=$ret->row();
         if($result=='array'){
         return (($ret->num_rows()>1)?$ret->result_array():$ret->row_array());
         }return (($ret->num_rows()>1)?$ret->result():$ret->row());

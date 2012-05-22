@@ -11,7 +11,7 @@
                                     ->html('<tr><td>')->label('Password')->html('</td><td>')->pass('password|password','','trim|xss_clean')->html('</td></tr>')
                                     ->html('<tr><td></td><td>')->submit()->reset()->html('</td></tr></table>')->get();
                 }
-                private function _authen_type(){
+                /*private function _authen_type(){
                     $this->load->model('Rbac_users_model','users');
                         $this->users->set('username',$this->input->post('username'));
                         $user='';
@@ -31,7 +31,7 @@
                                 break;
                         }
 			return $user;
-                }
+                }*/
 		public function index(){
                         $this->load->library('session');
                         $this->load->library('jquery_ext');
@@ -89,16 +89,25 @@
 		}
 		public function checkAuth($opt=NULL){
                     //$this->load->library('form');
-                    $user=$this->_authen_type();
+                    //$user=$this->_authen_type();
+                        $autherizer=array('username'=>$this->input->post('username'),'password'=>$this->input->post('password'));
+                        $this->load->library('authentications',$autherizer);
+                        $this->authentications->login();
+                        if($this->authentications->authenticated()){
+                            $this->load->model('Rbac_users_model','user');
+                            $user=$this->user;
+                            $user->set('user_id',$this->authentications->get_authen_obj()->get_user_id());
+                            $user=$user->getdata();
+                        }
 			if(!empty($user)&&$user->user_id>-1){
-         
                                 $sess_user=$this->frame->users();
                                 $sess_user->fullname=$user->firstname.' '.$user->lastname;
                                 $sess_user->user_id=$user->user_id;
                                 $sess_user->avatar=$user->avatar;
                                 $sess_user->is_logedin=true;
-                                $sess_user->aviable_app=array();
+                                $sess_user->available_app=array();
                                 $sess_user->save();
+                                $this->frame->initialize();
                                 if($opt=='json'){
                                     $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
                                             $this->output->set_header("Cache-Control: post-check=0, pre-check=0");

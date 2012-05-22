@@ -5,7 +5,7 @@ class Logout extends CI_Controller{
         }
     function index(){
         //$this->load->library('session');
-        if($this->frame->users()->logout()){
+        if($this->frame->logout()){
             redirect(site_url());
         }
         
