@@ -73,6 +73,7 @@ class Authentications
                                     //$user=($this->authen_ldap->login())?$this->_ci->users_model->getdata():'';
                                     $this->authen_obj=new Authen_Ldap(array('username'=>$this->username,'password'=>$this->password));
                                 break;
+                            default:$this->authen_obj=new Authen_Internal(array());
                         }
 			//return $user;
                 }

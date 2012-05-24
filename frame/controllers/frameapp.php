@@ -5,11 +5,13 @@ class Frameapp extends CI_Controller{
     private $_link;
     public function _construct(){
         parent::__construct();
+   
         }
     public function index(){
         if(!$this->frame->users()->is_authen())redirect('login');
         $this->frame->nav->reset();
-        $this->frame->nav->add($this->_page,'');
+        $this->frame->nav->add($this->_page);
+        $this->frame->nav->save();    
         $this->display_menu();
         $data['app_list']=$this->generate_app_list();
         $data['menu']=$this->_menu;
@@ -63,7 +65,7 @@ class Frameapp extends CI_Controller{
     }
     public function generate_app_list(){
         $this->load->model('application');
-        $user_enable_app=$this->application->get_enable_app();
+        $user_enable_app=$this->application->get_app_list();
         if($user_enable_app->num_rows()>0){
             $data['app_list']=$user_enable_app->result();
             return $this->load->view('program_panel',$data,true);

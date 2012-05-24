@@ -11,16 +11,19 @@ class Application extends CI_Model{
         return $this->db->select('*')->from(self::$TABLE_NAME)->where(array('lock !='=>1))->get();
     }
     public function get_app_list(){
-        return $this->db->select('*')->from(self::$TABLE_NAME)->where(array('app_id !='=>0))->get();
+        return $this->db->select('*')->from(self::$TABLE_NAME)->join('rbac_user_role','app_rule_id=role_id')
+                ->where(array('lock !='=>1,'user_id'=>$this->frame->users->user_id))
+                ->get();
     }
     public function num_installed_app(){
         return $this->db->get('app_installed')->num_rows();
     }
-    public function get_app_values($app=NULL){
-        if(is_array($app)){
-            $app=$this->db->get_where('app_installed',array('app_name'=>$app));
+    public function get_app_values($id){
+        if(isset($id)){
+            $app=$this->db->get_where('app_installed',array('app_id'=>$id));
             return (($app->num_rows()>1)?$app->result():$app->row());
         }
+        return false;
     }
     public function check_app_installed($conf=NULL){
         if(!is_array($conf)||!empty($conf)){

@@ -7,7 +7,7 @@ class Profiles extends CI_Controller{
         parent::__construct();
         $this->_page='แก้ไขข้อมูลส่วนตัว';
         $this->_link=site_url('profiles');
-        
+        if(!$this->frame->users->is_authen())redirect('login');
     }
     private function _genForm(){
         $this->load->library('form');
@@ -29,7 +29,7 @@ class Profiles extends CI_Controller{
     {
         $this->frame->nav->reset();
         $this->frame->nav->add('หน้าหลัก',site_url('frameapp'));
-        $this->frame->nav->add($this->_page,'');
+        $this->frame->nav->add($this->_page);
         $this->load->library('jquery_ext');
         if(!$this->frame->users()->is_authen())redirect('login');
         $data['profile']=$this->_genForm();

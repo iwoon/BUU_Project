@@ -25,6 +25,7 @@ class Rbac_users_model extends CI_Model{
       if($userdata->num_rows()>0 && $userdata->num_rows()<2){
           return (string) $userdata->row()->authen_type;
       }
+      return ' ';
     }
     private function _get()
     {

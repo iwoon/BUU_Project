@@ -88,9 +88,9 @@
                         }else{redirect('frameapp/');}
 		}
 		public function checkAuth($opt=NULL){
-                    //$this->load->library('form');
-                    //$user=$this->_authen_type();
-                        $autherizer=array('username'=>$this->input->post('username'),'password'=>$this->input->post('password'));
+                    $username=$this->input->post('username');
+                    $username=(empty($username))?'guest':$username;
+                        $autherizer=array('username'=>$username,'password'=>$this->input->post('password'));
                         $this->load->library('authentications',$autherizer);
                         $this->authentications->login();
                         if($this->authentications->authenticated()){
@@ -99,34 +99,34 @@
                             $user->set('user_id',$this->authentications->get_authen_obj()->get_user_id());
                             $user=$user->getdata();
                         }
-			if(!empty($user)&&$user->user_id>-1){
-                                $sess_user=$this->frame->users();
-                                $sess_user->fullname=$user->firstname.' '.$user->lastname;
-                                $sess_user->user_id=$user->user_id;
-                                $sess_user->avatar=$user->avatar;
-                                $sess_user->is_logedin=true;
-                                $sess_user->available_app=array();
-                                $sess_user->save();
+                        if(!empty($user)&&$user->user_id>-1){
+                                $this->frame->users()->user_id=$user->user_id;
+                                $this->frame->users()->fullname=$user->firstname.' '.$user->lastname;
+                                $this->frame->users()->avatar=$user->avatar;
+                                $this->frame->users()->is_logedin=true;
+                                $this->frame->users()->save();
                                 $this->frame->initialize();
-                                if($opt=='json'){
-                                    $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
-                                            $this->output->set_header("Cache-Control: post-check=0, pre-check=0");
-                                            $this->output->set_header("Pragma: no-cache");
-                                            //$this->output->set_content_type('text/plian')->set_output(json_encode($data));
-						$this->output->set_content_type('application/json')->set_output(json_encode(array('redirect'=>site_url('frameapp/'))));
-                                            
-                                    }else{
-                                        redirect('frameapp/');
-                                        }
-				
-			}else{
-				$data=array(
-					'failure'=>true,
-					'msgtitle'=>'ไม่สามารถเข้าสู่ระบบได้',
-					'msg'=>'ชื่อผู้ใช้หรือรหัสผ่านผิด กรูณาลองใหม่อีกครั้ง',
-					'app_url'=>base_url(),
-					'session'=>$this->session->userdata
-				);
+                                //print_r($this->frame->users()->get());
+                                
+                        }
+			
+			//var_dump($this->frame->users()->hasPermission('login'));
+                        if($this->frame->users()->hasPermission('login')->object('loginpanel')->read())
+                        {
+                                redirect('frameapp/');
+                        }else{	
+                            
+                            $data=array(
+                                            'failure'=>true,
+                                            'msgtitle'=>'ไม่สามารถเข้าสู่ระบบได้',
+                                            'msg'=>'ชื่อผู้ใช้หรือรหัสผ่านผิด กรูณาลองใหม่อีกครั้ง',
+                                            'app_url'=>base_url(),
+                                            'session'=>$this->session->userdata
+                                    );
+                            if($this->frame->users->is_auhen()){
+                                 $data['msg']='คุณไม่ได้รับอนุญาติให้เข้าสู่ระบบ เนื่องจากปัญหาบางประการ กรุณาติดต่อผู้ดูแลระบบหรือผู้ที่มีส่วนรับผิดชอบ';
+                                 //$this->frame->logout();
+                            }
 				switch(strtolower($opt))
 				{
 					case 'json':
@@ -139,7 +139,7 @@
 					default:
 						$this->load->view('login',$data);
 				}
-			}
-		}
+                        }
 	}
+   }
 ?>
