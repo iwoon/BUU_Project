@@ -81,7 +81,7 @@ class Frame{
                     else{$this->_app=new Appsession();}
                     break;
                 case 'nav':
-                    if($this->_nav!=NULL){$this->app()->$properties=$value;}
+                    if($this->_nav!=NULL){$this->nav()->$properties=$value;}
                     else{$this->_nav=new Navigation();}
                     break;
                 default:
