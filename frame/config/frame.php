@@ -4,3 +4,4 @@ $config['app_controller']='program/';
 $config['app_location']='application/';
 $config['avatar_path']='frame/asset/images/profiles/';
 $config['no_avatar']='noimage.gif';
+$config['frame_url']=$_SERVER['SERVER_NAME']."/frame/";

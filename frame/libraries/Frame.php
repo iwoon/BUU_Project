@@ -6,10 +6,12 @@ class Frame{
         private $_user=NULL;
         private $_nav=NULL; 
         private $app_id;
+        private $data=array();
 	public function __construct(){
 		$this->_ci=&get_instance();
 		$this->_ci->load->library('session');
                 $this->_ci->config->load('frame'); // not api
+                $this->data['url']=$this->_ci->config->item('frame_url');
                 $this->_user=new Usersession();
                 $this->_nav=new Navigation();
                 $this->_app=new Appsession(); //not api
@@ -84,7 +86,7 @@ class Frame{
                     if($this->_nav!=NULL){$this->nav()->$properties=$value;}
                     else{$this->_nav=new Navigation();}
                     break;
-                default:
+                default: $this->data[$properties]=$value;
                     //$this->_data[$properties]=$value;
             }
         }
@@ -107,7 +109,7 @@ class Frame{
                 case 'nav':
                     return $this->nav();
                     break;
-                default:
+                default: return $this->data[$properties];
                     //$this->_data[$properties];
             }
         }
