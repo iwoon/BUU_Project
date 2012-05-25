@@ -35,7 +35,7 @@
   <div id="footer">
     <p >คณะวิทยาการสารสนเทศ มหาวิทยาลัยบูรพา </p>
     <p>169 ต.แสนสุข อ.เมือง จ.ชลบุรี 20131 โทรศัพท์ 038-103061 แฟกซ์ 038-393245</p>
-    <p class="tworld">Designed By Weerayut Plaharn<br/>Page rendered in : <strong>{elapsed_time}</strong> seconds</p>
+    <p class="tworld">Designed By Weerayut Plaharn<br/>Page rendered in : <strong>{elapsed_time}</strong> seconds<br/><? echo $this->frame->users()->get_session_id();?></p>
 </div>
 	<!-- footer end -->	
 </body>
