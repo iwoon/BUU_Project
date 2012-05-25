@@ -32,7 +32,8 @@
                         }
 			return $user;
                 }*/
-		public function index(){
+		public function index()
+                {
                         $this->load->library('session');
                         $this->load->library('jquery_ext');
                         $this->jquery_ext->add_library('frame/asset/js/jquery.alerts.js');
@@ -102,32 +103,38 @@
                         if(!empty($user)&&$user->user_id>-1){
                                 $this->frame->users()->user_id=$user->user_id;
                                 $this->frame->users()->fullname=$user->firstname.' '.$user->lastname;
-                                $this->frame->users()->avatar=$user->avatar;
+                                $this->frame->users()->avatar=(!empty($user->avatar))?$user->avatar:base_url().'frame/asset/images/profiles/noimage.gif';
                                 $this->frame->users()->is_logedin=true;
                                 $this->frame->users()->save();
                                 $this->frame->initialize();
-                                //print_r($this->frame->users()->get());
                                 
                         }
 			
 			//var_dump($this->frame->users()->hasPermission('login'));
+                        
                         if($this->frame->users()->hasPermission('login')->object('loginpanel')->read())
                         {
-                                redirect('frameapp/');
-                        }else{	
-                            
-                            $data=array(
-                                            'failure'=>true,
-                                            'msgtitle'=>'ไม่สามารถเข้าสู่ระบบได้',
-                                            'msg'=>'ชื่อผู้ใช้หรือรหัสผ่านผิด กรูณาลองใหม่อีกครั้ง',
-                                            'app_url'=>base_url(),
-                                            'session'=>$this->session->userdata
+                                $data=array(
+                                            'failure'=>false,
+                                            'msgtitle'=>null,
+                                            'msg'=>null,
+                                            'redirect'=>site_url('frameapp')
                                     );
-                            if($this->frame->users->is_auhen()){
-                                 $data['msg']='คุณไม่ได้รับอนุญาติให้เข้าสู่ระบบ เนื่องจากปัญหาบางประการ กรุณาติดต่อผู้ดูแลระบบหรือผู้ที่มีส่วนรับผิดชอบ';
-                                 //$this->frame->logout();
+                        }else{	
+                            $data=array(
+                                            'failure'=>false,
+                                            'msgtitle'=>'ไม่สามาระเข้าสู่ระบบได้',
+                                            'msg'=>'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
+                                            'redirect'=>null
+                                            
+                                    );
+                            if($this->frame->users->is_authen()){
+                                 $data['msg']='คุณไม่ได้รับอนุญาติให้เข้าสู่ระบบเนื่องจากปัญหาบางประการ<br/>กรุณาติดต่อผู้ดูแลระบบหรือผู้ที่มีส่วนรับผิดชอบ';
+                                 $this->frame->logout();
                             }
-				switch(strtolower($opt))
+				
+                        }
+                        switch(strtolower($opt))
 				{
 					case 'json':
                                             $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
@@ -139,7 +146,6 @@
 					default:
 						$this->load->view('login',$data);
 				}
-                        }
 	}
    }
 ?>

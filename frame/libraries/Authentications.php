@@ -57,23 +57,15 @@ class Authentications
                     
                         switch($this->_ci->users_model->get_authen_type())
                         {
-                            case 'internal':
-                                    /*$this->_ci->load->model('Login_Model','login',true);
-                                    $authen_params=array('username'=>$this->username,
-                            'password'=>(strtolower($this->username)=='guest')?'':$this->password
-                            );
-                                    $user=$this->_ci->login->CheckAuth($authen_params);
-                                    $this->user_id=$user->user_id;*/
-                                    
-                                    $this->authen_obj=new Authen_Internal(array('username'=>$this->username,'password'=>$this->password));
-                                    
-                                break;
+                            
                             case 'Ldap':
                                     //$this->load->library('Authen_Ldap',array('username'=>$this->username,'password'=>$this->input->post('password')));
                                     //$user=($this->authen_ldap->login())?$this->_ci->users_model->getdata():'';
                                     $this->authen_obj=new Authen_Ldap(array('username'=>$this->username,'password'=>$this->password));
                                 break;
-                            default:$this->authen_obj=new Authen_Internal(array());
+                            default:
+                                    $this->authen_obj=new Authen_Internal(array('username'=>$this->username,'password'=>$this->password));
+                                
                         }
 			//return $user;
                 }
@@ -97,7 +89,8 @@ Abstract class Abstract_Authen
             $this->username=(array_key_exists('username',$autherizer))?$autherizer['username']:NULL;
             $this->password=(array_key_exists('password',$autherizer))?$autherizer['password']:NULL;
         }elseif(empty($this->username)||empty($this->password)){ // prevent empty important key
-            show_error('please set username & password before!');
+            
+            show_error('please set username & password before!'.$this->username.$this->password);
         }
         $this->_init();
         

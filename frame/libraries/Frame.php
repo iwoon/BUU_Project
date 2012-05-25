@@ -9,18 +9,15 @@ class Frame{
 	public function __construct(){
 		$this->_ci=&get_instance();
 		$this->_ci->load->library('session');
-                $this->_ci->config->load('frame');
+                $this->_ci->config->load('frame'); // not api
                 $this->_user=new Usersession();
-                $this->_app=new Appsession();
                 $this->_nav=new Navigation();
+                $this->_app=new Appsession(); //not api
 	}
-	/* PARAM
-	 * @array {'rule'=>'child app rule'} ex.{'rule'=>array{'ADMIN'=>array{'SUB-ADMIN-1'=>array{'SUB}}} <-- not implement
-	 * UM/ADMIN <-- fine 555
-	 * @var
-	 */
+
         public function initialize() // not developers api clone and delete this methode
         {
+           // $this->_app=$this->app();
             $this->app_id=$this->_ci->config->item('app_id');
             $this->_app->set_app_id($this->app_id);
             $this->_session=new Active_Usersession($this->_user); //hot api
@@ -147,6 +144,7 @@ class Session{ // not api
     {
         if(!empty($section))
         {
+            if(is_array($section)){$section=array($section);}
             switch(count($section))
             {
                 case 0: $this->fetchAll();
@@ -166,8 +164,10 @@ class Session{ // not api
     {
         if(empty($this->_data))return false;
         if(count($section)==1)
-        {return ($this->exists($section))?$this->_data[$section]:false;}
-        else{
+        {
+            return $this->_data[$section];
+            //return (($this->exists($section))?$this->_data[$section]:false);
+        }else{
             $arr_sec=explode($section,'|');
             if(count($arr_sec)<1) return false;//return 'Not found data on session section '.$section;
                 $buffer=$this->_data;
@@ -228,6 +228,10 @@ class Session{ // not api
     {
         $this->_data=$this->_ci->session->userdata(self::$namespace);
     }
+    public function __destruct()
+    {
+        unset($this);
+    }
 }
 class Active_Rolesession extends Session{ // not api
  protected static $TABLE_NAME='rbac_session_role';
@@ -235,7 +239,7 @@ class Active_Rolesession extends Session{ // not api
     public function __construct($role_node)
     {
         parent::__construct();
-        $this->role_node=$role_node;
+        $this->_userhasrole($role_node);
         $this->init();
     }
     public function init()
@@ -244,15 +248,45 @@ class Active_Rolesession extends Session{ // not api
      log_message('debug',"Load session Session complete.");
      
     }
+    public function get_role_node(){return $this->role_node;}
+    private function _userhasrole($role_node)
+    {
+        $roleid=array();
+        parent::reload();
+        $user=$this->_data['USERS'];
+        foreach($role_node as $nodes=>$node){
+            $roleid[]=$node->role_id;
+        }
+        if(empty($user)){
+            show_error('Log in before');
+            parent::RemoveSession();
+        }
+        $query=$this->_ci->db->select('role_id')->from('rbac_user_role')
+                ->where('user_id',$user['user_id'])
+                        ->where_in('role_id',$roleid)->get();
+        if($query->num_rows()>0)
+        {
+            foreach($query->result() as $row){
+                    foreach($role_node as $node=>$n)
+                    {
+                        if((int)$n->role_id==(int)$row->role_id)$this->role_node[]=$n;
+                    }
+            }
+        }
+        $query->free_result();
+        unset($role_node);
+        unset($roleid);
+        unset($user);
+    }
     private function _active_session()
     {
-        if(empty($this->role_node)) show_error('User not assigned to any roles Contact Administrator.');
+        //if(empty($this->role_node)) show_error('User not assigned to any roles Contact Administrator.');
         $data=array();
         foreach($this->role_node as $nodes=>$node){
             $q=$this->_ci->db->select('role_id')->from(self::$TABLE_NAME)
                     ->where(array('session_id'=>$this->get_session_id(),'role_id'=>$node->role_id))
                     ->get();
-            if($q->num_rows()<1)
+            if($q->num_rows()==0)
             {$data[]=array('session_id'=>$this->get_session_id(),'role_id'=>$node->role_id);}
             $q->free_result();
         }
@@ -417,8 +451,63 @@ class Permissions //not api
         return false; 
     } 
 }
-class PermissionOnSession extends Session{
-    private $object_data;
+class Obj
+{
+    private $data=array();
+    private $p=null;
+    public function __construct($obj)
+    {
+            $this->data=$obj;  
+    }
+    public function object($name)
+    {
+        if(empty($this->data)||!array_key_exists($name,$this->data))
+        {
+            $o=new stdClass();
+            $o->create=0;
+            $o->read=0;
+            $o->update=0;
+            $o->delete=0;
+            $this->data=array($name=>$o);
+            log_message('debug','Create Temporary Object for return false invalid object');
+        }
+        $this->p=new ObjOperations($this->data[$name]);
+        return $this->p;
+    }
+    public function __destruct()
+    {
+        unset($this);
+    }
+}
+class ObjOperations
+{
+    private $data;
+    public function __construct($obj)
+    {
+        $this->data=$obj;
+    }
+    public function operation($operation)
+    {
+        //print_r($this->data);
+        return $this->data->{$operation};
+    }
+    public function __call($operation,$param=null)
+    {
+        unset($param);
+        $operation=strtolower($operation);
+        switch($operation)
+        {
+            case 'create';
+            case 'read';
+            case 'update';
+            case 'delete': return $this->operation($operation);
+                break;
+            default:return false;
+        }
+    }
+    public function __destruct(){unset($this->data);}
+}
+class PermissionOnSession extends Session{ //reader
     private $data=array();
     public function __construct()
     {
@@ -428,43 +517,25 @@ class PermissionOnSession extends Session{
     private function _init()
     {
         parent::reload();
-        $this->data=$this->fetch('APP');
-        log_message('debug','Fetch App Permission on Session complete');
+        //$this->data=$this->_data['APP'];
+        if(!empty($this->_data['APP'])){
+            $this->data=$this->_data['APP'];
+            log_message('debug','Fetch App Permission on Session complete');
+        }
     }
     public function permission($name)
     {
-        print_r($this->data);
+        if(empty($this->data)){
+            $this->_init();
+            }
         if(!empty($this->data) && array_key_exists($name,$this->data)){
-            $this->object_data=$this->data[$name];
+            return new Obj($this->data[$name]);
         }
-        return false;
+        return new Obj(array());
     }
-
-       public function object($name)
+    public function __destruct()
     {
-        if(array_key_exists($name,$this->objet_data))
-        {
-            return $this->object_data[$name];
-        }
-    }
-    public function __call($name,$param)
-    {
-        if(empty($this->object_data))return false;
-        $data=null;
-        switch($name)
-        {
-            case 'object':
-                    $data=(array_key_exists($param,$this->object_data))?$this->object($param):null;
-               break;
-            case 'create':return (!is_null($data))?$data->create:false;
-                break;
-            case 'read':return (!is_null($data))?$data->read:false;
-                break;
-            case 'update':return (!is_null($data))?$data->update:false;
-                break;
-            case 'delete':return (!is_null($data))?$data->delete:false;
-                break;
-        }
+        unset($this);
     }
 }
 class Usersession extends Session
@@ -481,6 +552,7 @@ class Usersession extends Session
     }
     public function hasPermission($permission)
     {
+        if(is_null($this->p)){$this->p=new PermissionOnSession();}
         return  $this->p->permission($permission);
     }
     private function _init()
@@ -513,6 +585,7 @@ class Usersession extends Session
         parent::RemoveSession();
         return (empty($this->data))?true:false;
         //return (!isset($this->data));
+        return true;
     }
     public function save()
     {
@@ -534,6 +607,7 @@ class Usersession extends Session
         if(empty($this->data))return null;
         return $this->data[$properties];
     }
+    public function __destruct(){unset($this);}
 }
 class Appsession extends Session //not api reader
 {
@@ -549,7 +623,7 @@ class Appsession extends Session //not api reader
     {
         if(!$this->is_loaded){
             parent::reload();
-            if(is_null($this->app_id))show_error('properties not set for application id');
+            if(is_null($this->app_id)){show_error('properties not set for application id');}
             $this->reset();
             $this->createSession();
             $this->is_loaded=true;
@@ -581,7 +655,6 @@ class Appsession extends Session //not api reader
         //unset($this->data);
         $this->data=array();
     }
-
     public function createSession()
     {
         
@@ -589,14 +662,20 @@ class Appsession extends Session //not api reader
         $role_obj->role_id=$this->get_app_role_id();
         $role_obj->getTreeroles();
         $rolesess=new Active_Rolesession($role_obj->rolenode);
-        $r=new Rolepermission($role_obj->rolenode);
-            $this->data=$r->get();
-            unset($r);
-            $this->_data[self::$namespace]=$this->data;
-            parent::save();
+        unset($role_obj);
+        $rolenode=$rolesess->get_role_node();
+        unset($rolesess);
+        if(!empty($rolenode)){
+            $r=new Rolepermission($rolenode);
+        $this->data=$r->get();
+        unset($r);
+        }
+        $this->_data[self::$namespace]=$this->data;
+        parent::save();
             //print_r($this->_data);
         log_message('debug','Create session for application id : '.$this->app_id.' complete.');
     }
+    public function __destruct(){unset($this);}
 }
 class Rolepermission
 {
@@ -609,7 +688,7 @@ class Rolepermission
         $this->data['rolenode']=$rolenode;
         $this->data['roleidlist']=array();
         if(!empty($this->data['rolenode'])){
-            foreach($this->data['rolenode'] as $node){
+            foreach($this->data['rolenode'] as $nodes=>$node){
                 $this->data['roleidlist'][]=$node->role_id;
             }
         }
@@ -621,6 +700,7 @@ class Rolepermission
     }
     private function prepare()
     {
+        //print_r($this->data['roleidlist']);
         $role=$this->data['ci']->db->select('rp.permission_id,p.name')->from('rbac_role_permission rp')
                 ->join('rbac_permissions p','rp.permission_id=p.permission_id','left')
                 ->where_in('rp.role_id',$this->data['roleidlist'])->get();
@@ -643,7 +723,6 @@ class Rolepermission
         $this->data[$properties]=$value;
     }
     public function __get($properties){return $this->data[$properties];}
-    
 }
 class Role{
     protected $_ci;
@@ -663,7 +742,7 @@ class Role{
     {
             if(array_key_exists('rolenode',$this->data))
             {
-               foreach($this->data['rolenode'] as $node)
+               foreach($this->data['rolenode'] as $nodes=>$node)
                {
                    return (is_int($role))?(($node->role_id==$role)?true:false):(($node->name==$role)?true:false);
                }
@@ -681,7 +760,8 @@ class Role{
     }
     public function getRole()
     {
-        $query=$this->_ci->db->select('role_id,parent_role_id,name')->from('rbac_roles')->where('role_id',$this->data['role_id'])->get();
+        $query=$this->_ci->db->select('role_id,parent_role_id,name')->from('rbac_roles')
+                ->where('role_id',$this->data['role_id'])->get();
         if($query->num_rows()>0){
             return $query->row();
         }
@@ -700,6 +780,7 @@ class Role{
         }
     }
     public function reset(){unset($this->data);}
+    public function __destruct(){unset($this);}
 }
 class Navigation extends Session
 {
@@ -740,5 +821,6 @@ class Navigation extends Session
             return $this->data;
         }return array();
     }
+    public function __destruct(){unset($this);}
 }
 ?>

@@ -6,7 +6,7 @@ class Profiles extends CI_Controller{
     {
         parent::__construct();
         $this->_page='แก้ไขข้อมูลส่วนตัว';
-        $this->_link=site_url('profiles');
+        $this->_link=base_url('profiles');
         if(!$this->frame->users->is_authen())redirect('login');
     }
     private function _genForm(){
