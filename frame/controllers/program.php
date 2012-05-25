@@ -18,7 +18,7 @@ class Program extends CI_Controller{
         $app_id=$this->uri->segment(2,-1);
         $app=$this->application->get_app_values(2);
         $app_path=(string)$app->app_path;
-        $domain=(string)$_SERVER['host'];
+        $domain=(string)$_SERVER['SERVER_NAME'];
         if(!empty($app_path)){
             if(stristr($app_path,$domain)){ //localpath
                 redirect($app_path);

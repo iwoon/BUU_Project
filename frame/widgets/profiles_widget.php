@@ -15,12 +15,12 @@ class profiles_widget extends Widget {
                     });");
                 
                 $this->fullname=$this->frame->users()->fullname;
-                $this->edit_profile_link=site_url('profiles/'.$this->frame->users()->user_id);
 		$this->avatar=$this->frame->users()->avatar;
             $this->data = array(
-                    'avatar'=>image((empty($this->avatar))?base_url().'frame/asset/images/profiles/noimage.gif':$this->avatar,'',array('width'=>'115px','height'=>'100px')),
+                    'avatar'=>image((empty($this->avatar))?base_url().'frame/asset/images/profiles/noimage.gif':$this->avatar,'',array('width'=>'100px','height'=>'100px')),
                     'fullname'=>$this->fullname,
-                    'edit_profile'=>$this->edit_profile_link
+                    'edit_profiles'=>(($this->frame->users()->hasPermission('visible_profiles_link')->object('profiles_link')->read())?anchor("profiles/".$this->frame->users()->user_id,'แก้ไขข้อมูลส่วนตัว |'):null),
+                    'logout'=>anchor(base_url('index.php/logout/'),'ออกจากระบบ',array('class'=>'logout'))
             );
                 $this->load->view('widgets/profiles', $this->data);
             }
