@@ -11,7 +11,9 @@ class Frame{
 		$this->_ci=&get_instance();
 		$this->_ci->load->library('session');
                 $this->_ci->config->load('frame'); // not api
-                $this->data['url']=$this->_ci->config->item('frame_url');
+                
+                $data=array('URL'=>$this->_ci->config->item('frame_url'));
+                $this->_ci->session->set_userdata('FRAME',$data);
                 $this->_user=new Usersession();
                 $this->_nav=new Navigation();
                 $this->_app=new Appsession(); //not api
