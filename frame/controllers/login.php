@@ -113,7 +113,6 @@
                         }
 			
 			//var_dump($this->frame->users()->hasPermission('login'));
-                        
                         if($this->frame->users()->hasPermission('login')->object('loginpanel')->read())
                         {
                                 $data=array(

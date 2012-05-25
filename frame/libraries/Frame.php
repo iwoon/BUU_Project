@@ -11,9 +11,6 @@ class Frame{
 		$this->_ci=&get_instance();
 		$this->_ci->load->library('session');
                 $this->_ci->config->load('frame'); // not api
-                
-                $data=array('URL'=>$this->_ci->config->item('frame_url'));
-                $this->_ci->session->set_userdata('FRAME',$data);
                 $this->_user=new Usersession();
                 $this->_nav=new Navigation();
                 $this->_app=new Appsession(); //not api
@@ -22,12 +19,20 @@ class Frame{
         public function initialize() // not developers api clone and delete this methode
         {
            // $this->_app=$this->app();
+            $this->data['sess']=$this->_ci->session->userdata('FRAME');
+                if(!empty($this->data['sess'])){
+                    $this->data['sess']['URL']=$this->_ci->config->item('frame_url');
+                }else{$this->data['sess']=array('URL'=>$this->_ci->config->item('frame_url'));}
+                $this->_ci->session->set_userdata('FRAME',$this->data['sess']);
+                log_message('debug','FRAME session id:'.$this->_ci->session->userdata('session_id'));
+                
             $this->app_id=$this->_ci->config->item('app_id');
             $this->_app->set_app_id($this->app_id);
             $this->_session=new Active_Usersession($this->_user); //hot api
             log_message('debug','Initialize Frame library App ID:'.$this->app_id);
             $this->_app->initialize(); // initial after user has loged in
             //log_message('debug','Frame Application has initialized');
+            
         }
         public function logout()
         {
@@ -125,6 +130,7 @@ class Session{ // not api
     {
         $this->_ci=&get_instance();
         $this->_ci->load->library('session');
+        log_message('debug','Session id :'.$this->_ci->session->userdata('session_id'));
         $this->_ci->load->database();
         $this->_data=$this->_ci->session->userdata(self::$namespace);
         //print_r($this->_data);
@@ -298,7 +304,7 @@ class Active_Rolesession extends Session{ // not api
         if(!empty($data)){
             $this->_ci->db->insert_batch(self::$TABLE_NAME, $data); 
         }
-        log_message('debug',"Load user's active session");
+        log_message('debug',"Load session active role");
     }
     public function revoke_session() //database constriant implemented
     {
