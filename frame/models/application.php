@@ -12,7 +12,7 @@ class Application extends CI_Model{
     }
     public function get_app_list(){
         return $this->db->select('*')->from(self::$TABLE_NAME)->join('rbac_user_role','app_rule_id=role_id')
-                ->where(array('lock !='=>1,'user_id'=>$this->frame->users->user_id))
+                ->where(array('lock !='=>1,'user_id'=>$this->frame->users()->user_id))
                 ->get();
     }
     public function num_installed_app(){

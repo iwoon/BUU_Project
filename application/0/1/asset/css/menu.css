@@ -1,0 +1,51 @@
+/* 
+    Document   : menu
+    Created on : 21 เม.ย. 2555, 3:34:08
+    Author     : TOSHIBA
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+/* -------------------- */
+/* CLASSES */
+/* -------------------- */
+a.button{
+background:url(/frame/frame/asset/images/button.gif);
+display:block;
+color:#555555;
+font-weight:bold;
+height:30px;
+line-height:29px;
+margin-bottom:14px;
+text-decoration:none;
+width:191px;
+}
+a:hover.button{
+color:#0066CC;
+}
+.profiles{
+background:url(/frame/frame/asset/images/icons/with-shadows/person-profile-16.png) no-repeat 10px 8px;
+text-indent:30px;
+display:block;
+}
+.add{
+background:url(images/add.gif) no-repeat 10px 8px;
+text-indent:30px;
+display:block;
+}
+.delete{
+background:url(images/delete.gif) no-repeat 10px 8px;
+text-indent:30px;
+display:block;
+}
+.user{
+background:url(images/user.gif) no-repeat 10px 8px;
+text-indent:30px;
+display:block;
+}
+

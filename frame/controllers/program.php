@@ -10,6 +10,7 @@ class Program extends CI_Controller{
     {
         $this->frame->app()->set_app_id($program_id);
         $this->frame->app()->initialize();
+        //$this->frame->app()->get();exit;
         $this->_gotoApp();
     }
     private function _gotoApp()

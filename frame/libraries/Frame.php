@@ -665,6 +665,10 @@ class Appsession extends Session //not api reader
         //unset($this->data);
         $this->data=array();
     }
+    public function get()
+    {
+        print_r($this->data);
+    }
     public function createSession()
     {
         
