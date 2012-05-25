@@ -2,3 +2,5 @@
 $config['app_id']  =   0;
 $config['app_controller']='program/';
 $config['app_location']='application/';
+$config['avatar_path']='frame/asset/images/profiles/';
+$config['no_avatar']='noimage.gif';

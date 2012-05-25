@@ -91,6 +91,8 @@
 		public function checkAuth($opt=NULL){
                     $username=$this->input->post('username');
                     $username=(empty($username))?'guest':$username;
+                    $avatar_path=$this->config->item('avatar_path');
+                    $noavatar_image=$this->config->item('no_avatar');
                         $autherizer=array('username'=>$username,'password'=>$this->input->post('password'));
                         $this->load->library('authentications',$autherizer);
                         $this->authentications->login();
@@ -103,7 +105,7 @@
                         if(!empty($user)&&$user->user_id>-1){
                                 $this->frame->users()->user_id=$user->user_id;
                                 $this->frame->users()->fullname=$user->firstname.' '.$user->lastname;
-                                $this->frame->users()->avatar=(!empty($user->avatar))?$user->avatar:base_url().'frame/asset/images/profiles/noimage.gif';
+                                $this->frame->users()->avatar=(!empty($user->avatar))?$user->avatar:base_url($avatar_path.$noavatar_image);
                                 $this->frame->users()->is_logedin=true;
                                 $this->frame->users()->save();
                                 $this->frame->initialize();
