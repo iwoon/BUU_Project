@@ -14,14 +14,21 @@ class Frame{
             if($this->users()->logout()){
                 unset($this->_user);
                 unset($this->_nav);
+                log_message('debug','User is loged out and destroyed frame instance');
                 return true;
             }
-            return false;
+            unset($this);
+            log_message('debug','destroy frame instance');
+            return true;
         }
         public function users(){
-            return (($this->_user!=NULL)?$this->_user:new Usersession());
+            $this->_user=(($this->_user!=NULL)?$this->_user:new Usersession());
+            return $this->_user;
             }
-        public function nav(){return (($this->_nav!=NULL)?$this->_nav:new Navigation());}
+        public function nav(){
+            $this->_nav=(($this->_nav!=NULL)?$this->_nav:new Navigation());
+            return $this->_nav();
+            }
         public function sess(){return $this->_ci->session;}
         public function __set($properties,$value)
         {
@@ -61,7 +68,7 @@ class Frame{
                     return $this->nav();
                     break;
                 case 'url':
-                        $data=$this->_ci->session->userdata('FRAME');
+                        $data=$this->sess()->userdata('FRAME');
                         $url=$data['URL'];
                         unset($data);
                     return $url;
@@ -86,6 +93,7 @@ class Session{
     }
     public function RemoveSession()
     {
+        $this->_data=array();
         $this->_ci->session->sess_destroy();
     }
     public function get_session_id()
@@ -195,11 +203,8 @@ class Obj
         if(empty($this->data)||!array_key_exists($name,$this->data))
         {
             $o=new stdClass();
-            $o->create=0;
-            $o->read=0;
-            $o->update=0;
-            $o->delete=0;
             $this->data=array($name=>$o);
+            unset($o);
             log_message('debug','Create Temporary Object for return false invalid object');
         }
         $this->p=new ObjOperations($this->data[$name]);
@@ -220,7 +225,10 @@ class ObjOperations
     public function operation($operation)
     {
         //print_r($this->data);
-        return $this->data->{$operation};
+        if(array_key_exists($operation,$this->data))
+        {
+            return $this->data->{$operation};
+        }return false;
     }
     public function __call($operation,$param=null)
     {
@@ -300,11 +308,15 @@ class Usersession extends Session
     {
         return $this->data;
     }
+    public function reload()
+    {
+        parent::reload();
+        $this->data=$this->_data[self::$namespace];
+    }
     public function get_user_id()
     {
         return $this->data['user_id'];
     }
-    
     public function is_authen()
     {
         return (!empty($this->data))?$this->data['is_logedin']:false;
@@ -313,6 +325,7 @@ class Usersession extends Session
     {
         $this->data=array();
         parent::RemoveSession();
+        log_message('debug','User is loged out from system');
         return (empty($this->data))?true:false;
     }
     public function save()
