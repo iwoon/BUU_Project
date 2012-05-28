@@ -27,7 +27,7 @@ class Frame{
                 log_message('debug','FRAME session id:'.$this->_ci->session->userdata('session_id'));
                 
             $this->app_id=$this->_ci->config->item('app_id');
-            $this->_app->set_app_id($this->app_id);
+            $this->app()->set_app_id($this->app_id);
             $this->_session=new Active_Usersession($this->_user); //hot api
             log_message('debug','Initialize Frame library App ID:'.$this->app_id);
             $this->_app->initialize(); // initial after user has loged in
@@ -49,7 +49,8 @@ class Frame{
             return true;
         }
         public function users(){
-            return (($this->_user!=NULL)?$this->_user:new Usersession());
+            $this->_user=(($this->_user!=NULL)?$this->_user:new Usersession());
+            return $this->_user;
             }
         public function app(){
             $this->_app=(($this->_app!=NULL)?$this->_app:new Appsession());
@@ -60,6 +61,9 @@ class Frame{
             $this->_nav=(($this->_nav!=NULL)?$this->_nav:new Navigation());
             return $this->_nav;
             }
+        public function session(){
+            $this->_session=(($this->_session!=NULL)?$this->_session:new Active_Usersession($this->users()));
+        }
         public function sess(){return $this->_ci->session;}
 	public function get_app_rule($rule=NULL)
 	{
@@ -445,8 +449,9 @@ class Permissions //not api
     
     public function prepare()
     {
-        $query=$this->data['ci']->db->select('name,object_id,operation_id')->from('rbac_permissions')
-                ->where('permission_id',$this->data['permission_id'])->get();
+        $query=$this->data['ci']->db->select('p.name,po.object_id,po.operation_id')->from('rbac_permissions p')
+                ->join('rbac_permission_object po','p.permission_id=po.permission_id')
+                ->where('p.permission_id',$this->data['permission_id'])->get();
         foreach($query->result() as $row)
         {
             $this->data['obj_instance']->object_id=$row->object_id;

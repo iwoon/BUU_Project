@@ -40,6 +40,13 @@
 
 $route['default_controller'] = "welcome";
 $route['404_override'] = '';
+$route['users']='users/manages_users';
+$route['users/([a-z]+)'] = "users/$1";
+$route['roles/([a-z]+)']= "roles/$1";
+$route['permissions/([a-z]+)']= "permissions/$1";
+$route['users/([a-z]+)/(\d+)'] = "users/$1/$2";
+$route['roles/([a-z]+)/(\d+)'] = "roles/$1/$2";
+$route['permissions/([a-z]+)/(\d+)'] = "permissions/$1/$2";
 
 
 /* End of file routes.php */

@@ -27,7 +27,7 @@ class Frame{
             }
         public function nav(){
             $this->_nav=(($this->_nav!=NULL)?$this->_nav:new Navigation());
-            return $this->_nav();
+            return $this->_nav;
             }
         public function sess(){return $this->_ci->session;}
         public function __set($properties,$value)
@@ -371,21 +371,19 @@ class Navigation extends Session
     }
     public function add($page,$controller='')
     {
-        if(!array_key_exists($page,$this->data)){
             if(!empty($page)){
                 $this->data[]=array(
                                 'page'=>$page,
                                 'link'=>$controller
                               );
             }
-        }
     }
     public function save()
     {
         //$this->_data[self::$namespace]=$this->data;
         //parent::save();
     }
-    public function reset(){unset($this->data);$this->data=array();}
+    public function reset(){$this->data=array();}
     public function get()
     {
         if (!empty($this->data)){

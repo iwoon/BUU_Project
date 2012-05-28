@@ -3,6 +3,12 @@
             
 		public function __contruct(){
 			parent::__construct();
+                        if($this->frame->users()->is_authen())
+                        {
+                            $this->app()->set_app_id($this->config->item('app_id'));
+                            $this->app()->initialize();
+                            redirect('frameapp');
+                        }
 		}
                 public function gen_login_form(){
                         $this->load->library('form');

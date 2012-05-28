@@ -2,7 +2,6 @@
 class Frameapp extends CI_Controller{
     private $_menu=array();
     private $_page='หน้าหลัก';
-    private $_link;
     public function _construct(){
         parent::__construct();
    

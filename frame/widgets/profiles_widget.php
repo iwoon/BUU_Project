@@ -1,7 +1,6 @@
 ﻿<?php if(!defined('BASEPATH')) exit("No direct access script allowed");
 class profiles_widget extends Widget {
         private $fullname='คุณยังไม่ได้เข้าสู่ระบบ';
-        private $edit_profile_link=NULL;
         private $data=NULL;
         private $avatar=NULL;  
 	public function display($args) {
@@ -19,7 +18,7 @@ class profiles_widget extends Widget {
             $this->data = array(
                     'avatar'=>image((empty($this->avatar))?base_url().'frame/asset/images/profiles/noimage.gif':$this->avatar,'',array('width'=>'100px','height'=>'100px')),
                     'fullname'=>$this->fullname,
-                    'edit_profiles'=>(($this->frame->users()->hasPermission('visible_profiles_link')->object('profiles_link')->read())?anchor("profiles/".$this->frame->users()->user_id,'แก้ไขข้อมูลส่วนตัว |'):null),
+                    'edit_profiles'=>(($this->frame->users()->hasPermission('profiles')->object('profiles_panel')->read())?anchor("profiles/".$this->frame->users()->user_id,'แก้ไขข้อมูลส่วนตัว |'):null),
                     'logout'=>anchor(base_url('index.php/logout/'),'ออกจากระบบ',array('class'=>'logout'))
             );
                 $this->load->view('widgets/profiles', $this->data);
