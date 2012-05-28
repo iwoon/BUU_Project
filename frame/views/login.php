@@ -9,7 +9,7 @@
                 <center><h3>:: Authentication :: </h3></center>
 		<fieldset ><legend>Login Panel</legend>
               
-                    <?=$login_form;?>
+                   <?=$login_form;?>
 		</fieldset>
 	</div>
     </center></div>

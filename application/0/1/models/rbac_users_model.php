@@ -37,6 +37,20 @@ class Rbac_users_model extends CI_Model{
          $this->db->or_where('usr.user_id',$this->_data['user_id']);
          return $this->db->get();
     }
+    public function get_users_list($users=array())
+    {
+        if(empty($users))
+        {
+         $user=$this->db->select('usr.* ,at.*')->from(self::$TABLE_NAME.' usr')->join('authen_type at','usr.authen_id=at.authen_id'); 
+        }else
+        {
+            $user=$this->db->select('usr.*,at.*')
+                    ->from(self::$TABLE_NAME.' usr')
+                    ->join('authen_type at','usr.authen_id=at.authen_id')->where_in('user_id',$users);
+        }
+        
+        return $user->get()->result();
+    }
     public function getdata($result='object')
     {
         $ret=$this->_get();

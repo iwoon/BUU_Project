@@ -205,7 +205,6 @@ class Obj
             $o=new stdClass();
             $this->data=array($name=>$o);
             unset($o);
-            log_message('debug','Create Temporary Object for return false invalid object');
         }
         $this->p=new ObjOperations($this->data[$name]);
         return $this->p;
@@ -293,6 +292,10 @@ class Usersession extends Session
     {
         if(is_null($this->p)){$this->p=new PermissionOnSession();}
         return  $this->p->permission($permission);
+    }
+    public function checkaccess($permise,$object)
+    {
+        return $this->hasPermission($permise)->object($object);
     }
     private function _init()
     {
