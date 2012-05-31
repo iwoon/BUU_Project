@@ -24,7 +24,7 @@ class Users_role_menu extends Widget{
                             'label'=>'ลบ',
                             'url'=> '#',//site_url('users/users_main/delete'),
                             'icon'=>  image_path('icons/without-shadows/badge-circle-cross-16-ns.png'),
-                            'type'=>'deletebutton',
+                            'type'=>'delete',
                             'action'=>'users/users_main/roles/delete'
                         );
         }

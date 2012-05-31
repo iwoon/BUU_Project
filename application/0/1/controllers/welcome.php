@@ -46,14 +46,15 @@ class Welcome extends CI_Controller
                         'app_url'=>site_url('permissions/')
                 );
             }
-            if($this->frame->users()->hasPermission('visible_admin_icon')->object('programs_icon')->read())
+            /* ไม่ทันจะ implement
+             * if($this->frame->users()->hasPermission('visible_admin_icon')->object('programs_icon')->read())
             {
                 $app_list[]=array(
                         'app_icon'=>image_path('icons/install.jpg'),
                         'app_name'=>'จัดการโปรแกรมเสริม',
                         'app_url'=>site_url('programs/')
                 );
-            }
+            }*/
             if($this->frame->users()->hasPermission('visible_admin_icon')->object('add_users_icon')->read())
             {
                 $app_list[]=array(
@@ -78,14 +79,15 @@ class Welcome extends CI_Controller
                         'app_url'=>site_url('permissions/permissions_main/add')
                 );
             }
-            if($this->frame->users()->hasPermission('visible_admin_icon')->object('add_programs_icon')->read())
+           /* ไม่ทัน จะ implement
+            *  if($this->frame->users()->hasPermission('visible_admin_icon')->object('add_programs_icon')->read())
             {
                 $app_list[]=array(
                         'app_icon'=>image_path('icons/install-icon.jpg'),
                         'app_name'=>'ติดตั้งโปรแกรม',
                         'app_url'=>site_url('programs/programs_main/install')
                 );
-            }
+            }*/
         
         //$data['session']=$this->frame->users()->get_session_id();
         //$data['messages']=$this->load->view('welcome_message',$data['messages'],true);

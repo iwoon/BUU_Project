@@ -24,8 +24,9 @@ class Profiles extends CI_Controller{
                 ->html('<tr><td>')->label('รหัสผ่านเดิม')->html('</td><td>')->pass('current_password|current_password','','trim|xss_clean')->html('</td></tr>')
                 ->html('<tr><td>')->label('รหัสผ่านใหม่')->html('</td><td>')->pass('new_password|new_password','','trim|xss_clean')->html('</td></tr>')
                 ->html('<tr><td>')->label('ยืนยันรหัสผ่านใหม่')->html('</td><td>')->pass('verify_new_password|verify_new_password','','trim|xss_clean')->html('</td></tr>')
-                ->html('<tr><td>')->label('อีเมล์')->html('</td><td>')->text('email|email','','trim|xss_clean','',array('maxlength'=>20,'size'=>50))->html('</td></tr>')
+                ->html('<tr><td>')->label('อีเมล์')->html('</td><td>')->text('email|email','','trim|xss_clean',$userdata->email,array('maxlength'=>20,'size'=>50))->html('</td></tr>')
                 ->html('<tr><td>')->label('รูปประจำตัว')->html('</td><td>')->iupload('profile_picture')->html('</td></tr>')
+                ->html('<tr><td></td><td><img src="'.$userdata->avatar.'"/>')
                 ->html('<tr><td></td><td>')->submit()->reset()->html('</td></tr></table>')->get();   
         return $form;
     }
@@ -61,11 +62,12 @@ class Profiles extends CI_Controller{
              
             $input=$this->input->post();
             $user_id=$this->frame->users()->get_user_id();
-             if($this->users->checkauthen($user_id,$input['current_password'])<1)
+             $password_valid=$this->users->checkauthen($user_id,$input['current_password']);
+             if($password_valid<1)
              {
                  $this->template->content->add('<h1>รหัสผ่านเดิมไม่ถูกต้อง</h1>');
-                 $this->template->publish();exit;
-             }
+                 
+             }else{
             $avatarpath='./asset/images/profiles/';
             $config=array(
                 'upload_path'=>$avatarpath,
@@ -88,8 +90,8 @@ class Profiles extends CI_Controller{
                 
                 $data=array(
                     'user_id'=>$user_id,
-                    'password'=>$input['verify_new_password']
                     );
+                if(!empty($input['verify_new_password']))$data['password']=$input['verify_new_password'];
                 if(!empty($input['firstname']))$data['firstname']=$input['firstname'];
                 if(!empty($input['lastname']))$data['lastname']=$input['lastname'];
                 if(!empty($input['email']))$data['email']=$input['email'];
@@ -104,10 +106,9 @@ class Profiles extends CI_Controller{
                     
                     //echo json_encode(array('msgtitle'=>'ผลการบันทึก','msg'=>'ผิดพลาด','redirect'=>''));exit;
                 }
-                
-            }else{$this->template->content->add('คุณไม่ได้รับอนุญาติให้ปรับเปลี่ยนข้อมูลผู้ใช้');
-                $this->template->publish();
-            }
+             }  
+            }else{$this->template->content->add('คุณไม่ได้รับอนุญาติให้ปรับเปลี่ยนข้อมูลผู้ใช้');}
+            $this->template->publish();
     }
 }
 ?>

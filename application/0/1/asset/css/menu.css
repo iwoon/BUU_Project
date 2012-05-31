@@ -15,7 +15,6 @@
 /* CLASSES */
 /* -------------------- */
 a.button{
-background:url(/frame/frame/asset/images/button.gif);
 display:block;
 color:#555555;
 font-weight:bold;
@@ -23,7 +22,7 @@ height:30px;
 line-height:29px;
 margin-bottom:14px;
 text-decoration:none;
-width:191px;
+width:100px;
 }
 a:hover.button{
 color:#0066CC;
@@ -37,11 +36,13 @@ display:block;
 background:url(images/add.gif) no-repeat 10px 8px;
 text-indent:30px;
 display:block;
+width:100px;
 }
 .delete{
 background:url(images/delete.gif) no-repeat 10px 8px;
 text-indent:30px;
 display:block;
+width:100px;
 }
 .user{
 background:url(images/user.gif) no-repeat 10px 8px;

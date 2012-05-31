@@ -1,5 +1,5 @@
 <?php
-class Roles_menu extends Widget
+class Roles_members_menu extends Widget
 {
     public function display()
     {
@@ -13,11 +13,18 @@ class Roles_menu extends Widget
         $menu=array();
         if($this->frame->users()->hasPermission('users_management')->object('users')->delete()){
             $menu[]=array(
+                            'label'=>'เพิ่มสมาชิก',
+                            'url'=> '#',//site_url('users/users_main/delete'),
+                            'icon'=>  image_path('icons/without-shadows/badge-circle-plus-16-ns'),
+                            'type'=>'add',
+                            'action'=>''
+                        );
+            $menu[]=array(
                             'label'=>'ลบ',
                             'url'=> '#',//site_url('users/users_main/delete'),
-                            'icon'=>  image_path('icons/with-shadows/person-profile-16.png'),
+                            'icon'=>  image_path('icons/without-shadows/badge-circle-cross-16-ns.png'),
                             'type'=>'delete',
-                            'action'=>'roles/roles_main/delete'
+                            'action'=>''
                         );
         }
         return $menu;

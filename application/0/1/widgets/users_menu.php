@@ -16,7 +16,7 @@ class Users_menu extends Widget
                                 'label'=>'เพิ่มผู้ใช้',
                                 'url'=>site_url('users/users_main/add'),
                                 'icon'=>image_path('icons/without-shadows/cpanel.png'),
-                                'type'=>'buttons',
+                                'type'=>'add',
                                 'action'=>'users/users_main/add'
                    );
         }
@@ -25,7 +25,7 @@ class Users_menu extends Widget
                             'label'=>'ลบ',
                             'url'=> '#',//site_url('users/users_main/delete'),
                             'icon'=>  image_path('icons/with-shadows/person-profile-16.png'),
-                            'type'=>'deletebutton',
+                            'type'=>'delete',
                             'action'=>'users/users_main/delete'
                         );
         }

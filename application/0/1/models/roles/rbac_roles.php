@@ -33,6 +33,34 @@ class Rbac_roles extends CI_Model
     {
         return $this->db->select('*')->from($this->table)->get()->result();
     }
+    public function get_all_roles_condition($condition=array())
+    {
+        if(empty($condition))
+        {
+            return $this->get_all_roles();
+        }
+        $role=$this->db->select('*')->from($this->table);
+        
+        if(array_key_exists('limit',$condition))
+            {
+                $limit=$condition['limit'];
+                //
+            }
+        if(is_array($condition))
+        {
+            if(isset($limit)){
+                unset($condition['limit']);
+            }
+            $role->where($condition);
+            if(isset($limit)){
+                $role->limit($limit['rowperpage'],$limit['begin']);
+            }
+        }
+        $data=array();$role=$role->get();
+        $data['num_roles']=$role->num_rows();
+        $data['rolelist']=$role->result();
+        return $data;
+    }
     public function get_child_roles($parent=null)
     {
          if($parent==null)return false;
@@ -85,6 +113,56 @@ class Rbac_roles extends CI_Model
             $query->free_result();
         }
     }
+    public function delete_by_id($id=null)
+    {
+        if($this->frame->users()->hasPermission('roles_management')->object('roles')->delete())
+        {
+            $id=implode(',',$id);
+                $query=$this->db->query('delete from prj_'.$this->table.' where role_id in ('.$id.')');
+                return true;
+            //return $this->db->delete(self::$TABLE_NAME)->where_in('user_id',$id)->affected_rows();
+        }
+        return false;
+    }
+    public function save($data,$tablename="")
+	{
+		if($tablename=="")
+		{
+			$tablename = $this->table;
+		}
+		$op = 'update';
+		$keyExists = FALSE;
+		$fields = $this->db->field_data($tablename);
+		foreach ($fields as $field)
+		{
+			if($field->primary_key==1)
+			{
+				$keyExists = TRUE;
+				if(isset($data[$field->name]))
+				{
+					$this->db->where($field->name, $data[$field->name]);
+				}
+				else
+				{
+					$op = 'insert';
+				}
+			}
+		}
+	 
+		if($keyExists && $op=='update')
+		{
+			$this->db->set($data);
+			$this->db->update($tablename);
+			if($this->db->affected_rows()==1)
+			{
+				return $this->db->affected_rows();
+			}
+		}
+		$this->db->insert($this->table,$data);
+	 
+		return $this->db->affected_rows();
+	 
+	}
     
     
 }

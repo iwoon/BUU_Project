@@ -5,7 +5,7 @@
                 echo anchor('users/','จัดการผู้ใช้')."<br/>";
                 echo anchor('roles/','จัดการบทบาท')."<br/>";
                 echo anchor('permissions/','จัดการสิทธิ')."<br/>";
-                echo anchor('programes/','จัดการโปรแกรม')."<br/>";
+                //echo anchor('programes/','จัดการโปรแกรม')."<br/>";
               ?>
          </a>
        </div>

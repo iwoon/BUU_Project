@@ -31,7 +31,7 @@ class Users_main extends CI_Controller
         $data['row_per_page']=$rowperpage;
         $user_panel=$this->load->view('users/user_list',$data,true);
         $this->jquery_ext->add_script("
-                $('.deletebutton').click(function(){
+                $('.delete').click(function(){
                     jConfirm('ยืนยันการลบข้อมูล','คุณแน่ใจที่จะลบข้อมูล',function(r){
                         if(r==true){
                             var data = { 'user_id[]' : []};
@@ -47,15 +47,15 @@ class Users_main extends CI_Controller
             ");
         $left_menu=$this->load->view('left_menu','',true);
         $this->template->content->add($left_menu);
-        $this->template->content->add('<div id="admin_panel" style="float:left;">');
+        $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
         $this->template->content->widget('Users_menu');
         $this->template->content->add($user_panel);
         $this->template->content->add('</div>');
-        $this->jquery_ext->add_css(css_path('menu.css'));
-        $this->jquery_ext->add_css(css_path('button.css'));
-        $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
-        $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
-        $this->template->publish();
+        $this->jquery_ext->add_css(css_path('table.css'));
+           $this->jquery_ext->add_css(css_path('button.css'));
+           $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
+           $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
+           $this->template->publish();
     }
     public function add($opt='view')
     {
@@ -85,14 +85,15 @@ class Users_main extends CI_Controller
                     }*/
                     if($this->add_user->saveForm($form_data))
                     {
-                        $this->jquery_ext->add_script("
+                        /*$this->jquery_ext->add_script("
                                 jConfirm('เพิ่มผู้ใช้รายใหม่','คุณต้องการเพิ่มผู้ใช้อีกหรือไม่?',function(r){
                                     if(r==true){
                                         window.location.href='".site_url('users/users_main/add')."';
                                     }else{
                                     window.location.href='".site_url('users/')."';}
                                 });
-                            "); 
+                            "); */
+                        redirect('users/');
                     }
                 }else{$this->template->content->add('<h1>คุณไม่ได้รับอนุญาติให้เพิ่มรายชื่อผู้ใช้ใหม่เข้าสู่ระบบ</h1>');}
                 break;
@@ -102,7 +103,7 @@ class Users_main extends CI_Controller
                     $users_form=$this->load->view('users/users_new','',true);
                     $left_menu=$this->load->view('left_menu','',true);
                     $this->template->content->add($left_menu);
-                    $this->template->content->add('<div id="admin_panel" style="float:left;">');
+                    $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
                     $this->template->content->widget('Users_menu');
                     $this->template->content->add('<div id="users_form" style="float:left;padding 1em 1em;">'.$this->gen_form().'</div>');
                     $this->template->content->add('</div>');
@@ -112,11 +113,11 @@ class Users_main extends CI_Controller
                     
                 }
         }
-        $this->jquery_ext->add_css(css_path('menu.css'));
-        $this->jquery_ext->add_css(css_path('button.css'));
-         $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
-         $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
-        $this->template->publish();
+        $this->jquery_ext->add_css(css_path('table.css'));
+           $this->jquery_ext->add_css(css_path('button.css'));
+           $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
+           $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
+           $this->template->publish();
     }
     public function delete($user_id=null)
     {
@@ -187,21 +188,23 @@ class Users_main extends CI_Controller
                 }
                 
             }else{$this->template->content->add('คุณไม่ได้รับอนุญาติให้ปรับเปลี่ยนข้อมูลผู้ใช้');
-                $this->template->publish();
+                //$this->template->publish();
             }
-        $this->jquery_ext->add_css(css_path('menu.css'));
-        $this->jquery_ext->add_css(css_path('button.css'));
-        $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
-        $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
-        $this->template->publish();
+        $this->jquery_ext->add_css(css_path('table.css'));
+           $this->jquery_ext->add_css(css_path('button.css'));
+           $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
+           $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
+           $this->template->publish();
     }
     public function profiles($user_id)
     {
+        $this->frame->nav()->add($this->page,site_url('users/'));
+        $this->frame->nav()->add('แก้ไขข้อมูลผู้ใช้');
         if($this->frame->users()->hasPermission('users_management')->object('users')->create())
                 {
                     $left_menu=$this->load->view('left_menu','',true);
                     $this->template->content->add($left_menu);
-                    $this->template->content->add('<div id="admin_panel" style="float:left;">');
+                    $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
                     $this->template->content->widget('Users_menu');
                     $this->template->content->add('<div id="users_form" style="float:left;padding 1em 1em;">'.$this->gen_profile($user_id).'</div>');
                     $this->template->content->add('</div>');
@@ -221,11 +224,11 @@ class Users_main extends CI_Controller
                 return false;
             });
             ");
-        $this->jquery_ext->add_css(css_path('menu.css'));
-        $this->jquery_ext->add_css(css_path('button.css'));
-        $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
-        $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
-        $this->template->publish();
+        $this->jquery_ext->add_css(css_path('table.css'));
+           $this->jquery_ext->add_css(css_path('button.css'));
+           $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
+           $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
+           $this->template->publish();
                 
     }
     private function gen_profile($user_id=NULL)
@@ -307,13 +310,23 @@ class Users_main extends CI_Controller
         if(($user_id==null)){redirect('users/');}
         $this->load->model('rbac_users_model','user');
         $user_role=$this->users->get_user_has_roles($user_id);
-        $data='<fieldset><legend>บทบาทของผู้ใช้</legend><table border=0>';
+        $data='<fieldset><legend>บทบาทของผู้ใช้</legend><table>';
+        $data.='<thead>
+            <tr class="odd">
+                    <td class="column1"></td>
+                    <th scope="col" abbr="Home">ชื่อบทบาท</th>
+                    <th scope="col" abbr="Home Plus">รายละเอียด</th>	
+            </tr>	
+            </thead>
+            <tbody>';
+        $i=0;
         foreach($user_role as $role)
         {
-            $data.='<tr><td><input type="checkbox" name="role_id[]" value="'.$role->role_id.'"/>';
-            $data.='</td><td>'.$role->name.'</td><td>'.$role->description.'</td><tr>';
+            $data.='<tr'.(($i%2)? 'class="odd"':'').'><th scope="row" class="column1"><input type="checkbox" name="role_id[]" value="'.$role->role_id.'"/></th>';
+            $data.='<td>'.$role->name.'</td><td>'.$role->description.'</td></tr>';
+            $i++;
         }
-        $data.="</table></fieldset>";
+        $data.="</tbody></table></fieldset>";
         $this->load->library('form');
         $role_data=array('0'=>'กรุณาเลือก');
         $roles=$this->roles->get_not_assigned_roles($user_id);
@@ -321,23 +334,25 @@ class Users_main extends CI_Controller
         {
             $role_data[$role->role_id]=$role->name.' : '.$role->description;
         }
-        $form_roles=$this->form->fieldset('เพิ่มบทบาทให้กับผู้ใช้')->open('users/users_main/assign_roles')->select('role_id',$role_data,'เลือกบทบาทสำหรับผู้ใช้')
-                ->hidden('user_id',$user_id)->submit('บันทึก')->get();
+        $form_roles=$this->form->fieldset('เพิ่มบทบาทให้กับผู้ใช้')->open('users/users_main/assign_roles')->select('role_id',$role_data,'เลือกบทบาท')
+                ->hidden('user_id',$user_id)->submit('เพิ่มบทบาท')->get();
         $users_form=$this->load->view('users/users_new','',true);
                     $left_menu=$this->load->view('left_menu','',true);
                     $this->template->content->add($left_menu);
-                    $this->template->content->add('<div id="admin_panel" style="float:left;">');
+                    $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
                     $this->template->content->widget('Users_role_menu');
-                    $this->template->content->add('<div id="users_role" style="float:left;padding 1em 1em;">'.$data.'</div>');
+                    if(!empty($user_role)){
+                        $this->template->content->add('<div id="users_role" style="float:left;padding 1em 1em;">'.$data.'</div>');
+                    }
                     if($this->frame->users()->hasPermission('roles_management')->object('assignment')->read()){
                         $this->template->content->add('<div id="form_assign_role">'.$form_roles.'</div>');
                     }
                     $this->template->content->add('</div>');
            $this->jquery_ext->add_script("
-                $('.deletebutton').click(function(){
+                $('.delete').click(function(){
                     jConfirm('ยืนยันการลบข้อมูล','คุณแน่ใจที่จะลบข้อมูล',function(r){
                         if(r==true){
-                            var data = { 'role_id[]' : [],'user_id':".$user_id."};
+                            var data = { 'role_id[]' : [],'user_id[]':[".$user_id."]};
                             $('input:checked').each(function() {
                               data['role_id[]'].push($(this).val());
                             });
@@ -348,9 +363,12 @@ class Users_main extends CI_Controller
                     });
                 });
             ");
+           $this->jquery_ext->add_css(css_path('table.css'));
+           $this->jquery_ext->add_css(css_path('button.css'));
            $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
            $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
            $this->template->publish();
+           
     }
     public function assign_roles()
     {
@@ -375,13 +393,15 @@ class Users_main extends CI_Controller
     {
         if($this->frame->users()->checkaccess('roles_management','revoke')->read()){
             $input=$this->input->post();
-            foreach($input['role_id'] as $role_id)
-            {
-                $rolelist=$this->roles->getTreeRoles($role_id);
-                foreach($rolelist as $role)
+            foreach($input['user_id'] as $user_id){
+                foreach($input['role_id'] as $role_id)
                 {
-                    $this->user_role->revoke_role($role->role_id,$input['user_id']);
-                 }
+                    $rolelist=$this->roles->getTreeRoles($role_id);
+                    foreach($rolelist as $role)
+                    {
+                        $this->user_role->revoke_role($role->role_id,$user_id);
+                     }
+                }
             }
         }
         //redirect('users/users_main/role');

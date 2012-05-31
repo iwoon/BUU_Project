@@ -7,7 +7,7 @@ class Frameapp extends CI_Controller{
    
         }
     public function index(){
-        if(!$this->frame->users()->is_authen())redirect('login');
+        if(!$this->frame->users()->is_authen())redirect(site_url('login'));
         $this->frame->nav->reset();
         $this->frame->nav->add($this->_page);
         $this->frame->nav->save();    
