@@ -12,7 +12,47 @@ class Rbac_users_model extends CI_Model{
          $this->_data[$properties]=$value;
     }
     public function get($properties){return $this->_data[$properties];}
-    public function save()
+    public function save($data,$tablename="")
+	{
+		if($tablename=="")
+		{
+			$tablename = self::$TABLE_NAME;
+		}
+		$op = 'update';
+		$keyExists = FALSE;
+		$fields = $this->db->field_data($tablename);
+		foreach ($fields as $field)
+		{
+			if($field->primary_key==1)
+			{
+				$keyExists = TRUE;
+				if(isset($data[$field->name]))
+				{
+					$this->db->where($field->name, $data[$field->name]);
+				}
+				else
+				{
+					$op = 'insert';
+				}
+			}
+		}
+	 
+		if($keyExists && $op=='update')
+		{
+			$this->db->set($data);
+			$this->db->update($tablename);
+			if($this->db->affected_rows()==1)
+			{
+				return $this->db->affected_rows();
+			}
+		}
+	 
+		$this->db->insert(self::$TABLE_NAME,$data);
+	 
+		return $this->db->affected_rows();
+	 
+	}
+    public function save1()
     {
         if($this->_get()->num_rows()>0){
             //data already exists
@@ -44,6 +84,11 @@ class Rbac_users_model extends CI_Model{
         if($result=='array'){
         return (($ret->num_rows()>1)?$ret->result_array():$ret->row_array());
         }return (($ret->num_rows()>1)?$ret->result():$ret->row());
+    }
+    public function checkauthen($user_id,$password)
+    {
+        return $this->db->select('user_id')->from(self::$TABLE_NAME)->where(array('user_id'=>$user_id,'password'=>$password))
+                ->get()->num_rows();
     }
 }
 

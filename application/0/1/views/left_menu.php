@@ -2,10 +2,10 @@
     <? echo form_fieldset('การจัดการ');?>
       <div style = "float:left;">
               <? 
-                echo anchor('admin_manages_users','จัดการผู้ใช้')."<br/>";
-                echo anchor('admin_manages_roles','จัดการบทบาท')."<br/>";
-                echo anchor('admin_manages_permissions','จัดการสิทธิ')."<br/>";
-                echo anchor('admin_manages_programes','จัดการโปรแกรม')."<br/>";
+                echo anchor('users/','จัดการผู้ใช้')."<br/>";
+                echo anchor('roles/','จัดการบทบาท')."<br/>";
+                echo anchor('permissions/','จัดการสิทธิ')."<br/>";
+                echo anchor('programes/','จัดการโปรแกรม')."<br/>";
               ?>
          </a>
        </div>

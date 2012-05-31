@@ -4,7 +4,8 @@ class Logout extends CI_Controller
     public function __construct(){parent::__construct();}
     public function index()
     {
-        redirect($this->frame->url.'logout');
+        $this->frame->logout();
+        redirect($this->frame->url.'/logout');
     }
 }
 ?>

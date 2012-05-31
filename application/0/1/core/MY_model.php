@@ -1,4 +1,4 @@
-﻿<?
+﻿<? if(!defined('BASEPATH')) exit('Not direct script access allowed.');
 class MY_Model extends CI_Model
 {
 	public $table;

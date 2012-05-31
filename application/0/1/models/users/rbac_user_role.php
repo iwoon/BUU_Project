@@ -1,41 +1,34 @@
 <?php
-class Admin_users_add_m extends CI_Model
+class Rbac_user_role extends CI_Model
 {
-        protected static $TABLE='rbac_users';
-	function __construct()
-	{
-		parent::__construct();
-	}
-	
-	// --------------------------------------------------------------------
-
-      /** 
-       * function SaveForm()
-       *
-       * insert form data
-       * @param $form_data - array
-       * @return Bool - TRUE or FALSE
-       */
-        
-	function SaveForm($form_data)
-	{
-		/*$this->db->insert('rbac_users', $form_data);
-		
-		if ($this->db->affected_rows() == '1')
-		{
-			return TRUE;
-		}
-		
-		return FALSE;
-                */
-            return $this->save($form_data);
+        protected $table;
+        public function __construct()
+        {
+            $this->table=strtolower(get_class($this));
+            $this->load->database();
         }
-
+        public function assign_role($role_id,$user_id)
+        {
+            if(!$this->frame->users()->hasPermission('roles_management')->object('assigment'))return false;
+            $data=array('role_id'=>$role_id,'user_id'=>$user_id);
+            return $this->save($data);
+        }
+        public function revoke_role($role_id,$user_id)
+        {
+            if(!$this->frame->users()->hasPermission('roles_management')->object('revoke'))return false;
+            if(is_array($role_id))
+            {
+                return $this->db->delete($this->table)->where_in('role_id',$role_id)->where('user_id',$user_id)->affected_rows();
+            }
+            $role_id=(int)$role_id;
+            $user_id=(int)$user_id;
+            return $this->db->delete($this->table,array('user_id'=>$user_id,'role_id'=>$role_id));
+        }
         public function save($data,$tablename="")
 	{
 		if($tablename=="")
 		{
-			$tablename = self::$TABLE;
+			$tablename = $this->table;
 		}
 		$op = 'update';
 		$keyExists = FALSE;
@@ -65,8 +58,7 @@ class Admin_users_add_m extends CI_Model
 				return $this->db->affected_rows();
 			}
 		}
-	 
-		$this->db->insert(self::$TABLE,$data);
+		$this->db->insert($this->table,$data);
 	 
 		return $this->db->affected_rows();
 	 
@@ -100,6 +92,7 @@ class Admin_users_add_m extends CI_Model
 		$this->db->where($conditions);
 		$this->db->update($tablename,$data);
 		return $this->db->affected_rows();
-	}
+	
         }
+}
 ?>

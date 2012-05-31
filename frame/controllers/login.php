@@ -114,7 +114,9 @@
                                 $this->frame->users()->avatar=(!empty($user->avatar))?$user->avatar:base_url($avatar_path.$noavatar_image);
                                 $this->frame->users()->is_logedin=true;
                                 $this->frame->users()->save();
-                                $this->frame->initialize();
+                                //$this->frame->initialize();
+                                $this->frame->app()->set_app_id($this->config->item('app_id'));
+                                $this->frame->app()->initialize();
                                 
                         }
 			

@@ -2,7 +2,7 @@
  // Change the css classes to suit your needs    
 
 $attributes = array('class' => '', 'id' => '');
-echo form_open('Profile', $attributes); ?>
+echo form_open('users/users_main/add/submit', $attributes); ?>
 
 <p>
         <label for="firstname">ชื่อ <span class="required">*</span></label>
@@ -47,4 +47,3 @@ echo form_open('Profile', $attributes); ?>
 
 <?php echo form_close(); ?>
 
-?>

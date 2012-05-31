@@ -14,8 +14,8 @@ class Frame{
                 $this->_user=new Usersession();
                 $this->_nav=new Navigation();
                 $this->_app=new Appsession(); //not api
+                $this->initialize();
 	}
-
         public function initialize() // not developers api clone and delete this methode
         {
            // $this->_app=$this->app();
@@ -26,11 +26,11 @@ class Frame{
                 $this->_ci->session->set_userdata('FRAME',$this->data['sess']);
                 log_message('debug','FRAME session id:'.$this->_ci->session->userdata('session_id'));
                 
-            $this->app_id=$this->_ci->config->item('app_id');
-            $this->app()->set_app_id($this->app_id);
-            $this->_session=new Active_Usersession($this->_user); //hot api
-            log_message('debug','Initialize Frame library App ID:'.$this->app_id);
-            $this->_app->initialize(); // initial after user has loged in
+            //$this->app_id=$this->_ci->config->item('app_id');
+            //$this->app()->set_app_id($this->app_id);
+            //$this->_session=new Active_Usersession($this->_user); //hot api
+            log_message('debug','Initialize Frame library');
+            //$this->_app->initialize(); // initial after user has loged in
             //log_message('debug','Frame Application has initialized');
             
         }
@@ -329,13 +329,13 @@ class Active_Rolesession extends Session{ // not api
         $this->_ci->db->where('session_id',$this->_ci->session->userdata('session_id'))->delete(self::$TABLE_NAME);
     }
 }
-class Active_Usersession extends Session{ // not api
+class Active_Usersession extends Usersession{ // not api
     protected static $TABLE_NAME='rbac_sessions';
-    private $_userobj;
-    public function __construct(&$userobj)
+    //private $_userobj;
+    public function __construct()
     {
         parent::__construct();
-        $this->_userobj=&$userobj;
+        //$this->_userobj=&$userobj;
         $this->init();
     }
     public function init()
@@ -346,9 +346,9 @@ class Active_Usersession extends Session{ // not api
     }
     private function _active_session()
     {
-        $data=array('session_id'=>$this->get_session_id(),'user_id'=>$this->_userobj->get_user_id());
+        $data=array('session_id'=>$this->get_session_id(),'user_id'=>parent::get_user_id());
         $q=$this->_ci->db->select('user_id')->from(self::$TABLE_NAME)
-                ->where(array('session_id'=>$this->get_session_id(),'user_id'=>$this->_userobj->get_user_id()))
+                ->where(array('session_id'=>$this->get_session_id(),'user_id'=>parent::get_user_id()))
                 ->get();
         if($q->num_rows()<1)
         {$this->_ci->db->set($data)->insert(self::$TABLE_NAME);}
@@ -758,6 +758,8 @@ class Appsession extends Session //not api reader
         $role_obj=new Role();
         $role_obj->role_id=$this->get_app_role_id();
         $role_obj->getTreeroles();
+        $user_session=new Active_Usersession();
+        unset($user_session);
         $rolesess=new Active_Rolesession($role_obj->rolenode);
         unset($role_obj);
         $rolenode=$rolesess->get_role_node();

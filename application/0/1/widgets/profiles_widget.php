@@ -15,7 +15,7 @@ class profiles_widget extends Widget {
                     });");
                 
                 $this->fullname=$this->frame->users()->fullname;
-                $this->edit_profile_link='http://'.$this->frame->url.'/profiles/'.$this->frame->users()->user_id;
+                $this->edit_profile_link=$this->frame->url.'/profiles/'.$this->frame->users()->user_id;
 		$this->avatar=$this->frame->users()->avatar;
             $this->data = array(
                     'avatar'=>image((empty($this->avatar))?base_url().'frame/asset/images/profiles/noimage.gif':$this->avatar,'',array('width'=>'100px','height'=>'100px')),
