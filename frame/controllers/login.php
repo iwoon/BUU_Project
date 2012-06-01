@@ -57,13 +57,10 @@
 					data:data,
 					success:function(data){
                                               if(data.msgtitle!=null){
-                                                  "./*var div_message_box='<div id='status_bar' name='status_bar'>';
-                                                  var close_icon='<img id=\"close_message\" style=\"float:right;cursor:pointer\" src=\"frame/asset/images/close.png\" /></div>';
-                                                $('#body').append(div_message_box);
-						$('#status_bar').empty().append(data.msgtitle).fadeOut(800).fadeIn(800)
-                                                        .fadeOut(800).fadeIn(800,function(){"."$('#status_bar').empty().append(data.msg+''+close_icon);}).fadeOut(800).fadeIn(800)
-                                                        .delay(10000).hide('fast',function(){"."$('#status_bar').remove();});*/
-                                              "jAlert('error',data.msg,data.msgtitle,function(r){"."$('username').empty().focus();$('password').empty()});   
+                                                jAlert('error',data.msg,data.msgtitle);
+                                                 $('#username').val('');
+                                                 $('#password').val('');
+                                                 $('#username').focus();  
                                               }
                                                 if(data.redirect!=null){window.location.href=data.redirect;}
 					},

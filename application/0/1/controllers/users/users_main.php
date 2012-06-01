@@ -70,6 +70,25 @@ class Users_main extends CI_Controller
                     $user=$this->input->post('username');
                     if(empty($user)){redirect('users');}
                     $authen=$this->input->post('authen_type');
+                    $avatarpath='./asset/images/profiles/';
+                    
+                    $config=array(
+                        'upload_path'=>$avatarpath,
+                        'file_name'=>$user_id,
+                        'allowed_types'=>'jpeg|jpg|gif|png',
+                        'max_size'=>250,
+                        'max_width'=>250,
+                        'max_height'=>250
+                    );
+                    $this->load->library('upload',$config);
+                    $avatar_img='';
+                    if($this->upload->do_upload('avatar'))
+                    {
+                       // echo json_encode(array('error'=>$this->upload->display_errors()));
+                       // exit;
+                        $avatar=$this->upload->data();
+                        $avatar_img=base_url($avatarpath.$user_id.$avatar['file_ext']);
+                    }
                     $form_data=array(
                         'firstname'=>$this->input->post('firstname'),
                         'lastname'=>$this->input->post('lastname'),
@@ -78,11 +97,7 @@ class Users_main extends CI_Controller
                         'email'=>$this->input->post('email'),
                         'authen_id'=>$authen[0]
                     );
-                    /*if((int)$authen[0]!=1){
-                        $form_data['authen_id']=$authen[0];
-                        $form_data['server']=$this->input->post('server');
-                        $form_data['port']=$this->input->post('port');
-                    }*/
+                    if(!empty($avatar_img)){$form_data['avatar']=$avatar_img;}
                     if($this->add_user->saveForm($form_data))
                     {
                         /*$this->jquery_ext->add_script("
@@ -113,7 +128,7 @@ class Users_main extends CI_Controller
                     
                 }
         }
-        $this->jquery_ext->add_css(css_path('table.css'));
+        //$this->jquery_ext->add_css(css_path('table.css'));
            $this->jquery_ext->add_css(css_path('button.css'));
            $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
            $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
@@ -149,9 +164,9 @@ class Users_main extends CI_Controller
                 'upload_path'=>$avatarpath,
                 'file_name'=>$user_id,
                 'allowed_types'=>'jpeg|jpg|gif|png',
-                'max_size'=>100,
-                'max_width'=>150,
-                'max_height'=>150
+                'max_size'=>250,
+                'max_width'=>250,
+                'max_height'=>250
             );
             $this->load->library('upload',$config);
             $avatar_img='';
@@ -224,7 +239,7 @@ class Users_main extends CI_Controller
                 return false;
             });
             ");
-        $this->jquery_ext->add_css(css_path('table.css'));
+        //$this->jquery_ext->add_css(css_path('table.css'));
            $this->jquery_ext->add_css(css_path('button.css'));
            $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
            $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
@@ -269,6 +284,7 @@ class Users_main extends CI_Controller
                 ->html('<tr><td>')->label('พิสูจน์ตัวบุคคล')->html('</td><td></td></tr>')
                 ->html('<tr><td>')->label('ผ่าน')->html('</td><td>')->select('authen_type|authen_type',$authen_type,'',$form_value['authen_type'])->html('</td></tr>')
                 ->html('<tr><td>')->label('รูปโปรไฟล์')->html('</td><td>')->iupload('avatar')->html('</td></tr>')
+                ->html('<tr><td></td><td><img src="'.$profile->avatar.'"/>')
                 ->html('<tr><td></td><td>')->submit('บันทึก')->reset('รีเซ็ต')->html('</td></tr></table>')->get();   
         return $form;
     }
@@ -296,6 +312,7 @@ class Users_main extends CI_Controller
                 ->html('<tr><td>')->label('ชื่อผู้ใช้')->html('</td><td>')->text('username|username','','trim|alpha_numberic|xss_clean')->html('</td></tr>')
                 ->html('<tr><td>')->label('รหัสผ่าน')->html('</td><td>')->pass('password|password','','trim|xss_clean')->checkbox('auto|auto','true','สร้างอัตโนมัติ',false,'trim|xss_clean')->html('</td></tr>')
                 ->html('<tr><td>')->label('อีเมล์')->html('</td><td>')->text('email|email','','trim|xss_clean','',array('maxlength'=>60,'size'=>30))->html('</td></tr>')
+                ->html('<tr><td>')->label('รูปประจำตัว')->html('</td><td>')->iupload('avatar')->html('</td></tr>')
                 ->html('<tr><td>')->label('พิสูจน์ตัวบุคคล')->html('</td><td></td></tr>')
                 ->html('<tr><td>')->label('ผ่าน')->html('</td><td>')->select('authen_type|authen_type',$authen_type,'',1)->html('</td></tr>')
                 /*->html('<tr><td>')->label('เซิฟเวอร์')->html('</td><td>')->text('server|server','','trim|xss_clean')->html('</td></tr>')

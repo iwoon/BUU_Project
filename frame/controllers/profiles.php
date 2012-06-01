@@ -25,7 +25,7 @@ class Profiles extends CI_Controller{
                 ->html('<tr><td>')->label('รหัสผ่านใหม่')->html('</td><td>')->pass('new_password|new_password','','trim|xss_clean')->html('</td></tr>')
                 ->html('<tr><td>')->label('ยืนยันรหัสผ่านใหม่')->html('</td><td>')->pass('verify_new_password|verify_new_password','','trim|xss_clean')->html('</td></tr>')
                 ->html('<tr><td>')->label('อีเมล์')->html('</td><td>')->text('email|email','','trim|xss_clean',$userdata->email,array('maxlength'=>20,'size'=>50))->html('</td></tr>')
-                ->html('<tr><td>')->label('รูปประจำตัว')->html('</td><td>')->iupload('profile_picture')->html('</td></tr>')
+                ->html('<tr><td>')->label('รูปประจำตัว')->html('</td><td>')->iupload('avatar')->html('</td></tr>')
                 ->html('<tr><td></td><td><img src="'.$userdata->avatar.'"/>')
                 ->html('<tr><td></td><td>')->submit()->reset()->html('</td></tr></table>')->get();   
         return $form;
@@ -85,6 +85,8 @@ class Profiles extends CI_Controller{
                // exit;
                 $avatar=$this->upload->data();
                 $avatar_img=base_url($avatarpath.$user_id.$avatar['file_ext']);
+            }else{
+                echo $this->upload->display_errors();exit;
             }
                 
                 
