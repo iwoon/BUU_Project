@@ -4,7 +4,6 @@ class Frameapp extends CI_Controller{
     private $_page='หน้าหลัก';
     public function _construct(){
         parent::__construct();
-   
         }
     public function index(){
         if(!$this->frame->users()->is_authen())redirect(site_url('login'));

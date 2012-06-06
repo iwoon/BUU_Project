@@ -9,7 +9,7 @@ class Rbac_user_role extends CI_Model
         }
         public function assign_role($role_id,$user_id)
         {
-            if(!$this->frame->users()->hasPermission('roles_management')->object('assigment'))return false;
+            if(!$this->frame->users()->hasPermission('roles_management')->object('assign_users')->create())return false;
             $data=array('role_id'=>$role_id,'user_id'=>$user_id);
             return $this->save($data);
         }
@@ -66,13 +66,14 @@ class Rbac_user_role extends CI_Model
 	public function get_role_members($condition=null)
         {
             if($condition==null)return false;
-            if(!$this->frame->users()->checkaccess('roles_management','users')->read())return false;
+            if(!$this->frame->users()->checkaccess('roles_management','member')->read())return false;
             if(array_key_exists('role_id',$condition))
             {
                 $role_id=$condition['role_id'];
             }
             $members=$this->db->select("u.user_id,u.username,u.firstname,u.lastname")->from($this->table.' ur')
-                    ->join('rbac_users u','ur.user_id=u.user_id')->where('ur.role_id',$role_id);
+                    ->join('rbac_users u','ur.user_id=u.user_id')->where(array('ur.role_id'=>$role_id,'u.user_id !='=>0));
+            
             if(array_key_exists('limit',$condition))
             {
                 $limit=$condition['limit'];
@@ -87,20 +88,25 @@ class Rbac_user_role extends CI_Model
         public function get_not_role_members($condition=null)
         {
             if($condition==null)return false;
-            if(!$this->frame->users()->checkaccess('roles_management','users')->read())return false;
+            if(!$this->frame->users()->checkaccess('roles_management','member')->read())return false;
             if(array_key_exists('role_id',$condition))
             {
                 $role_id=$condition['role_id'];
             }
-            $sql="select * from prj_rbac_users where user_id not in 
-                (select user_id from prj_rbac_user_role where role_id=".$role_id.") ";
+            $sql="select * from ? where user_id not in (select user_id from ? where role_id=? )";
+            $binding=array(
+              $this->db->dbprefix.'rbac_users',
+              $this->db->dbprefix.$this->table,
+              $role_id
+             );
             if(array_key_exists('limit',$condition))
             {
                 $limit=$condition['limit'];
-                
-                $sql.=" limit ".$limit['begin'].",".$limit['rowperpage'];
+                $sql.=" limit ?,?";
+                $binding[]=$limit['begin'];
+                $binding[]=$limit['rowperpage']; 
             }
-            $q=$this->db->query($sql);
+            $q=$this->db->query($sql,$binding);
             $data['num_members']=$q->num_rows();
             $data['members']=$q->result();
             return $data;

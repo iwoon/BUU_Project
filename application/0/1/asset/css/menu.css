@@ -49,4 +49,14 @@ background:url(images/user.gif) no-repeat 10px 8px;
 text-indent:30px;
 display:block;
 }
+.copy{
+background:url(images/user.gif) no-repeat 10px 8px;
+text-indent:30px;
+display:block;
+}
+.move{
+background:url(images/user.gif) no-repeat 10px 8px;
+text-indent:30px;
+display:block;
+}
 

@@ -15,7 +15,7 @@ class Users_menu extends Widget
                     $menu[]=array(
                                 'label'=>'เพิ่มผู้ใช้',
                                 'url'=>site_url('users/users_main/add'),
-                                'icon'=>image_path('icons/without-shadows/cpanel.png'),
+                                'icon'=>image_path('icons/with-shadows/person-plus-24.png'),
                                 'type'=>'add',
                                 'action'=>'users/users_main/add'
                    );
@@ -24,7 +24,7 @@ class Users_menu extends Widget
             $menu[]=array(
                             'label'=>'ลบ',
                             'url'=> '#',//site_url('users/users_main/delete'),
-                            'icon'=>  image_path('icons/with-shadows/person-profile-16.png'),
+                            'icon'=>  image_path('icons/with-shadows/badge-square-minus-16.png'),
                             'type'=>'delete',
                             'action'=>'users/users_main/delete'
                         );

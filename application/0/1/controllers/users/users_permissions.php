@@ -5,9 +5,10 @@ class Users_permissions extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('rbac_users_model','user');
+        $this->load->model('users/rbac_users','user');
         $this->load->library('form');
         $this->load->model('roles/rbac_roles','roles');
+        $this->load->model('permissions/rbac_permission','permise');
         $this->load->library('jquery_ext');
         $this->frame->nav()->reset();
         $this->frame->nav()->add('หน้าหลัก','http://'.$_SERVER['SERVER_NAME'].'/frame');
@@ -32,7 +33,7 @@ class Users_permissions extends CI_Controller
     private function permission_panel($user_id=null)
     {
         //$roles=$this->roles->get_parent_roles();
-        $this->load->model('permissions/rbac_permission','permise');
+        
         $data='';
         $operation=array(
             'read'=>'อ่านได้/เข้าถึงได้',
@@ -88,10 +89,7 @@ class Users_permissions extends CI_Controller
         $data.='</table>';
         return $data;
     }*/
-    private function travalRole($id)
-    {
-        
-    }
+
     private function gen_form()
     {
         $form=$this->form->open(site_url('users/users_roles/add/roles'),'users_roles|users_roles')->html('<table border=0 cellpadding=1px>')
@@ -107,14 +105,6 @@ class Users_permissions extends CI_Controller
                 ->html('<tr><td>')->label('พอร์ต')->html('</td><td>')->text('port|port','','trim|xss_clean','',array('maxlength'=>4,'size'=>4))->html('</td></tr>')
                 */->html('<tr><td></td><td>')->submit('บันทึก')->reset('รีเซ็ต')->html('</td></tr></table>')->get();   
         return $form;
-    }
-    public function assign()
-    {
-        
-    }
-    public function revoke()
-    {
-        
     }
 }
 ?>

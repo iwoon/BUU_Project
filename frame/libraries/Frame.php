@@ -276,7 +276,9 @@ class Active_Rolesession extends Session{ // not api
      log_message('debug',"Load session Session complete.");
      
     }
-    public function get_role_node(){return $this->role_node;}
+    public function get_role_node(){
+        return $this->role_node;
+    }
     private function _userhasrole($role_node)
     {
         $roleid=array();
@@ -449,9 +451,9 @@ class Permissions //not api
     
     public function prepare()
     {
-        $query=$this->data['ci']->db->select('p.name,po.object_id,po.operation_id')->from('rbac_permissions p')
-                ->join('rbac_permission_object po','p.permission_id=po.permission_id')
-                ->where('p.permission_id',$this->data['permission_id'])->get();
+        $query=$this->data['ci']->db->select('pg.name,p.permission_id,p.object_id,p.operation_id')->from('rbac_permissions p')
+                ->join('rbac_permissions_group pg','pg.permission_group_id=p.permission_group_id')
+                ->where('pg.permission_group_id',$this->data['permission_group_id'])->get();
         foreach($query->result() as $row)
         {
             $this->data['obj_instance']->object_id=$row->object_id;
@@ -572,13 +574,27 @@ class ObjOperations
     {
         $this->data=$obj;
     }
-    public function operation($operation)
+    public function operation($operation=array())
     {
         //print_r($this->data);
-        if(array_key_exists($operation,$this->data))
+        
+        if(!is_array($operation))
         {
-            return $this->data->{$operation};
-        }return false;
+            if(array_key_exists($operation,$this->data))
+            {
+                return $this->data->{$operation};
+            }return false;
+        }
+        $result=true;
+        foreach($operation as $oper)
+        {
+            if(array_key_exists($oper,$this->data))
+            {
+                $result=($result&&$this->data->{$oper})?true:false;
+            }else{$result=false;}
+            if(!$result)break;
+        }
+        return $result;
     }
     public function __call($operation,$param=null)
     {
@@ -591,6 +607,17 @@ class ObjOperations
             case 'update';
             case 'delete': return $this->operation($operation);
                 break;
+            case 'create_read':return $this->operation(array('create','read'));break;
+            case 'create_read_update':return $this->operation(array('create','read','update'));break;
+            case 'create_read_update_delete':return $this->operation(array('create','read','update','delete'));break;
+            case 'create_update':return $this->operation(array('create','update'));break;
+            case 'create_update_delete':return $this->operation(array('create','update','delete'));break;
+            case 'read_update':return $this->operation(array('read','update'));break;
+            case 'update_delete':return $this->operation(array('update','delete'));break;
+            case 'read_update_delete':return $this->operation(array('read','update','delete'));break;
+            case 'create_read_delete':return $this->operation(array('create','read','delete'));break;
+            case 'create_delete':return $this->operation(array('create','delete'));break;
+            case 'read_delete':return $this->operation(array('read','delete'));break;
             default:return false;
         }
     }
@@ -707,6 +734,7 @@ class Appsession extends Session //not api reader
     private $app_id=-1;
     protected static $namespace='APP';
     protected $data=array();
+    private $loaded_app_id=array();
     private $is_loaded=false;
     public function __construct()
     {
@@ -714,10 +742,15 @@ class Appsession extends Session //not api reader
     }
     public function initialize()
     {
-        if(!$this->is_loaded){
+        if(!in_array($this->app_id,$this->loaded_app_id)){ //!$this->is_loaded
             parent::reload();
             if(is_null($this->app_id)){show_error('properties not set for application id');}
+            $this->loaded_app_id[]=$this->app_id;
             $this->reset();
+            if(!empty($this->_data[self::$namespace]))
+            {
+                $this->data=$this->_data[self::$namespace];
+            }
             $this->createSession();
             $this->is_loaded=true;
             log_message('debug','Application ID: '.$this->app_id. ' is running.');
@@ -752,6 +785,15 @@ class Appsession extends Session //not api reader
     {
         print_r($this->data);
     }
+    private function setPermission($data)
+    {
+        if(!empty($data)){
+            foreach($data as $item=>$val)
+            {
+                $this->data[$item]=$val;
+            }
+        }
+    }
     public function createSession()
     {
         
@@ -766,7 +808,8 @@ class Appsession extends Session //not api reader
         unset($rolesess);
         if(!empty($rolenode)){
             $r=new Rolepermission($rolenode);
-        $this->data=$r->get();
+        //$this->data=$r->get();
+            $this->setPermission($r->get());
         unset($r);
         }
         $this->_data[self::$namespace]=$this->data;
@@ -800,13 +843,14 @@ class Rolepermission
     private function prepare()
     {
         //print_r($this->data['roleidlist']);
-        $role=$this->data['ci']->db->select('rp.permission_id,p.name')->from('rbac_role_permission rp')
-                ->join('rbac_permissions p','rp.permission_id=p.permission_id','left')
+        $role=$this->data['ci']->db->select('rp.permission_id,pg.name,pg.permission_group_id')->from('rbac_role_permission rp')
+                ->join('rbac_permissions p','rp.permission_id=p.permission_id')
+                ->join('rbac_permissions_group pg','pg.permission_group_id=p.permission_group_id')
                 ->where_in('rp.role_id',$this->data['roleidlist'])->get();
         foreach($role->result() as $row)
         {
             $pm=new Permissions();
-            $pm->permission_id=$row->permission_id;
+            $pm->permission_group_id=$row->permission_group_id;
             $pm->prepare();
             $this->data['data'][$row->name]=$pm->get();
             unset($pm);  

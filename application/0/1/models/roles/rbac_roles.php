@@ -25,13 +25,32 @@ class Rbac_roles extends CI_Model
     public function get_not_assigned_roles($user_id=null)
     {
         $sql='select role_id,name,description 
-            from prj_rbac_roles  where role_id not in 
-            (select role_id from prj_rbac_user_role where user_id='.$user_id.')';
-        return $this->db->query($sql)->result();
+            from ?  where creater_id=? and role_id not in 
+            (select role_id from ? where user_id=?)';
+        $binding=array(
+            $this->db->dbprefix.'rbac_roles',
+            $this->frame->users()->get_user_id(),
+            $this->db->dbprefix.'rbac_user_role',
+            $user_id
+        );
+        return $this->db->query($sql,$binding)->result();
     }
-    public function get_all_roles()
+    public function get_all_roles($condition=null)
     {
-        return $this->db->select('*')->from($this->table)->get()->result();
+        $r=$this->db->select('*')->from($this->table);
+        if($condition!=null)
+        {
+            if(array_key_exists('creater_id',$condition))
+            {
+                $r->where('creater_id',$condition['creater_id']);
+            }
+            
+        }
+        $data=array();
+        $r=$r->get();
+        $data['num_roles']=$r->num_rows();
+        $data['rolelist']=$r->result();
+        return $data;
     }
     public function get_all_roles_condition($condition=array())
     {
@@ -40,7 +59,10 @@ class Rbac_roles extends CI_Model
             return $this->get_all_roles();
         }
         $role=$this->db->select('*')->from($this->table);
-        
+        if(array_key_exists('creater_id',$condition))
+        {
+            $role->where('creater_id',$condition['creater_id']);
+        }
         if(array_key_exists('limit',$condition))
             {
                 $limit=$condition['limit'];
@@ -94,7 +116,7 @@ class Rbac_roles extends CI_Model
     }
     private function getRole($role_id)
     {
-        $query=$this->db->select('role_id,parent_role_id,name,description')->from('rbac_roles')
+        $query=$this->db->select('role_id,parent_role_id,name,description')->from($this->table)
                 ->where('role_id',$role_id)->get();
         if($query->num_rows()>0){
             return $query->row();
@@ -103,7 +125,7 @@ class Rbac_roles extends CI_Model
     }
     private function _getParentRules($role_id)
     {
-        $query=$this->db->select('role_id,parent_role_id,name,description')->from('rbac_roles')->where('parent_role_id',$role_id)->get();
+        $query=$this->db->select('role_id,parent_role_id,name,description')->from($this->table)->where('parent_role_id',$role_id)->get();
         if($query->num_rows()>0){
             foreach($query->result() as $row)
             {
@@ -118,9 +140,8 @@ class Rbac_roles extends CI_Model
         if($this->frame->users()->hasPermission('roles_management')->object('roles')->delete())
         {
             $id=implode(',',$id);
-                $query=$this->db->query('delete from prj_'.$this->table.' where role_id in ('.$id.')');
-                return true;
-            //return $this->db->delete(self::$TABLE_NAME)->where_in('user_id',$id)->affected_rows();
+            $sql="delete from ? where role_id in (?) and locked!=1";
+            return $this->db->query($sql,array($this->db->dbprefix.$this->table,$id));
         }
         return false;
     }

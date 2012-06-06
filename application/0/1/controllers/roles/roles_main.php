@@ -34,11 +34,16 @@ class Roles_main extends CI_Controller
             $input=$this->input->post();
             if(empty($input))redirect('roles/');
             $parent_role_id=$input['base_on'][0];
+            
             $data=array(
                 'name'=>$input['role_name'],
                 'description'=>$input['description'],
-                'creater_id'=>$this->frame->users()->get_user_id()
+                'creater_id'=>$this->frame->users()->get_user_id(),
+                'role_id'=>$input['role_id']
             );
+            if($input['role_id']==null){
+                unset($data['role_id']);
+            }
             if($input['base_on'][0]>0){$data['parent_role_id']=$parent_role_id;}
             $this->roles->save($data);
             redirect('roles/');
@@ -81,6 +86,7 @@ class Roles_main extends CI_Controller
                     });
                 });
             ");
+        
         $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
         $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
         $this->jquery_ext->add_css(css_path('table.css'));
@@ -97,13 +103,15 @@ class Roles_main extends CI_Controller
             ");
         $this->template->publish();
     }
-    private function gen_form()
+    private function gen_form($role_id=null)
     {
         $this->load->library('form');
         $condition=array(
                 'creater_id'=>$this->frame->users()->get_user_id(),
             );
-        
+        if($role_id!=null){
+            $edit_role_data=$this->roles->get_roles($role_id);
+        }
         if($this->frame->users()->checkaccess('visible_all_roles','all_roles')->read())
         {
                 unset($condition['creater_id']);
@@ -114,10 +122,12 @@ class Roles_main extends CI_Controller
         {
             $select_data[$role->role_id]=$role->name.' '.$role->description;
         }
+        
         $form=$this->form->fieldset('เพิ่มบทบาท')->open('roles/roles_main/add')
-                ->label('ชื่อบทบาทใหม่')->text('role_name|role_name','','trim|alpha_numberic|xss_clean')
-                ->label('ภายใต้บทบาท')->select('base_on',$select_data,0)
-                ->label('รายระเอียดบทบาท')->br()->textarea('description|description','','trim|xss_clean')->margin(90)
+                ->label('ชื่อบทบาท')->text('role_name|role_name','','trim|alpha_numberic|xss_clean',(isset($edit_role_data))?$edit_role_data[0]->name:'')
+                ->label('ภายใต้บทบาท')->select('base_on',$select_data,'',(!is_null($role_id))?$role_id:0)
+                ->label('รายระเอียดบทบาท')->br()->textarea('description|description','','trim|xss_clean',(isset($edit_role_data))?$edit_role_data[0]->description:'')->margin(90)
+                ->hidden('role_id',$role_id)
                 ->submit('เพิ่ม')->margin(90)->get();
         return $form;
     }
@@ -141,6 +151,17 @@ class Roles_main extends CI_Controller
                 }
             }
     }
+    public function edit($role_id)
+    {
+        $this->frame->nav()->add('จัดการบทบาท',site_url('roles/'));
+        $this->frame->nav()->add('แก้ไขบทบาท');
+        $left_menu=$this->load->view('left_menu','',true);
+        $this->template->content->add($left_menu);
+        $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
+        $this->template->content->add('<div id="roles_form">'.$this->gen_form($role_id).'</div>');
+        $this->template->content->add('</div>');
+        $this->template->publish();
+    }
     public function members($role_id=null)
     {
         $page=$this->uri->uri_to_assoc(3);
@@ -149,10 +170,12 @@ class Roles_main extends CI_Controller
         if(array_key_exists('members',$page)){
             $role_id=$page['members'];
         }
+        $role_detail=$this->roles->get_roles($role_id);
         if(!$this->frame->users()->checkaccess('roles_management','assign_users')->read())redirect('roles/');
         if($role_id==null){redirect('roles/');}
         $this->frame->nav()->add($this->page,site_url('roles/'.strtolower(get_class($this))));
-        $this->frame->nav()->add('รายชื่อสมาชิกบทบาท');
+        $this->frame->nav()->add('รายชื่อสมาชิกบทบาท '.$role_detail[0]->name);
+        $user_list=null;
         if($page_id>0){
             $rowperpage=20;
             $begin = ($page_id==1)?0:$page_id*$rowperpage;
@@ -161,7 +184,7 @@ class Roles_main extends CI_Controller
                 'limit'=>array('rowperpage'=>$rowperpage,'begin'=>$begin)
             );
             $data=$this->user_role->get_role_members($condition);
-
+            if((int)$data['num_members']>0){
             $member_data=array(
                 'users_list'=>$data['members'],
                 'num_users'=>$data['num_members'],
@@ -169,6 +192,7 @@ class Roles_main extends CI_Controller
                 'role_id'=>$page['members']
                 );
             $user_list=$this->load->view('roles/members',$member_data,true);
+            }
         }
         $left_menu=$this->load->view('left_menu','',true);
         $this->template->content->add($left_menu);
@@ -189,9 +213,9 @@ class Roles_main extends CI_Controller
                     });
                 });
                $('.add').click(function(){
-                    jConfirm('ยืนยัน','คุณต้องการเพิ่มสมาชิกให้กับบทบาทนี้',function(r){
+                    jConfirm('คุณต้องการเพิ่มสมาชิกให้กับบทบาทนี้','ยืนยัน',function(r){
                         if(r==true){
-                            var data = { 'role_id[]' : [".$role_id."],'user_id[]':[]};
+                            var data = { 'role_id[]' : [".$role_id."],'user_id[]':[],'ajax':'true'};
                             $('input:checked').each(function() {
                               data['user_id[]'].push($(this).val());
                             });
@@ -202,8 +226,9 @@ class Roles_main extends CI_Controller
                     });
                });
             ");
-        $role_detail=$this->roles->get_roles($role_id);
-        $this->template->content->add('<fieldset><legend>สมาชิกของบทบาท '.$role_detail[0]->name.' .</legend>'.$user_list.'</fieldset>');
+        
+        $this->template->content->add('<fieldset><legend>สมาชิกของบทบาท '.$role_detail[0]->name.'</legend>'.(($user_list!=null)?$user_list:'ไม่มีสามาชิก').'</fieldset>');
+        $user_panel=null;
         if(array_key_exists('not_member_page',$page)){$notpage=$page['not_member_page'];}else{$notpage=1;}
         if($notpage>0)
         {
@@ -216,6 +241,7 @@ class Roles_main extends CI_Controller
                     );
             $notmember=$this->user_role->get_not_role_members($condition);
             //print_r($notmember);exit;
+            if((int)$notmember['num_members']>0){
             $data['users_list']=$notmember['members'];
             $data['num_users']=$notmember['num_members'];
             $data['row_per_page']=$rowperpage;
@@ -223,8 +249,9 @@ class Roles_main extends CI_Controller
             $pattern=array('/users/','/users_main/','/page/');
             $replacement=array('roles',"roles_main",'members/'.$role_id.'/not_member_page');
             $user_panel=preg_replace($pattern,$replacement,$user_panel);
+            }
         }
-        $this->template->content->add('<fieldset><legend>รายชื่อสมาชิกที่ยังไม่ได้อยู่ในบทบาทนี้</legend>'.$user_panel.'</fieldset>');
+        $this->template->content->add('<fieldset><legend>รายชื่อสมาชิกที่ยังไม่ได้อยู่ในบทบาทนี้</legend>'.(($user_panel!=null)?$user_panel:'ไม่พบรายชื่อ').'</fieldset>');
         $this->template->content->add('</div>');
         $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
         $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
@@ -234,20 +261,20 @@ class Roles_main extends CI_Controller
     }
     public function assign_members()
     {
-        if($this->frame->users()->checkaccess('roles_management','assignment')->read())
+        if($this->frame->users()->checkaccess('roles_management','assign_users')->create())
         {
             $input=$this->input->post();
             $role_id=$input['role_id'][0];
             $user_id=$input['user_id'];
+            $rolelist=$this->roles->get_child_to_parent($role_id);
             foreach($user_id as $user)
             {
-                $rolelist=$this->roles->get_child_to_parent($role_id);
                 foreach($rolelist as $role)
                 {
                     $this->user_role->assign_role($role,$user);
                 }
             }
-            redirect('roles/roles_main/members/'.$role_id);
+            if(!$input['ajax']){redirect('roles/roles_main/members/'.$role_id);}
         }else{
             $this->template->content->add('<h1>คุณไม่ได้รับอนุญาติให้จัดการบทบาทให้กับผู้ใช้</h1>');
             $this->template->publish();

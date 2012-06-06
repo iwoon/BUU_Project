@@ -20,12 +20,18 @@ class Users_main extends CI_Controller
     }
     public function page($page_id)
     {
+        if(!$this->frame->users()->checkaccess('users_management','users')->read())redirect('welcome');
          $this->frame->nav()->add($this->page);
         $rowperpage=20;
         $begin = ($page_id==1)?0:$page_id*$rowperpage;
         $condition=array(
+            'user_id'=>$this->frame->users()->get_user_id(),
             'limit'=>array('rowperpage'=>$rowperpage,'begin'=>$begin)
                 );
+        if($this->frame->users()->get_user_id()==0)
+        {
+            unset($condition['user_id']);
+        }
         $data['users_list']=$this->users->get_users_list($condition);
         $data['num_users']=$this->users->get_num_users();
         $data['row_per_page']=$rowperpage;
@@ -71,31 +77,35 @@ class Users_main extends CI_Controller
                     if(empty($user)){redirect('users');}
                     $authen=$this->input->post('authen_type');
                     $avatarpath='./asset/images/profiles/';
-                    
-                    $config=array(
-                        'upload_path'=>$avatarpath,
-                        'file_name'=>$user_id,
-                        'allowed_types'=>'jpeg|jpg|gif|png',
-                        'max_size'=>250,
-                        'max_width'=>250,
-                        'max_height'=>250
-                    );
-                    $this->load->library('upload',$config);
-                    $avatar_img='';
-                    if($this->upload->do_upload('avatar'))
+                    $user_id=$this->frame->users()->get_user_id();
+                    $input=$this->input->post('avatar');
+                    if(!empty($input['avatar']))
                     {
-                       // echo json_encode(array('error'=>$this->upload->display_errors()));
-                       // exit;
-                        $avatar=$this->upload->data();
-                        $avatar_img=base_url($avatarpath.$user_id.$avatar['file_ext']);
+                        $config=array(
+                            'upload_path'=>$avatarpath,
+                            'file_name'=>$user_id,
+                            'allowed_types'=>'jpeg|jpg|gif|png',
+                            'max_size'=>250,
+                            'max_width'=>250,
+                            'max_height'=>250
+                        );
+                        $this->load->library('upload',$config);
+                        $avatar_img='';
+                        if($this->upload->do_upload('avatar'))
+                        {
+                           // echo json_encode(array('error'=>$this->upload->display_errors()));
+                           // exit;
+                            $avatar=$this->upload->data();
+                            $avatar_img=base_url($avatarpath.$user_id.$avatar['file_ext']);
+                        }
                     }
                     $form_data=array(
                         'firstname'=>$this->input->post('firstname'),
                         'lastname'=>$this->input->post('lastname'),
                         'username'=>$this->input->post('username'),
                         'password'=>$this->input->post('password'),
-                        'email'=>$this->input->post('email'),
-                        'authen_id'=>$authen[0]
+                        'email'=>$this->input->post('email')
+                        //'authen_id'=> $authen[0]
                     );
                     if(!empty($avatar_img)){$form_data['avatar']=$avatar_img;}
                     if($this->add_user->saveForm($form_data))
@@ -185,8 +195,8 @@ class Users_main extends CI_Controller
                     'lastname'=>$input['lastname'],
                     'username'=>$input['username'],
                     'email'=>$input['email'],
-                    'authen_id'=>$input['authen_type'][0],
                     'avatar'=>$avatar_img
+                    //'authen_id'=>$input['authen_type'][0]
                     );
                 if(!empty($input['password']))
                 {
@@ -258,8 +268,8 @@ class Users_main extends CI_Controller
             'firstname'=>(!empty($profile))?$profile->firstname:'',
             'lastname'=>(!empty($profile))?$profile->lastname:'',
             'username'=>(!empty($profile))?$profile->username:'',
-            'email'=>(!empty($profile))?$profile->email:'',
-            'authen_type'=>(!empty($profile))?$profile->authen_id:'',
+            'email'=>(!empty($profile))?$profile->email:''
+            //'authen_type'=>(!empty($profile))?$profile->authen_id:'',
         );
          $this->load->model('authen_type_m','authen');
         $authen_type=array();
@@ -281,8 +291,8 @@ class Users_main extends CI_Controller
                 ->html('<tr><td>')->label('ชื่อผู้ใช้')->html('</td><td>')->text('username|username','','trim|alpha_numberic|xss_clean',$form_value['username'])->html('</td></tr>')
                 ->html('<tr><td>')->label('รหัสผ่าน')->html('</td><td>')->pass('password|password','','trim|xss_clean')->html('</td></tr>')
                 ->html('<tr><td>')->label('อีเมล์')->html('</td><td>')->text('email|email','','trim|xss_clean',$form_value['email'],array('maxlength'=>60,'size'=>30))->html('</td></tr>')
-                ->html('<tr><td>')->label('พิสูจน์ตัวบุคคล')->html('</td><td></td></tr>')
-                ->html('<tr><td>')->label('ผ่าน')->html('</td><td>')->select('authen_type|authen_type',$authen_type,'',$form_value['authen_type'])->html('</td></tr>')
+                //->html('<tr><td>')->label('พิสูจน์ตัวบุคคล')->html('</td><td></td></tr>')
+                //->html('<tr><td>')->label('ผ่าน')->html('</td><td>')->select('authen_type|authen_type',$authen_type,'',$form_value['authen_type'])->html('</td></tr>')
                 ->html('<tr><td>')->label('รูปโปรไฟล์')->html('</td><td>')->iupload('avatar')->html('</td></tr>')
                 ->html('<tr><td></td><td><img src="'.$profile->avatar.'"/>')
                 ->html('<tr><td></td><td>')->submit('บันทึก')->reset('รีเซ็ต')->html('</td></tr></table>')->get();   
@@ -301,6 +311,39 @@ class Users_main extends CI_Controller
                if($(this).val()!=2){ $('#server').attr('disabled',true);$('#port').attr('disabled',true);}
                else{ $('#server').removeAttr('disabled');$('#port').removeAttr('disabled');}
             }).trigger('change');
+            $('#auto').click(function(){
+                if($(this).is(':checked')){
+                       var marker = $('<span />').insertBefore('#password');
+                        $('#password').detach().attr('type', 'text').insertAfter(marker).focus();
+                        marker.remove();
+                        $('#password').val(gen_password(8,false));
+                    }else{
+                        var marker = $('<span />').insertBefore('#password');
+                        $('#password').detach().attr('type', 'password').insertAfter(marker).focus();
+                        marker.remove();
+                        $('#password').val('');
+                    }
+                });
+              function gen_password(length, special) {
+                var iteration = 0;
+                var password = '';
+                var randomNumber;
+                if(special == undefined){
+                    var special = false;
+                }
+                while(iteration < length){
+                    randomNumber = (Math.floor((Math.random() * 100)) % 94) + 33;
+                    if(!special){
+                        if ((randomNumber >=33) && (randomNumber <=47)) { continue; }
+                        if ((randomNumber >=58) && (randomNumber <=64)) { continue; }
+                        if ((randomNumber >=91) && (randomNumber <=96)) { continue; }
+                        if ((randomNumber >=123) && (randomNumber <=126)) { continue; }
+                    }
+                    iteration++;
+                    password += String.fromCharCode(randomNumber);
+                }
+                return password;
+            }
             ");
         foreach( $authen_data as $row)
         {
@@ -313,8 +356,8 @@ class Users_main extends CI_Controller
                 ->html('<tr><td>')->label('รหัสผ่าน')->html('</td><td>')->pass('password|password','','trim|xss_clean')->checkbox('auto|auto','true','สร้างอัตโนมัติ',false,'trim|xss_clean')->html('</td></tr>')
                 ->html('<tr><td>')->label('อีเมล์')->html('</td><td>')->text('email|email','','trim|xss_clean','',array('maxlength'=>60,'size'=>30))->html('</td></tr>')
                 ->html('<tr><td>')->label('รูปประจำตัว')->html('</td><td>')->iupload('avatar')->html('</td></tr>')
-                ->html('<tr><td>')->label('พิสูจน์ตัวบุคคล')->html('</td><td></td></tr>')
-                ->html('<tr><td>')->label('ผ่าน')->html('</td><td>')->select('authen_type|authen_type',$authen_type,'',1)->html('</td></tr>')
+                //->html('<tr><td>')->label('พิสูจน์ตัวบุคคล')->html('</td><td></td></tr>')
+                //->html('<tr><td>')->label('ผ่าน')->html('</td><td>')->select('authen_type|authen_type',$authen_type,'',1)->html('</td></tr>')
                 /*->html('<tr><td>')->label('เซิฟเวอร์')->html('</td><td>')->text('server|server','','trim|xss_clean')->html('</td></tr>')
                 ->html('<tr><td>')->label('พอร์ต')->html('</td><td>')->text('port|port','','trim|xss_clean','',array('maxlength'=>4,'size'=>4))->html('</td></tr>')
                 */->html('<tr><td></td><td>')->submit('บันทึก')->reset('รีเซ็ต')->html('</td></tr></table>')->get();   
@@ -325,14 +368,14 @@ class Users_main extends CI_Controller
         $this->frame->nav()->add($this->page,site_url('users/'));
         $this->frame->nav()->add('บทบาทผู้ใช้');
         if(($user_id==null)){redirect('users/');}
-        $this->load->model('rbac_users_model','user');
         $user_role=$this->users->get_user_has_roles($user_id);
-        $data='<fieldset><legend>บทบาทของผู้ใช้</legend><table>';
+        $data='<fieldset><legend>บทบาทของ[ '.((!empty($user_role))?($user_role[0]->firstname.' '.$user_role[0]->lastname):'').' ] </legend><table>';
         $data.='<thead>
             <tr class="odd">
                     <td class="column1"></td>
                     <th scope="col" abbr="Home">ชื่อบทบาท</th>
-                    <th scope="col" abbr="Home Plus">รายละเอียด</th>	
+                    <th scope="col" abbr="Home Plus">รายละเอียด</th>
+                    <td class="column1">สิทธิ</td>
             </tr>	
             </thead>
             <tbody>';
@@ -340,7 +383,7 @@ class Users_main extends CI_Controller
         foreach($user_role as $role)
         {
             $data.='<tr'.(($i%2)? 'class="odd"':'').'><th scope="row" class="column1"><input type="checkbox" name="role_id[]" value="'.$role->role_id.'"/></th>';
-            $data.='<td>'.$role->name.'</td><td>'.$role->description.'</td></tr>';
+            $data.='<td>'.$role->name.'</td><td>'.$role->description.'</td><td>'.anchor('permissions/permissions_main/permissions_roles/'.$role->role_id,'สิทธิ').'</td></tr>';
             $i++;
         }
         $data.="</tbody></table></fieldset>";
@@ -361,7 +404,7 @@ class Users_main extends CI_Controller
                     if(!empty($user_role)){
                         $this->template->content->add('<div id="users_role" style="float:left;padding 1em 1em;">'.$data.'</div>');
                     }
-                    if($this->frame->users()->hasPermission('roles_management')->object('assignment')->read()){
+                    if($this->frame->users()->hasPermission('roles_management')->object('assign_users')->create()){
                         $this->template->content->add('<div id="form_assign_role">'.$form_roles.'</div>');
                     }
                     $this->template->content->add('</div>');
@@ -389,7 +432,7 @@ class Users_main extends CI_Controller
     }
     public function assign_roles()
     {
-        if($this->frame->users()->checkaccess('roles_management','assignment')->read())
+        if($this->frame->users()->checkaccess('roles_management','assign_users')->create())
         {
             $input=$this->input->post();
             $role_id=$input['role_id'][0];

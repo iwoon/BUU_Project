@@ -5,8 +5,8 @@
 			parent::__construct();
                         if($this->frame->users()->is_authen())
                         {
-                            $this->app()->set_app_id($this->config->item('app_id'));
-                            $this->app()->initialize();
+                            $this->frame->app()->set_app_id($this->config->item('app_id'));
+                            $this->frame->app()->initialize();
                             redirect('frameapp');
                         }
 		}
@@ -120,6 +120,7 @@
 			//var_dump($this->frame->users()->hasPermission('login'));
                         if($this->frame->users()->hasPermission('login')->object('loginpanel')->read())
                         {
+                            
                                 $data=array(
                                             'failure'=>false,
                                             'msgtitle'=>null,
@@ -136,7 +137,8 @@
                                     );
                             if($this->frame->users->is_authen()){
                                  $data['msg']='คุณไม่ได้รับอนุญาติให้เข้าสู่ระบบเนื่องจากปัญหาบางประการ<br/>กรุณาติดต่อผู้ดูแลระบบหรือผู้ที่มีส่วนรับผิดชอบ';
-                                 $this->frame->logout();
+                                $this->frame->logout();
+                                 
                             }
 				
                         }

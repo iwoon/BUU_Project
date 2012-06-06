@@ -63,14 +63,14 @@ class Welcome extends CI_Controller
                         'app_url'=>site_url('users/users_main/add')
                 );
             }
-            if($this->frame->users()->hasPermission('visible_admin_icon')->object('add_roles_icon')->read())
+            /*if($this->frame->users()->hasPermission('visible_admin_icon')->object('add_roles_icon')->read())
             {
                 $app_list[]=array(
                         'app_icon'=>image_path('icons/no-image.gif'),
                         'app_name'=>'เพิ่มบทบาท',
                         'app_url'=>site_url('roles/roles_main/add')
                 );
-            }
+            }*/
             if($this->frame->users()->hasPermission('visible_admin_icon')->object('add_permissions_icon')->read())
             {
                 $app_list[]=array(

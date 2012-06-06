@@ -10,6 +10,11 @@ class Profiles extends CI_Controller{
         $this->frame->nav()->add('หน้าหลัก',site_url('frameapp'));
         $this->frame->nav()->add($this->_page);
         $this->load->library('jquery_ext');
+        /*if($this->frame->users()->is_authen())
+          {
+            $this->frame->app()->set_app_id($this->config->item('app_id'));
+            $this->frame->app()->initialize();
+          }*/
         if(!$this->frame->users->is_authen())redirect('login');
     }
     private function _genForm(){
@@ -36,6 +41,7 @@ class Profiles extends CI_Controller{
         $this->frame->nav->add('หน้าหลัก',site_url('frameapp'));
         $this->frame->nav->add($this->_page);
         if(!$this->frame->users()->is_authen())redirect('login');
+        if(!$this->frame->users()->checkaccess('profiles','profile')->read()) redirect('login');
         $data['profile']=$this->_genForm();
         $this->jquery_ext->add_script("
                 $('#email').keyup(function(){
@@ -68,27 +74,28 @@ class Profiles extends CI_Controller{
                  $this->template->content->add('<h1>รหัสผ่านเดิมไม่ถูกต้อง</h1>');
                  
              }else{
-            $avatarpath='./asset/images/profiles/';
-            $config=array(
-                'upload_path'=>$avatarpath,
-                'file_name'=>$user_id,
-                'allowed_types'=>'jpeg|jpg|gif|png',
-                'max_size'=>100,
-                'max_width'=>150,
-                'max_height'=>150
-            );
-            $this->load->library('upload',$config);
-            $avatar_img='';
-            if($this->upload->do_upload('avatar'))
-            {
-               // echo json_encode(array('error'=>$this->upload->display_errors()));
-               // exit;
-                $avatar=$this->upload->data();
-                $avatar_img=base_url($avatarpath.$user_id.$avatar['file_ext']);
-            }else{
-                echo $this->upload->display_errors();exit;
-            }
-                
+               if(!empty($input['avatar'])){  
+                $avatarpath='./asset/images/profiles/';
+                $config=array(
+                    'upload_path'=>$avatarpath,
+                    'file_name'=>$user_id,
+                    'allowed_types'=>'jpeg|jpg|gif|png',
+                    'max_size'=>100,
+                    'max_width'=>150,
+                    'max_height'=>150
+                );
+                $this->load->library('upload',$config);
+                $avatar_img='';
+                if($this->upload->do_upload('avatar'))
+                {
+                   // echo json_encode(array('error'=>$this->upload->display_errors()));
+                   // exit;
+                    $avatar=$this->upload->data();
+                    $avatar_img=base_url($avatarpath.$user_id.$avatar['file_ext']);
+                }else{
+                    echo $this->upload->display_errors();exit;
+                }
+               }
                 
                 $data=array(
                     'user_id'=>$user_id,

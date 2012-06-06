@@ -26,6 +26,7 @@ class Rbac_users_model extends CI_Model{
 			if($field->primary_key==1)
 			{
 				$keyExists = TRUE;
+
 				if(isset($data[$field->name]))
 				{
 					$this->db->where($field->name, $data[$field->name]);
@@ -36,17 +37,16 @@ class Rbac_users_model extends CI_Model{
 				}
 			}
 		}
-	 
 		if($keyExists && $op=='update')
 		{
 			$this->db->set($data);
 			$this->db->update($tablename);
+                        echo $this->db->affected_rows();
 			if($this->db->affected_rows()==1)
 			{
-				return $this->db->affected_rows();
+                            return $this->db->affected_rows();
 			}
 		}
-	 
 		$this->db->insert(self::$TABLE_NAME,$data);
 	 
 		return $this->db->affected_rows();

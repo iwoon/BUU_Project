@@ -18,7 +18,7 @@ class profiles_widget extends Widget {
             $this->data = array(
                     'avatar'=>image((empty($this->avatar))?base_url().'frame/asset/images/profiles/noimage.gif':$this->avatar,'',array('width'=>'100px','height'=>'100px')),
                     'fullname'=>$this->fullname,
-                    'edit_profiles'=>(($this->frame->users()->hasPermission('profiles')->object('profiles_panel')->read())?anchor("profiles/".$this->frame->users()->user_id,'แก้ไขข้อมูลส่วนตัว |'):null),
+                    'edit_profiles'=>(($this->frame->users()->hasPermission('profiles')->object('profile')->read())?anchor("profiles/".$this->frame->users()->user_id,'แก้ไขข้อมูลส่วนตัว |'):null),
                     'logout'=>anchor(base_url('index.php/logout/'),'ออกจากระบบ',array('class'=>'logout'))
             );
                 $this->load->view('widgets/profiles', $this->data);

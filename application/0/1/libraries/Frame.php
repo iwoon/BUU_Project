@@ -221,6 +221,62 @@ class ObjOperations
     {
         $this->data=$obj;
     }
+    public function operation($operation=array())
+    {
+        //print_r($this->data);
+        
+        if(!is_array($operation))
+        {
+            if(array_key_exists($operation,$this->data))
+            {
+                return $this->data->{$operation};
+            }return false;
+        }
+        $result=true;
+        foreach($operation as $oper)
+        {
+            if(array_key_exists($oper,$this->data))
+            {
+                $result=($result&&$this->data->{$oper})?true:false;
+            }else{$result=false;}
+            if(!$result)break;
+        }
+        return $result;
+    }
+    public function __call($operation,$param=null)
+    {
+        unset($param);
+        $operation=strtolower($operation);
+        switch($operation)
+        {
+            case 'create';
+            case 'read';
+            case 'update';
+            case 'delete': return $this->operation($operation);
+                break;
+            case 'create_read':return $this->operation(array('create','read'));break;
+            case 'create_read_update':return $this->operation(array('create','read','update'));break;
+            case 'create_read_update_delete':return $this->operation(array('create','read','update','delete'));break;
+            case 'create_update':return $this->operation(array('create','update'));break;
+            case 'create_update_delete':return $this->operation(array('create','update','delete'));break;
+            case 'read_update':return $this->operation(array('read','update'));break;
+            case 'update_delete':return $this->operation(array('update','delete'));break;
+            case 'read_update_delete':return $this->operation(array('read','update','delete'));break;
+            case 'create_read_delete':return $this->operation(array('create','read','delete'));break;
+            case 'create_delete':return $this->operation(array('create','delete'));break;
+            case 'read_delete':return $this->operation(array('read','delete'));break;
+            default:return false;
+        }
+    }
+    public function __destruct(){unset($this->data);}
+}
+/*class ObjOperations
+{
+    private $data;
+    public function __construct($obj)
+    {
+        $this->data=$obj;
+    }
     public function operation($operation)
     {
         //print_r($this->data);
@@ -244,7 +300,7 @@ class ObjOperations
         }
     }
     public function __destruct(){unset($this->data);}
-}
+}*/
 class PermissionOnSession extends Session{ //reader
     private $data=array();
     public function __construct()

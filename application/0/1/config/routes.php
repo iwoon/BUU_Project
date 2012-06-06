@@ -53,9 +53,9 @@ $route['users_([a-z]+)/uid/(\d+)']='users_$1/$2';
 //$route['user_main/page/(:num)']='user_main/page/$1';
 //$route['user_([a-z]+)/(\d+)']='users/user_$1/$2';
 $route['roles/([a-z]+)']= "roles/role_$1";
-$route['permissions/([a-z]+)']= "permissions/permission_$1";
+//$route['permissions_add/(\d+)']= "permissions/permissions_add/$1";
 //$route['roles/([a-z]+)/(\d+)'] = "roles/role_$1/$2";
-$route['permissions/([a-z]+)/(\d+)'] = "permissions/permission_$1/$2";
+//$route['permissions/([a-z]+)/(\d+)'] = "permissions/permissions_$1/$2";
 
 
 /* End of file routes.php */
