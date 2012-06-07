@@ -93,10 +93,8 @@ class Rbac_user_role extends CI_Model
             {
                 $role_id=$condition['role_id'];
             }
-            $sql="select * from ? where user_id not in (select user_id from ? where role_id=? )";
+            $sql="select * from ".$this->db->dbprefix."rbac_users where user_id not in (select user_id from ".$this->db->dbprefix.$this->table." where role_id=? )";
             $binding=array(
-              $this->db->dbprefix.'rbac_users',
-              $this->db->dbprefix.$this->table,
               $role_id
              );
             if(array_key_exists('limit',$condition))

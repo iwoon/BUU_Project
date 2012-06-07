@@ -7,7 +7,7 @@ class Permissions_main extends CI_Controller
         parent::__construct();
         $this->frame->nav()->add('หน้าหลัก',$this->frame->url);
         $this->frame->nav()->add('ระบบจัดการผู้ใช้',site_url('welcome'));
-                $this->load->model('rbac_users_model','user');
+                $this->load->model('users/rbac_users','user');
         $this->load->library('form');
         $this->load->model('roles/rbac_roles','roles');
         $this->load->model('roles/rbac_role_permission','role_permise');
@@ -49,9 +49,9 @@ class Permissions_main extends CI_Controller
             $condition=array('creater_id'=>$this->frame->users()->get_user_id());
             $owner_role=$this->roles->get_all_roles($condition);
                 $option=array('none'=>'บทบาท');
-                foreach($owner_role['rolelist'] as $role)
+                foreach($owner_role['rolelist'] as $item)
                 {
-                    $option[$role->role_id]=$role->name.' '.$role->description;
+                    $option[$item->role_id]=$item->name.' '.$item->description;
                 }
                 unset($owner_role);
             //    
@@ -90,7 +90,7 @@ class Permissions_main extends CI_Controller
                 $data.='<td style="text-align:left;">'.$item->permission_name.'</td>';
                 foreach($operation as $oper=>$desc)
                 {
-                  $data.='<td><input type="checkbox" name="permise['.$item->id.'][]" value="'.$oper.'" '.(($item->{$oper}==1)?'checked':'').'/></td>';
+                  $data.='<td><input type="checkbox" name="permise['.$item->permission_id.'][]" value="'.$oper.'" '.(($item->{$oper}==1)?'checked':'').'/></td>';
                 }
                 $data.='<td>'.anchor(site_url('permissions/permissions_add/permission/'.$item->permission_id),'แก้ไข').'</td>';
                 }
@@ -217,7 +217,7 @@ class Permissions_main extends CI_Controller
             if(!empty($role_detail)){
                 foreach($role_detail['rolelist'] as $role)
                 {
-                    $select_data[$role->role_id]=$role->role_name.' '.$role->role_description;
+                    $select_data[$role->role_id]=$role->name.' '.$role->description;
                 }
                 if($role_id==null){
                 $form=$this->form->fieldset('เลือกบทบาท')->open('permissions/permissions_main/permissions_roles','filter|filter')

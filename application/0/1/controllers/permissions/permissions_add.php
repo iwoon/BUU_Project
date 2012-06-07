@@ -14,6 +14,7 @@ class Permissions_add extends CI_Controller
         $this->load->model('roles/rbac_roles','roles');
         $this->load->model('operations/rbac_operations','operations');
         $this->load->model('objects/rbac_objects','objects');
+        $this->load->model('permissions/rbac_permissions_group','permise_group');
     }
     public function index()
     {
@@ -56,6 +57,24 @@ class Permissions_add extends CI_Controller
             }
         }
         $role_data=$this->roles->get_all_roles($condition);
+        $condition=array('creater_id'=>$this->frame->users()->get_user_id());
+        if($this->frame->users()->get_user_id()==0)
+        {
+            unset($condition['creater_id']);
+        }
+        $group=$this->permise_group->get_permissions_group($condition);
+        $data['group_data'][]='เลือกกลุ่มสิทธิ';
+        $this->jquery_ext->add_script("
+                $('select[name=\"permise_group\"]').change(function(){
+                    if($(this).val()!=0){
+                        $('input[name=\"group_name\"]').attr('disabled','disabled');
+                    }else{ $('input[name=\"group_name\"]').removeAttr('disabled');}
+                });
+            ");
+        foreach($group as $item)
+        {
+            $data['group_data'][$item->permission_group_id]=$item->name.' '.$item->description;
+        }
         $data['select_role']=$role_data['rolelist'];
         return $this->load->view('permissions/permission_form',$data,true);
         

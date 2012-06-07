@@ -47,5 +47,17 @@ class Rbac_permissions_group extends CI_Model {
 		return $this->db->insert_id();
 	 
 	}
+        public function get_permissions_group($condition=null)
+        {
+            $q=$this->db->select('*')->from($this->table);
+            if($condition!=null)
+            {
+                if(array_key_exists('creater_id'))
+                {
+                    $q->where('creater_id',$condition['creater_id']);
+                }
+            }
+            return $q->get()->result();
+        }
 }
 ?>

@@ -106,7 +106,7 @@ class Rbac_users extends CI_Model{
         if($this->frame->users()->hasPermission('users_management')->object('users')->delete())
         {
             $user_id=implode(',',$user_id);
-            return $this->db->query('delete from ? where user_id in (?)',array($this->db->dbprefix.$this->table,$user_id));
+            return $this->db->query('delete from '.$this->db->dbprefix.$this->table.' where user_id in (?)',array($user_id));
         }
         return false;
     }
@@ -122,6 +122,45 @@ class Rbac_users extends CI_Model{
         return (($ret->num_rows()>1)?$ret->result_array():$ret->row_array());
         }return (($ret->num_rows()>1)?$ret->result():$ret->row());
     }
+     public function save($data,$tablename="")
+	{
+		if($tablename=="")
+		{
+			$tablename = $this->table;
+		}
+		$op = 'update';
+		$keyExists = FALSE;
+		$fields = $this->db->field_data($tablename);
+		foreach ($fields as $field)
+		{
+			if($field->primary_key==1)
+			{
+				$keyExists = TRUE;
+				if(isset($data[$field->name]))
+				{
+					$this->db->where($field->name, $data[$field->name]);
+				}
+				else
+				{
+					$op = 'insert';
+				}
+			}
+		}
+	 
+		if($keyExists && $op=='update')
+		{
+			$this->db->set($data);
+			$this->db->update($tablename);
+			if($this->db->affected_rows()==1)
+			{
+				return $this->db->affected_rows();
+			}
+		}
+		$this->db->insert($this->table,$data);
+	 
+		return $this->db->affected_rows();
+	 
+	}
 }
 
 ?>

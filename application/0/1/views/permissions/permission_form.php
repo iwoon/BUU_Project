@@ -20,22 +20,24 @@
             });
             
             $('#btnDelObj').attr('disabled','disabled');
-            $('input').click(function(){$(this).val('');});
-            $('textarea').click(function(){$(this).val('');})
+            //$('input').click(function(){$(this).val('');});
+            //$('textarea').click(function(){$(this).val('');})
         });
     </script>
  <?
     if(!isset($permise))
     {
         $permise=new stdClass();
-        $permise->name='สิทธิภาษาอังกฤษ (ตัวเล็ก)';
-        $permise->description1='เช่น สิทธิอนุญาติเกี่ยวกับการเข้าสู่ระบบ';
-        $permise->description2='เช่น อนุญาติให้เข้าสู่ระบบ';
-        $permise->object='ชื่อวัตถุเป็นภาษาอังกฤษ (ตัวเล็ก)';
+        $permise->permission_group_name='สิทธิภาษาอังกฤษ (ตัวเล็ก)';
+        $permise->permission_group_description='เช่น สิทธิอนุญาติเกี่ยวกับการเข้าสู่ระบบ';
+        $permise->permission_name='เช่น อนุญาติให้เข้าสู่ระบบ';
+        $permise->object_name='ชื่อวัตถุเป็นภาษาอังกฤษ (ตัวเล็ก)';
         $permise->read=0;
         $permise->create=0;
         $permise->update=0;
         $permise->delete=0;
+        $permise->permission_group_id=0;
+  
     }
  
  ?>
@@ -43,16 +45,16 @@
     <div id="permise1" style="margin-bottom:4px;" class="clonePermise">
         <fieldset><legend>สิทธิ</legend>
         <div>
-        ชื่อกลุ่มสิทธิ <? echo form_dropdown('permise_group',$grop_data);?>สร้างกลุ่มใหม่ :<input type="text" name="group_name" size="50" value="<?=$permise->permission_group_name;?>"/><br/>
+        ชื่อกลุ่มสิทธิ <? echo form_dropdown('permise_group',$group_data,$permise->permission_group_id);?><br/>สร้างกลุ่มใหม่ :<input type="text" name="group_name" size="50" value="<? echo $permise->permission_group_name;?>"/><br/>
         รายละเอียด<br/><textarea name="group_description" cols="80" rows="3"/><?=$permise->permission_group_description;?></textarea><br/>
         ภายใต้บทบาท <br/> <select name="base_on[]" id="base_on"/>
                         <? foreach($select_role as $role):?>
-                            <option value="<?=$role->role_id;?>" <? echo (isset($role_id)&&($role->role_id==$role_id))?'selected':'';?>/><? echo $role->role_name.' '.$role->role_description;?></option>
+                            <option value="<?=$role->role_id;?>" <? echo (isset($role_id)&&($role->role_id==$role_id))?'selected':'';?>/><? echo $role->name.' '.$role->description;?></option>
                         <? endforeach;?>
                     </select>
         </div>
         <div id="object1" style="margin-bottom:4px;float:left;" class="clonedObject"><br/>
-            คำอธิบายเกียวกับอนุญาตินี้<br/><textarea name="name" cols="80" rows="3"/><?=$permise->permission_name;?></textarea>
+            คำอธิบายเกียวกับอนุญาตินี้<br/><textarea name="name" cols="80" rows="3"/><?=$permise->permission_name;?></textarea><br/>
             วัตถุ: <input type="text" name="object" size="50" value="<?=$permise->object_name;?>"/><br/>
             <fieldset><legend>การกระทำ</legend>
             อ่าน/เข้าถึง<input type="checkbox" name="operation[]" value="read" <? echo ($permise->read==1)?'checked':'';?>/>
@@ -62,20 +64,15 @@
             </fieldset>
             <hr/>
         </div>
-           <? if(is_null($permise->object)):?>
-            <!--<div>
-                <input type="button" id="btnAddObj" value="เพิ่มวัตถุ" />
-                <input type="button" id="btnDelObj" value="ลบวัตถุ" />
-            </div>-->
-          <? endif;?>
+           
         </fieldset>
     </div>
         <div>
             <input type="submit" id="btnAddPer" value="เพิ่มสิทธิ" />
             <? if(isset($permise->permission_group_id)){?>
-            <input type="hidden" name="permission_id" value="<?=$permise->permission_group_id;?>"/>
+            <input type="hidden" name="permission_group_id" value="<?=$permise->permission_group_id;?>"/>
             <?} if(isset($permise->permission_id)){?>
-            <input type="hidden" name="id" value="<?=$permise->id;?>"/>
+            <input type="hidden" name="permission_id" value="<?=$permise->permission_id;?>"/>
            <? } if(isset($role_id)){?>
             <input type="hidden" name="role_id" value="<?=$role_id;?>"/>
             <? } ?>

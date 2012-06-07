@@ -8,8 +8,7 @@ class Users_main extends CI_Controller
         $this->load->library('jquery_ext');
         $this->frame->nav()->add('หน้าหลัก',$this->frame->url);
         $this->frame->nav()->add('ระบบจัดการผู้ใช้',site_url());
-        $this->load->model('rbac_users_model','users');
-        $this->load->model('users/admin_users_add_m','add_user');
+        $this->load->model('users/rbac_users','users');
         $this->load->model('roles/rbac_roles','roles');
         $this->load->model('users/rbac_user_role','user_role');
     }
@@ -108,7 +107,7 @@ class Users_main extends CI_Controller
                         //'authen_id'=> $authen[0]
                     );
                     if(!empty($avatar_img)){$form_data['avatar']=$avatar_img;}
-                    if($this->add_user->saveForm($form_data))
+                    if($this->add_user->save($form_data))
                     {
                         /*$this->jquery_ext->add_script("
                                 jConfirm('เพิ่มผู้ใช้รายใหม่','คุณต้องการเพิ่มผู้ใช้อีกหรือไม่?',function(r){
@@ -259,10 +258,9 @@ class Users_main extends CI_Controller
     private function gen_profile($user_id=NULL)
     {
         $this->load->library('form');
-        $this->load->model('rbac_users_model','profile');
         if($user_id!=NULL){
-            $this->profile->set('user_id',$user_id);
-            $profile=$this->profile->getdata();
+            $this->users->set('user_id',$user_id);
+            $profile=$this->users->getdata();
         }
         $form_value=array(
             'firstname'=>(!empty($profile))?$profile->firstname:'',

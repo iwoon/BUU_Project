@@ -25,12 +25,10 @@ class Rbac_roles extends CI_Model
     public function get_not_assigned_roles($user_id=null)
     {
         $sql='select role_id,name,description 
-            from ?  where creater_id=? and role_id not in 
-            (select role_id from ? where user_id=?)';
+            from '.$this->db->dbprefix.'rbac_roles  where creater_id=? and role_id not in 
+            (select role_id from '.$this->db->dbprefix.'rbac_user_role where user_id=?)';
         $binding=array(
-            $this->db->dbprefix.'rbac_roles',
             $this->frame->users()->get_user_id(),
-            $this->db->dbprefix.'rbac_user_role',
             $user_id
         );
         return $this->db->query($sql,$binding)->result();
@@ -140,8 +138,8 @@ class Rbac_roles extends CI_Model
         if($this->frame->users()->hasPermission('roles_management')->object('roles')->delete())
         {
             $id=implode(',',$id);
-            $sql="delete from ? where role_id in (?) and locked!=1";
-            return $this->db->query($sql,array($this->db->dbprefix.$this->table,$id));
+            $sql="delete from ".$this->db->dbprefix.$this->table." where role_id in (?) and locked!=1";
+            return $this->db->query($sql,array($id));
         }
         return false;
     }

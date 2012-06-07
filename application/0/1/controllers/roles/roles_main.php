@@ -6,7 +6,7 @@ class Roles_main extends CI_Controller
     {
         parent::__construct();
         $this->load->library('jquery_ext');
-        $this->load->model('Rbac_users_model','users');
+        $this->load->model('users/rbac_users','users');
         $this->load->model('roles/rbac_roles','roles');
         $this->load->model('users/rbac_user_role','user_role');
         $this->frame->nav()->add('หน้าหลัก',$this->frame->url);
