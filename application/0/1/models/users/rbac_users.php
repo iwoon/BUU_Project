@@ -74,17 +74,16 @@ class Rbac_users extends CI_Model{
     }
     public function get_users_list($condition=array())
     {
+        $user=$this->db->select('usr.* ,at.*')->from($this->table.' usr')->join('authen_type at','usr.authen_id=at.authen_id')
+                    ->where('user_id !=',0);
          if(array_key_exists('user_id',$condition))
             {
-                $user=$this->db->select('usr.*,at.*')
-                        ->from($this->table.' usr')
-                        ->join('authen_type at','usr.authen_id=at.authen_id')
-                        ->where('user_id !=',0)
-                        ->where_in('user_id',$users_id);
-            }else{
-                $user=$this->db->select('usr.* ,at.*')->from($this->table.' usr')->join('authen_type at','usr.authen_id=at.authen_id')
-                    ->where('user_id !=',0); 
+                $user->where_in('user_id',$users_id);
             }
+         if(array_key_exists('creater_id',$condition))
+         {
+             $user->where('creater_id',$condition['creater_id']);
+         }
          if(array_key_exists('limit',$condition))
             {
                 $user->limit($condition['limit']['rowperpage'],$condition['limit']['begin']);

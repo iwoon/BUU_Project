@@ -55,7 +55,7 @@
         </div>
         <div id="object1" style="margin-bottom:4px;float:left;" class="clonedObject"><br/>
             คำอธิบายเกียวกับอนุญาตินี้<br/><textarea name="name" cols="80" rows="3"/><?=$permise->permission_name;?></textarea><br/>
-            วัตถุ: <input type="text" name="object" size="50" value="<?=$permise->object_name;?>"/><br/>
+            วัตถุ: <input type="text" name="object_name" size="50" value="<?=$permise->object_name;?>"/><br/>
             <fieldset><legend>การกระทำ</legend>
             อ่าน/เข้าถึง<input type="checkbox" name="operation[]" value="read" <? echo ($permise->read==1)?'checked':'';?>/>
             เพิ่ม/สร้างใหม่<input type="checkbox" name="operation[]" value="create" <? echo ($permise->create==1)?'checked':'';?>/>

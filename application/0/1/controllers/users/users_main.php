@@ -24,12 +24,13 @@ class Users_main extends CI_Controller
         $rowperpage=20;
         $begin = ($page_id==1)?0:$page_id*$rowperpage;
         $condition=array(
-            'user_id'=>$this->frame->users()->get_user_id(),
+            'creater_id'=>$this->frame->users()->get_user_id(),
             'limit'=>array('rowperpage'=>$rowperpage,'begin'=>$begin)
                 );
-        if($this->frame->users()->get_user_id()==0)
+        if($this->frame->users()->get_user_id()==0
+        ||$this->frame->users()->checkaccess('users_management','all_users')->read())
         {
-            unset($condition['user_id']);
+            unset($condition['creater_id']);
         }
         $data['users_list']=$this->users->get_users_list($condition);
         $data['num_users']=$this->users->get_num_users();
@@ -107,7 +108,7 @@ class Users_main extends CI_Controller
                         //'authen_id'=> $authen[0]
                     );
                     if(!empty($avatar_img)){$form_data['avatar']=$avatar_img;}
-                    if($this->add_user->save($form_data))
+                    if($this->users->save($form_data))
                     {
                         /*$this->jquery_ext->add_script("
                                 jConfirm('เพิ่มผู้ใช้รายใหม่','คุณต้องการเพิ่มผู้ใช้อีกหรือไม่?',function(r){
@@ -201,7 +202,7 @@ class Users_main extends CI_Controller
                 {
                     $data['password']=$input['password'];
                 }
-                if($this->add_user->save($data))
+                if($this->users->save($data))
                 {
                     redirect('users');
                     //echo json_encode(array('msgtitle'=>'ผลการบันทึก','msg'=>'บันทึกข้อมูลเรียบร้อย','redirect'=>''));exit;

@@ -426,6 +426,7 @@ class Operations //not api
 class Permissions //not api
 {
     //private $_permise_data;
+    public $promise_data;
     protected $data;
     public function __construct()
     {
@@ -451,15 +452,21 @@ class Permissions //not api
     
     public function prepare()
     {
-        $query=$this->data['ci']->db->select('pg.name,p.permission_id,p.object_id,p.operation_id')->from('rbac_permissions p')
-                ->join('rbac_permissions_group pg','pg.permission_group_id=p.permission_group_id')
-                ->where('pg.permission_group_id',$this->data['permission_group_id'])->get();
-        foreach($query->result() as $row)
+        foreach($this->permise_data as $item)
         {
-            $this->data['obj_instance']->object_id=$row->object_id;
-            $this->data['operation_instance']->operation_id=$row->operation_id;
-            //$this->data['data'][$row->name]=array($this->data['obj_instance']->get->name=>$this->data['operation_instance']->get());
-            $this->data['data'][$this->data['obj_instance']->get->name]=$this->data['operation_instance']->get();  
+            $query=$this->data['ci']->db->select('pg.name,p.permission_id,p.object_id,p.operation_id')->from('rbac_permissions p')
+                    ->join('rbac_permissions_group pg','pg.permission_group_id=p.permission_group_id')
+                    ->where(array('pg.permission_group_id'=>$item->permission_group_id,'p.permission_id'=>$item->permission_id))
+                    ->order_by('pg.name','asc')
+                    ->get();
+            foreach($query->result() as $row)
+            {
+                $this->data['obj_instance']->object_id=$row->object_id;
+                $this->data['operation_instance']->operation_id=$row->operation_id;
+                $this->data['data'][$item->name][$this->data['obj_instance']->get->name]=$this->data['operation_instance']->get();  
+            }
+            $query->free_result();
+            unset($query);
         }
     }
     public function get(){return $this->data['data'];}
@@ -843,18 +850,25 @@ class Rolepermission
     private function prepare()
     {
         //print_r($this->data['roleidlist']);
-        $role=$this->data['ci']->db->select('rp.permission_id,pg.name,pg.permission_group_id')->from('rbac_role_permission rp')
+        $role=$this->data['ci']->db->select('rp.permission_id,pg.name,p.permission_group_id')
+                ->from('rbac_role_permission rp')
                 ->join('rbac_permissions p','rp.permission_id=p.permission_id')
                 ->join('rbac_permissions_group pg','pg.permission_group_id=p.permission_group_id')
-                ->where_in('rp.role_id',$this->data['roleidlist'])->get();
-        foreach($role->result() as $row)
+                ->where_in('rp.role_id',$this->data['roleidlist'])
+                ->order_by('pg.name','asc')->get();
+        $pm=new Permissions();
+        $pm->permise_data=$role->result();
+        $pm->prepare();
+        $this->data['data']=$pm->get();
+        unset($pm);
+       /* foreach($role->result() as $row)
         {
             $pm=new Permissions();
-            $pm->permission_group_id=$row->permission_group_id;
+            $pm->permission_id=$row->permission_id;
             $pm->prepare();
             $this->data['data'][$row->name]=$pm->get();
             unset($pm);  
-        }           
+        }       */    
     }
     public function get()
     {

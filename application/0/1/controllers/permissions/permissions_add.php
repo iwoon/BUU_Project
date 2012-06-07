@@ -27,7 +27,7 @@ class Permissions_add extends CI_Controller
     {
         $p=$this->frame->users();
         if(!$p->checkaccess('permissions_management','permission')->read())redirect('permissions/');
-        $this->frame->nav->add($this->page);
+        $this->frame->nav->add((($id==null)?$this->page:'แก้ไขสิทธิ'));
         $left_menu=$this->load->view('left_menu','',true);
           $this->template->content->add($left_menu);
          $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
@@ -68,7 +68,11 @@ class Permissions_add extends CI_Controller
                 $('select[name=\"permise_group\"]').change(function(){
                     if($(this).val()!=0){
                         $('input[name=\"group_name\"]').attr('disabled','disabled');
-                    }else{ $('input[name=\"group_name\"]').removeAttr('disabled');}
+                        $('textarea[name=\"group_description\"]').attr('disabled','disabled');
+                    }else{ 
+                        $('input[name=\"group_name\"]').removeAttr('disabled');
+                        $('textarea[name=\"group_description\"]').removeAttr('disabled');
+                    }
                 });
             ");
         foreach($group as $item)
@@ -101,14 +105,14 @@ class Permissions_add extends CI_Controller
                 $input=$this->input->post();
                 //permission group
                 $group_data=array();
-                if(array_key_exists('group_name'))
+                if(array_key_exists('group_name',$input))
                 {
                     if(!empty($input['group_name']))
                     {
                         $group_data['name']=$input['group_name'];
                     }
                 }
-                if(array_key_exists('group_description'))
+                if(array_key_exists('group_description',$input))
                 {
                     if(!empty($input['group_description']))
                     {
@@ -116,19 +120,23 @@ class Permissions_add extends CI_Controller
                     }
                 }
                 $group_data['creater_id']=$this->frame->users()->get_user_id();
-                if($input['group_id']!=0){
-                    $group_data['permission_group_id']=$input['group_id'];
+                if($input['permise_group']!=0){
+                    $group_data['permission_group_id']=$input['permise_group'];
                     
                 }
-                $group_id=$this->permise_group->save($group_data);
+                if(array_key_exists('description',$group_data)||array_key_exists('name',$group_data))
+                {
+                    $group_id=$this->permise_group->save($group_data);
+                }else{$group_id=$input['permise_group'];}
                 $object_is_exists=$this->objects->get_object_by_name(trim($input['object_name']));
                 if(empty($object_is_exists))
                 {
-                    $object_id=$this->objects->save(trim($input['object_name']));
+                    $object_id=$this->objects->save(array('name'=>$input['object_name']));
                 }else{
-                    $object_id=$object_is_exists['object_id'];
+                    $object_id=$object_is_exists->object_id;
                 }
-                $operation_id=$this->operations->get_operation_by_name($input['opeation']);
+                $operation_id=$this->operations->get_operation_id_by_name($input['operation']);
+                $operation_id=(int)$operation_id->operation_id;
                 if(!array_key_exists('permission_id',$input))
                 {
                     $permise_data=array(
@@ -138,7 +146,10 @@ class Permissions_add extends CI_Controller
                         'object_id'=>$object_id,
                         'name'=>$input['name']
                     );
-                    $permise_id=$this->permise->createPermission($permise_data);
+                    $permise_id=$this->permise->check_permission_by_value($group_id,$object_id,$operation_id);  
+                    if(empty($permise_id)){
+                        $permise_id=$this->permise->createPermission($permise_data);
+                    }else{$permise_id=$permise_id->permission_id;}
                 }else{
                     $permise_data=array(
                         'permission_id'=>$input['permission_id'],
@@ -153,7 +164,9 @@ class Permissions_add extends CI_Controller
                     {
                         $input['role_id']=$input['base_on'][0];
                     }
-                  $this->role_permise->assign($input['role_id'],$permise_id);  
+                  
+                  $this->role_permise->assign($input['role_id'],$permise_id);
+                  unset($permise_id);
             }redirect('permissions/'); 
     }
 }

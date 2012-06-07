@@ -10,7 +10,7 @@ class Rbac_operations extends CI_Model
     }
     public function get_operation_by_permise_id($permise_id)
     {
-        $sql="select p.operation_id from ".$this->db->dbprefix."rbac_permissions p inner join ".$this->db->dbprefix.$this->table." op
+        $sql="select op.* from ".$this->db->dbprefix."rbac_permissions p inner join ".$this->db->dbprefix.$this->table." op
             on(p.operation_id=op.operation_id) where p.operation_id=?)";
         $binding=array(
             $permise_id

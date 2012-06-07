@@ -5,7 +5,8 @@ class profiles_widget extends Widget {
         private $data=NULL;
         private $avatar=NULL;  
 	public function display($args) {
-    
+          if($this->frame->users()->checkaccess('profiles','profiles_panel')->read())
+          {
             if($this->frame->users()->is_authen())
             {
                 $this->jquery_ext->add_script("$('#profile_picture').hover(function(){
@@ -24,6 +25,7 @@ class profiles_widget extends Widget {
             );
                 $this->load->view('widgets/profiles', $this->data);
             }
+          }
         }
 
 }

@@ -54,8 +54,15 @@ class Permissions_main extends CI_Controller
                     $option[$item->role_id]=$item->name.' '.$item->description;
                 }
                 unset($owner_role);
-            //    
+             $num_role=0;
+             $current_role_id=-1;
+            foreach($permise as $item_role)
+            {
+                if($num_role>1)break;
+                if($item_role->role_id!=$current_role_id){$num_role++;$current_role_id=$item_role->role_id;}
+            }
             $new=0;$i=0;$end=0;
+
             foreach($permise as $item)
             {
                 if($item->role_id!=$new){
@@ -66,12 +73,26 @@ class Permissions_main extends CI_Controller
                     }
                     $data.='<div id="permission_panel'.$i.'"> <fieldset><legend>'.$item->role_name.'</legend><form name="permission['.$item->role_id.']" method="post" action="'.site_url('permissions/permissions_main/edit').'">';
                     $data.='<p>'.$item->role_description.'</p>';
-                    $data.='<span id="toolbar"><a href="'.site_url('permissions/permissions_add/role/'.$item->role_id).'" class="add"><img src="'.image_path('icons/without-shadows/badge-circle-plus-16-ns.png').'">&nbsp;เพิ่ม</a>
-                        &nbsp;&nbsp;<a href="#" class="delete"><img src="'.image_path('icons/without-shadows/badge-circle-minus-16-ns.png').'">&nbsp;ลบ</a>&nbsp;<a href="#'.$item->role_id.'" class="copy"><img src="'.image_path('copy.png').'" align="bottom" width="16px" hiegth="16px">&nbsp;คัดลอกมาที่นี้</a>
-                            &nbsp;<a href="#'.$item->role_id.'" class="move"><img src="'.image_path('move.gif').'" align="bottom" width="25px" height="25px">&nbsp;ย้ายมาที่นี้</a>
-                                &nbsp;<a href="#'.$item->role_id.'" class="copyTo"><img src="'.image_path('copy.png').'" align="bottom" width="16px" hiegth="16px">&nbsp;คัดลอกไปยัง</a>
-                            &nbsp;<a href="#'.$item->role_id.'" class="moveTo"><img src="'.image_path('move.gif').'" align="bottom" width="25px" height="25px">&nbsp;ย้ายไปยัง</a></span>';
+                    $data.='<span id="toolbar">';
+                    if(!$item->locked)
+                    {
+                        $data.='<a href="'.site_url('permissions/permissions_add/role/'.$item->role_id).'" class="add"><img src="'.image_path('icons/without-shadows/badge-circle-plus-16-ns.png').'">&nbsp;เพิ่ม</a>&nbsp';
+                        $data.='&nbsp;<a href="#'.$item->role_id.'" class="delete"><img src="'.image_path('icons/without-shadows/badge-circle-minus-16-ns.png').'">&nbsp;ลบ</a>&nbsp;';
+                    }
                     
+                    if($num_role>1)
+                    {
+                        if(!$item->locked)
+                            {
+                                $data.='<a href="#'.$item->role_id.'" class="copy"><img src="'.image_path('copy.png').'" align="bottom" width="16px" hiegth="16px">&nbsp;คัดลอกมาที่นี้</a>
+                                &nbsp;<a href="#'.$item->role_id.'" class="move"><img src="'.image_path('move.gif').'" align="bottom" width="25px" height="25px">&nbsp;ย้ายมาที่นี้</a>';
+                            }
+                    }
+                     $data.='&nbsp;<a href="#'.$item->role_id.'" class="copyTo"><img src="'.image_path('copy.png').'" align="bottom" width="16px" hiegth="16px">&nbsp;คัดลอกไปยัง</a>';
+                    if(!$item->locked)
+                    {
+                        $data.='&nbsp;<a href="#'.$item->role_id.'" class="moveTo"><img src="'.image_path('move.gif').'" align="bottom" width="25px" height="25px">&nbsp;ย้ายไปยัง</a></span>';
+                    }
                     //$data.='<table border=0 cellpadding=1px style="font-size:12.5px;">';
                     $data.='<table> <thead><tr class="odd">
                         <td class="column1"></td>
@@ -85,7 +106,7 @@ class Permissions_main extends CI_Controller
                 }
                 $i++;
                 $data.='<tr '.(($i%2)? 'class="odd"':'').'>';
-                $data.='<td class="column1"><input type="checkbox" name="id[]" value="'.$item->permission_id.'"/></td>';
+                $data.='<td class="column1"><input type="checkbox" name="id'.$item->role_id.'" value="'.$item->permission_id.'"/></td>';
                 $data.='<td class="column1">'.$item->permission_group_name.'</td><td class="column1">'.$item->object_name.'</td>';
                 $data.='<td style="text-align:left;">'.$item->permission_name.'</td>';
                 foreach($operation as $oper=>$desc)
@@ -101,12 +122,17 @@ class Permissions_main extends CI_Controller
             }else{$data.=anchor('permissions/permissions_add/role/'.$role,'เพิ่มสิทธิให้บทบาทนี้');}
                $this->jquery_ext->add_script("
                    $('.delete').click(function(){
+                    var url=$(this).attr('href');
+                    
                     jConfirm('ยืนยันการลบข้อมูล','คุณแน่ใจที่จะลบข้อมูล',function(r){
                         if(r==true){
-                            var data = { 'id[]' : []};
+                            var role_id=$.trim(url.substring(1,10));
+                            var data = { 'id[]' : [],'role_id' : role_id };
                             $('input:checked').each(function() {
                                var name=$(this).attr('name');
-                               if(name.substring(0,2)=='id'){data['id[]'].push($(this).val());}
+                               if(name.substring(0,2)=='id'){
+                                data['id[]'].push($(this).val());
+                               }
                             });
                             $.post('".site_url('permissions/permissions_main/revoke')."', data,function(){
                                 window.location.href='".current_url()."';
@@ -118,7 +144,7 @@ class Permissions_main extends CI_Controller
                 $('#copy_panel,#move_panel').dialog({
                     autoOpen:false,
                     bgiframe: false,
-                    height: 200,
+                    height: 150,
                     width:400,
                     modal: true,
                     overlay: {
@@ -130,50 +156,90 @@ class Permissions_main extends CI_Controller
                 $('.copy').click(function() {
                        var url=$(this).attr('href');
                         var role_id=$.trim(url.substring(1,10));
-                       var data = { 'id[]' : [],'role_id':role_id};
+                       var data = { 'id[]' : [],'to_role_id':role_id};
                             $('input:checked').each(function() {
                                var name=$(this).attr('name');
-                               if(name.substring(0,2)=='id'){data['id[]'].push($(this).val());}
+                               if(name.substring(0,2)=='id'){
+                                if($.trim(name.substring(2,10))!=role_id){
+                                    data['id[]'].push($(this).val());
+                                }
+                               }
                             });
-			if(data['id[]']!='' && role_id !=''){ 
-                            
+			if(data['id[]']!='' && data['to_role_id'] !=''){ 
+                            $.post('".site_url('permissions/permissions_main/permission_copy')."', data,function(){
+                                window.location.href='".current_url()."';
+                            });
                         } 
 		}); 
                 $('.move').click(function() {
                         var url=$(this).attr('href');
                         var role_id=$.trim(url.substring(1,10));
-                       var data = { 'id[]' : [],'role_id':role_id};
+                       var data = { 'id[]' : [],'from_role_id[]':[],'to_role_id':role_id};
                             $('input:checked').each(function() {
                                var name=$(this).attr('name');
-                               if(name.substring(0,2)=='id'){data['id[]'].push($(this).val());}
+                               if(name.substring(0,2)=='id'){
+                                if($.trim(name.substring(2,10))!=role_id){
+                                    data['id[]'].push($(this).val());
+                                    data['from_role_id[]'].push($.trim(name.substring(2,10)));
+                                }
+                               }
                             });
-			if(data['id[]']!='' && role_id !=''){
-                            
-                        } 
+			if(data['id[]']!='' && data['from_role_id[]'] != '' && data['to_role_id'] !=''){ 
+                             $.post('".site_url('permissions/permissions_main/permission_move')."', data,function(){
+                                window.location.href='".current_url()."';
+                            });
+                       }
 		});
                 $('.copyTo').click(function() {
                        var url=$(this).attr('href');
                         var role_id=$.trim(url.substring(1,10));
-                       var data = { 'id[]' : [],'role_id':role_id};
+                       var data = { 'id[]' : [],'to_role_id':role_id};
                             $('input:checked').each(function() {
                                var name=$(this).attr('name');
-                               if(name.substring(0,2)=='id'){data['id[]'].push($(this).val());}
+                               if(name.substring(0,2)=='id'){
+                                data['id[]'].push($(this).val());
+                               }
                             });
-			if(data['id[]']!='' && role_id !=''){ $('#move_panel').dialog('open');} 
+			if(data['id[]']!='' && data['to_role_id'] !=''){ 
+                            $('input[name=\"id[]\"]').val(data['id[]']);
+                            $('input[name=\"to_role_id\"]').val(data['to_role_id']);
+                            $('#copy_panel').dialog('open');
+                        } 
 		}); 
                 $('.moveTo').click(function() {
                         var url=$(this).attr('href');
                         var role_id=$.trim(url.substring(1,10));
-                       var data = { 'id[]' : [],'role_id':role_id};
+                       var data = { 'id[]' : [],'from_role_id[]':[]};
                             $('input:checked').each(function() {
                                var name=$(this).attr('name');
-                               if(name.substring(0,2)=='id'){data['id[]'].push($(this).val());}
+                               if(name.substring(0,2)=='id'){
+                                if($.trim(name.substring(2,10))==role_id){
+                                    data['id[]'].push($(this).val());
+                                    data['from_role_id[]'].push($.trim(name.substring(2,10)));
+                                }
+                               }
                             });
-			if(data['id[]']!='' && role_id !=''){ $('#move_panel').dialog('open');} 
+                        if(data['id[]']!='' && data['from_role_id[]'] != ''){ 
+                            $('input[name=\"id[]\"]').val(data['id[]']);
+                            $('input[name=\"from_role_id\"]').val(data['from_role_id[]']);
+                            $('#move_panel').dialog('open');
+                        } 
+                        
 		});
                 ");
-               $data.="<div id='copy_panel' title='คัดลอกไปยังบทบาท'>".form_open('copy',array('id'=>'copy_form')).form_dropdown('copy_to_role_id',$option).form_submit('submit','คัดลอก').form_close()."</div>";
-               $data.="<div id='move_panel' title='ย้ายไปยังบทบาท'>".form_open('move',array('id'=>'move_form')).form_dropdown('move_to_role_id',$option).form_submit('submit','ย้าย').form_close()."</div>";
+               $data.="<div id='copy_panel' title='คัดลอกไปยังบทบาท'>"
+                            .form_open('permissions/permissions_main/permission_copy',array('id'=>'copy_form'))
+                            .form_dropdown('to_role_id',$option)
+                            .form_hidden('url',current_url())
+                            .form_hidden('id[]')
+                            .form_submit('submit','คัดลอก').form_close()."</div>";
+               $data.="<div id='move_panel' title='ย้ายไปยังบทบาท'>"
+                            .form_open('permissions/permissions_main/permission_move',array('id'=>'move_form'))
+                            .form_dropdown('to_role_id',$option)
+                            .form_hidden('url',current_url())
+                            .form_hidden('from_role_id[]')
+                            .form_hidden('id[]')
+                            .form_submit('submit','ย้าย').form_close()."</div>";
                $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
                $this->jquery_ext->add_library(js_path('jqueryUI/jquery-ui-1.8.21.custom.min.js'));
                $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.ui.dialog.js'));
@@ -250,7 +316,10 @@ class Permissions_main extends CI_Controller
     {
             if($this->frame->users()->hasPermission('permissions_management')->object('permission')->delete())
             {
-                $id=$this->input->post('id');
+                $input=$this->input->post();
+                $id=$input['id'];
+                $role_id=$input['role_id'];
+                $this->role_permise->revoke($role_id,$id);
                 if(is_array($id))
                 {
                     $this->permise->delete_by_id($id);
@@ -273,12 +342,50 @@ class Permissions_main extends CI_Controller
         redirect($input['url']);
             //print_r($input);
     }
-    public function delete()
-    {
-    }
     public function add()
     {
         redirect('permissions/permissions_add/');
+    }
+    public function permission_copy($opt=null)
+    {
+        $input=$this->input->post();
+        if(count($input['id'])==1)
+        {
+            $input['id']=explode(',',$input['id'][0]);
+            
+        }
+        foreach($input['id'] as $permission_id)
+        {
+            $this->role_permise->assign($input['to_role_id'],$permission_id);
+        }
+        if($opt==null)redirect($input['url']);
+    }
+    public function permission_move($opt=null)
+    {
+        
+        $input=$this->input->post();
+        if(count($input['id'])==1)
+        {
+            $input['id']=explode(',',$input['id'][0]);
+            
+        }
+        if(count($input['from_role_id'])==1)
+        {
+            $input['from_role_id']=explode(',',$input['from_role_id'][0]);
+            
+        }
+        $count_permise_id=count($input['id']);
+        $count_from_role_id=count($input['from_role_id']);
+        if($count_permise_id==$count_from_role_id)
+        {
+            for($i=0;$i<$count_permise_id;$i++)
+            {
+                $this->role_permise->revoke($input['from_role_id'][$i],$input['id'][$i]); //revoke permision from role
+                $this->role_permise->assign($input['to_role_id'],$input['id'][$i]); //assing permission to new role
+            }
+        }
+        unset($input);
+        if($opt==null)redirect($input['url']);
     }
 }
 ?>

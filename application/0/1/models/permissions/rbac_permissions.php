@@ -10,7 +10,7 @@ class Rbac_permissions extends CI_Model
     }
     public function get_all_permission()
     {
-        return $this->db->select("r.role_id,r.name as role_name,r.description as role_description,
+        return $this->db->select("r.role_id,r.name as role_name,r.locked,r.description as role_description,
                         p.permission_id,p.permission_group_id,p.object_id,p.operation_id,p.name as permission_name,
                         pg.permission_group_id,pg.name as permission_group_name,pg.description as permission_group_description,
                         obj.name as object_name,
@@ -25,7 +25,7 @@ class Rbac_permissions extends CI_Model
     }
     public function get_permission($condition=array())
     {
-        $p=$this->db->select("r.role_id,r.name as role_name,r.description as role_description,
+        $p=$this->db->select("r.role_id,r.name as role_name,r.locked,r.description as role_description,
                         p.permission_id,p.name as permission_name,
                         pg.permission_group_id,pg.name as permission_group_name,pg.description permission_group_description,
                         p.object_id,obj.name as object_name,p.operation_id,
@@ -62,7 +62,6 @@ class Rbac_permissions extends CI_Model
                 $permission_id
                 );
             return $this->db->query($sql,$binding);
-            //return $this->db->delete($this->table)->where_in('permission_id',$id);
         } 
         return false;
     }
@@ -81,6 +80,15 @@ class Rbac_permissions extends CI_Model
                 ->join('rbac_role_permission rp','rp.permission_id=p.permission_id')
                 ->where('p.permission_id',$id)->get()->row();
     }
+    public function check_permission_by_value($group_id,$object_id,$operation_id)
+    {
+        $data=array(
+            'permission_group_id'=>$group_id,
+            'object_id'=>$object_id,
+            'operation_id'=>$operation_id
+        );
+        return $this->db->select('*')->from($this->table)->where($data)->get()->row();
+    }
     public function delete($id=null)
     {
         if($this->frame->users()->hasPermission('permissions_management')->object('permission')->delete())
@@ -96,17 +104,18 @@ class Rbac_permissions extends CI_Model
         {
             $oper_id=$this->operations->get_operation_id_by_name($oper);
             if(isset($oper_id->operation_id)){
-                $this->db->update($this->table,array('operation_id'=>(int)$oper_id->operation_id),array('id'=>$item));
+                $this->db->update($this->table,array('operation_id'=>(int)$oper_id->operation_id),array('permission_id'=>$item));
             }
             unset($oper_id);
         }return true;
     }
     public function createPermission($data=null)
     {
-        if(!$this->frame->users()->checkaccess('permissions_management','permision')->create())return false;
+        if(!$this->frame->users()->checkaccess('permissions_management','permission')->create())return false;
         if($data!=null)
         {
-            return $this->db->insert($this->table,$data);
+            $this->db->insert($this->table,$data);
+            return $this->db->insert_id();
         }return false;
     }
     public function updatePermission($data=null)

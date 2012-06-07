@@ -9,6 +9,12 @@ class Rbac_role_permission extends CI_Model{
     public function revoke($role_id,$permission_id)
     {
         if(!$this->frame->users()->checkaccess('permissions_management','revoke')->delete())return false;
+        if(is_array($permission_id))
+        {
+            $permission_id=implode(',',$permission_id);
+            $sql="delete from ".$this->db->dbprefix.$this->table." where role_id = ".$role_id." and permission_id in(".$permission_id.")";
+            return $this->db->query($sql);
+        }
         return $this->delete($this->table)->where(array('role_id'=>$role_id,'permission_id'=>$permission_id))->affected_rows();
     }
     public function assign($role_id,$permission_id)
