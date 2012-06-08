@@ -55,6 +55,10 @@ class Rbac_users extends CI_Model{
                 ->order_by('r.role_id','asc')->get()->result();
         }return false;
     }
+    public function get_users_detail($user_id)
+    {
+        return $this->db->select('*')->from($this->table)->where('user_id',$user_id)->get()->row();
+    }
     public function get_authen_type(){
       $userdata=$this->_get();
       if($userdata->num_rows()>0 && $userdata->num_rows()<2){
@@ -82,7 +86,7 @@ class Rbac_users extends CI_Model{
             }
          if(array_key_exists('creater_id',$condition))
          {
-             $user->where('creater_id',$condition['creater_id']);
+             $user->where('usr.creater_id',$condition['creater_id']);
          }
          if(array_key_exists('limit',$condition))
             {
@@ -120,6 +124,13 @@ class Rbac_users extends CI_Model{
         if($result=='array'){
         return (($ret->num_rows()>1)?$ret->result_array():$ret->row_array());
         }return (($ret->num_rows()>1)?$ret->result():$ret->row());
+    }
+    public function get_users_by_name($data=null)
+    {
+        if($data!=null)
+        {
+            return $this->db->select("user_id,concat(firstname,' ',lastname) as fullname",false)->from($this->table)->like('firstname',$data)->or_like('lastname',$data)->get()->result_array();
+        }
     }
      public function save($data,$tablename="")
 	{

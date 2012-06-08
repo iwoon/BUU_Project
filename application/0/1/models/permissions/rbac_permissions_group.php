@@ -52,7 +52,7 @@ class Rbac_permissions_group extends CI_Model {
             $q=$this->db->select('*')->from($this->table);
             if($condition!=null)
             {
-                if(array_key_exists('creater_id'))
+                if(array_key_exists('creater_id',$condition))
                 {
                     $q->where('creater_id',$condition['creater_id']);
                 }

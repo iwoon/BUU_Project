@@ -178,7 +178,6 @@ class Rbac_roles extends CI_Model
 			}
 		}
 		$this->db->insert($this->table,$data);
-	 
 		return $this->db->affected_rows();
 	 
 	}

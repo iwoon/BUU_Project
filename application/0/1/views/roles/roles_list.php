@@ -16,7 +16,7 @@
         ?>
     <tr <?echo ($i%2)? 'class="odd"':'';?>>
         <th scope="row" class="column1"><?=form_checkbox('roles_id[]',$role->role_id);?></th>
-        <td><?=$role->name;?></td>
+        <td><? echo anchor('roles/roles_main/detail/'.$role->role_id,$role->name);?></td>
         <td><? echo $role->description;?></td>
         <td><? echo anchor(current_url().'#'.$role->role_id,'เพิ่มบทบาทย่อย',array('class'=>'add_subroles'));?>,<? echo anchor('permissions/permissions_main/permissions_roles/'.$role->role_id,'สิทธิ',array('class'=>'manage_p'));?>,<? echo anchor('roles/roles_main/members/'.$role->role_id,'สมาชิก',array('class'=>'assign_users'));?>,<? echo anchor('roles/roles_main/edit/'.$role->role_id,'แก้ไข');?></td>
     </tr>

@@ -18,11 +18,16 @@ class Permissions_main extends CI_Controller
     }
     public function index()
     { 
-        
-        $this->permissions_roles();
+        if(!$this->frame->users()->checkaccess('permissions_management','permission')->create_read_update_delete())
+        {
+            $this->template->content->add('คุณไม่ได้รับอนุญาติให้จัดการสิทธิ');
+            $this->template->publish();
+        }
+        else{$this->permissions_roles();}
     }
     private function permission_panel($role=null)
     {
+        
         //$roles=$this->roles->get_parent_roles();
         $this->load->model('permissions/rbac_permission','permise');
         $data=null;
@@ -119,7 +124,10 @@ class Permissions_main extends CI_Controller
                $data.='</tr></tbody></table>';
                $data.='<input type="hidden" name="url" value="'.current_url().'"/>';
                $data.='</form></fieldset></div>';
-            }else{$data.=anchor('permissions/permissions_add/role/'.$role,'เพิ่มสิทธิให้บทบาทนี้');}
+            }else{
+                $data.="<p>คุณยังไม่ได้สร้างสิทธิ</p>";
+                $data.=anchor('permissions/permissions_add/role/'.$role,'สร้างสิทธิใหม่');
+                }
                $this->jquery_ext->add_script("
                    $('.delete').click(function(){
                     var url=$(this).attr('href');
@@ -271,6 +279,7 @@ class Permissions_main extends CI_Controller
     }*/
     public function permissions_roles($role_id=null)
     {
+        
         $this->frame->nav()->add($this->page,site_url('permissions/'));
         $select_data=array('ดูทั้งหมด');
         $role_id=$role_id;
@@ -280,7 +289,7 @@ class Permissions_main extends CI_Controller
                 unset($condition['creater_id']);
             }
             $role_detail=$this->roles->get_all_roles_condition($condition);
-            if(!empty($role_detail)){
+            if(!empty($role_detail['rolelist'])){
                 foreach($role_detail['rolelist'] as $role)
                 {
                     $select_data[$role->role_id]=$role->name.' '.$role->description;

@@ -97,9 +97,10 @@ class Users_main extends CI_Controller
                            // exit;
                             $avatar=$this->upload->data();
                             $avatar_img=base_url($avatarpath.$user_id.$avatar['file_ext']);
-                        }
+                        }else{echo $this->upload->display_errors();exit;}
                     }
                     $form_data=array(
+                        
                         'firstname'=>$this->input->post('firstname'),
                         'lastname'=>$this->input->post('lastname'),
                         'username'=>$this->input->post('username'),
@@ -364,6 +365,11 @@ class Users_main extends CI_Controller
     }
     public function role($user_id=null)
     {
+        if(!$this->frame->users()->checkaccess('users_management','roles')->read())
+        {
+            $this->template->content->add('ไม่อนุญาติให้ดูบทบาทของผู้ใช้');
+            
+        }else{
         $this->frame->nav()->add($this->page,site_url('users/'));
         $this->frame->nav()->add('บทบาทผู้ใช้');
         if(($user_id==null)){redirect('users/');}
@@ -426,7 +432,8 @@ class Users_main extends CI_Controller
            $this->jquery_ext->add_css(css_path('button.css'));
            $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
            $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
-           $this->template->publish();
+        }
+       $this->template->publish();
            
     }
     public function assign_roles()
@@ -465,6 +472,18 @@ class Users_main extends CI_Controller
         }
         //redirect('users/users_main/role');
     }
-    
+    public function search()
+    {
+       $input= $this->input->post();
+       $user=$this->users->get_users_by_name($input['user']);
+       $data=array();
+       foreach($user as $item)
+       {
+           $data[]=array('id'=>(int)$item['user_id'],'label'=>$item['fullname']);
+           //$data['user_id'][]=$item['user_id'];
+           //$data['value'][]=$item['fullname'];
+       }
+       echo json_encode($data);
+    }
 }
 ?>

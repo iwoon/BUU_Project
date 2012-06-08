@@ -58,7 +58,8 @@ class Permissions_add extends CI_Controller
         }
         $role_data=$this->roles->get_all_roles($condition);
         $condition=array('creater_id'=>$this->frame->users()->get_user_id());
-        if($this->frame->users()->get_user_id()==0)
+        if($this->frame->users()->get_user_id()==0 
+       || $this->frame->users()->checkaccess('permissions_management','permission_group')->read())
         {
             unset($condition['creater_id']);
         }
@@ -83,7 +84,7 @@ class Permissions_add extends CI_Controller
         return $this->load->view('permissions/permission_form',$data,true);
         
     }
-    public function role($role_id)
+    public function role($role_id=null)
     {
         $p=$this->frame->users();
         $data=array('role_id'=>$role_id);

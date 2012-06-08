@@ -11,6 +11,7 @@ class Roles_main extends CI_Controller
         $this->load->model('users/rbac_user_role','user_role');
         $this->frame->nav()->add('หน้าหลัก',$this->frame->url);
         $this->frame->nav()->add('ระบบจัดการผู้ใช้',site_url('welcome'));
+        $this->load->library('form');
         
     }
     public function index($page=null)
@@ -58,7 +59,8 @@ class Roles_main extends CI_Controller
             'creater_id'=>$this->frame->users()->get_user_id(),
             'limit'=>array('rowperpage'=>$rowperpage,'begin'=>$begin)
                 );
-        if($this->frame->users()->checkaccess('manage_all_roles','all_roles')->read())
+        if($this->frame->users()->get_user_id()==0
+         ||$this->frame->users()->checkaccess('roles_management','all_roles')->read())
         {
             unset($condition['creater_id']);
         }
@@ -109,10 +111,12 @@ class Roles_main extends CI_Controller
         $condition=array(
                 'creater_id'=>$this->frame->users()->get_user_id(),
             );
+        if($this->frame->users()->get_user_id()==0||$this->frame->users()->checkaccess('visible_all_roles','all_roles')->read())unset($condition['creater_id']);
         if($role_id!=null){
             $edit_role_data=$this->roles->get_roles($role_id);
         }
-        if($this->frame->users()->checkaccess('visible_all_roles','all_roles')->read())
+        if($this->frame->users()->get_user_id()==0
+          ||$this->frame->users()->checkaccess('visible_all_roles','all_roles')->read())
         {
                 unset($condition['creater_id']);
         }
@@ -279,6 +283,111 @@ class Roles_main extends CI_Controller
             $this->template->content->add('<h1>คุณไม่ได้รับอนุญาติให้จัดการบทบาทให้กับผู้ใช้</h1>');
             $this->template->publish();
         }
+    }
+    public function detail($role_id=null)
+    {
+        $this->frame->nav()->add($this->page,site_url('roles/'));
+        if($role_id==null)redirect('roles/');
+        
+        if(!$this->frame->users()->checkaccess('roles_management','roles_detail')->read())
+        {
+            $this->template->content->add('คุณไม่ได้รับอนุญาติให้ดูรายละเอียดของบทบาท');
+        }else{
+            $role=$this->roles->get_roles($role_id);
+            if(!empty($role[0]->parent_role_id)){
+                $base_on=$this->roles->get_roles($role[0]->parent_role_id);
+            }
+            
+            $owner_detail=$this->users->get_users_detail($role[0]->creater_id);
+            $role_detail=$this->form->fieldset('รายละเอียดบทบาท')->html('<table border=0 cellpadding=1px>')
+               ->html('<tr><td>')->label('ชื่อบทบาท')->html('</td><td>')->label($role[0]->name)->html('</td></tr>')
+                ->html('<tr><td>')->label('รายละเอียด')->html('</td><td>')->label($role[0]->description)->html('</td></tr>')
+                ->html('<tr><td>')->label('ภายใต้บทบาท')->html('</td><td>')->label((isset($base_on)?$base_on[0]->name:'บทบาทหลัก'))->html('</td></tr>')
+                ->html('<tr><td>')->label('ผู้ดูแลบทบาท')->html('</td><td>')->label($owner_detail->firstname.' '.$owner_detail->lastname,'',array('class'=>'lbowner'))
+                    ->label((($this->frame->users()->checkaccess('roles_management','owner_role')->update())?'<a href="#'.$role[0]->role_id.'" class="owner" >เปลี่ยน</a>':''))
+                ->html('</td></tr>')
+                ->html('<tr><td></td><td>')->html('</td></tr></table>')->get();
+            
+            $this->frame->nav()->add('รายละเอียดของบทบาท '.$role[0]->name);
+            $left_menu=$this->load->view('left_menu','',true);
+            $this->template->content->add($left_menu);
+            $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
+            $this->template->content->add('<div id="role_detail">'.$role_detail.'</div>');
+            $this->template->content->add('<div id="owner_panel">'.form_open('roles/roles_main/change_owner').
+                                form_input(array('name'=>'owner_name','id'=>'owner_name','size'=>40)).
+                                form_hidden('role_id').
+                                form_hidden('user_id').
+                                form_close().'</div>');
+            $this->template->content->add('</div>');
+            $this->jquery_ext->add_script("
+                    $('#owner_panel').dialog('destroy');
+                    $('#owner_panel').dialog({
+                        autoOpen:false,
+                        bgiframe: false,
+                        height: 150,
+                        width:400,
+                        modal: true,
+                        overlay: {
+                            backgroundColor: '#000',
+                            opacity: 0.5
+                        },
+                        buttons:{
+                              'บันทึก':function(){
+                                var role_id=$('input[name=\"role_id\"]').val();
+                                var user_id=$('input[name=\"user_id\"]').val();
+                                var data={'role_id':role_id,'user_id':user_id};
+                                    $.post('".site_url('roles/roles_main/change_owner')."', data,function(r){
+                                        $(this).dialog(\"close\");
+                                        window.location.href='".current_url()."';
+                                    });
+                              }
+                        }
+                    });
+                    $('#owner_name').autocomplete({
+			source: function(request,response) {
+				$.ajax({ url: '".site_url('users/users_main/search')."',
+                                    data: { user: $('#owner_name').val()},
+                                    dataType: 'json',
+                                    type: 'POST',
+                                    success: function(data){
+                                        response(data);
+                                    }
+                                });
+                        },
+			minLength: 2,
+			select: function( event, ui ) {
+				$('input[name=\"user_id\"]').val(ui.item.id);
+                                $('.lbowner').empty().append(ui.item.label);
+			}
+                    });
+                    $('.owner').click(function(){
+                        
+                        var url=$(this).attr('href');
+                        var role_id=$.trim(url.substring(1,10));
+                        if(role_id!='')
+                        {
+                            $('input[name=\"role_id\"]').val(role_id);
+                            $('#owner_panel').dialog('open');
+                        }
+                    });
+            ");
+        }
+        $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
+               $this->jquery_ext->add_library(js_path('jqueryUI/jquery-ui-1.8.21.custom.min.js'));
+               $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.ui.dialog.js'));
+               $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.ui.autocomplete.js'));
+               $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.effects.core.js'));
+               $this->jquery_ext->add_css(css_path('jqueryUI/themes/ui-lightness/jquery-ui-1.8.21.custom.css'));
+               $this->jquery_ext->add_css(css_path('jqueryUI/themes/base/jquery.ui.all.css'));
+               $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
+        $this->template->publish();
+    }
+    public function change_owner()
+    {
+        if(!$this->frame->users()->checkaccess('roles_management','owner_role')->update())redirect('roles/roles_main/');
+        $input=$this->input->post();
+        $this->roles->save(array('role_id'=>$input['role_id'],'creater_id'=>$input['user_id']));
+        
     }
     
 }
