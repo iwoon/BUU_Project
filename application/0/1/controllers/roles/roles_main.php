@@ -75,7 +75,7 @@ class Roles_main extends CI_Controller
         $this->template->content->widget('Roles_menu');
         $this->jquery_ext->add_script("
                 $('.delete').click(function(){
-                    jConfirm('ยืนยันการลบข้อมูล','คุณแน่ใจที่จะลบข้อมูล',function(r){
+                    jConfirm('คุณแน่ใจที่จะลบบทบาทที่เลือกทิ้ง?','ยืนยันการทำรายการ',function(r){
                         if(r==true){
                             var data = { 'role_id[]' : []};
                             $('input:checked').each(function() {
@@ -132,7 +132,7 @@ class Roles_main extends CI_Controller
                 ->label('ภายใต้บทบาท')->select('base_on',$select_data,'',(!is_null($role_id))?$role_id:0)
                 ->label('รายระเอียดบทบาท')->br()->textarea('description|description','','trim|xss_clean',(isset($edit_role_data))?$edit_role_data[0]->description:'')->margin(90)
                 ->hidden('role_id',$role_id)
-                ->submit('เพิ่ม')->margin(90)->get();
+                ->submit((isset($edit_role_data))?'บันทึก':'เพิ่ม')->margin(90)->get();
         return $form;
     }
     public function delete()
@@ -185,8 +185,11 @@ class Roles_main extends CI_Controller
             $begin = ($page_id==1)?0:$page_id*$rowperpage;
             $condition=array(
                 'role_id'=>$role_id,
+                'creater_id'=>$this->frame->users()->get_user_id(),
                 'limit'=>array('rowperpage'=>$rowperpage,'begin'=>$begin)
             );
+            if($this->frame->users()->get_user_id()==0||
+            $this->frame->users()->checkaccess('users_managment','all_users')->read() ){unset($condition['creater_id']);}
             $data=$this->user_role->get_role_members($condition);
             if((int)$data['num_members']>0){
             $member_data=array(
@@ -204,7 +207,7 @@ class Roles_main extends CI_Controller
         $this->template->content->widget('Roles_members_menu');
         $this->jquery_ext->add_script("
                 $('.delete').click(function(){
-                    jConfirm('ยืนยันการลบข้อมูล','คุณแน่ใจที่จะลบข้อมูล',function(r){
+                    jConfirm('คุณแน่ใจที่จะนำผู้ใช้ที่เลืออกออกจากบทบาทนี้','ยืนยันการทำรายการ',function(r){
                         if(r==true){
                             var data = { 'role_id[]' : [".$role_id."],'user_id[]':[]};
                             $('input:checked').each(function() {
@@ -217,7 +220,7 @@ class Roles_main extends CI_Controller
                     });
                 });
                $('.add').click(function(){
-                    jConfirm('คุณต้องการเพิ่มสมาชิกให้กับบทบาทนี้','ยืนยัน',function(r){
+                    jConfirm('คุณต้องการเพิ่มสมาชิกให้กับบทบาทนี้','ยืนยันการทำรายการ',function(r){
                         if(r==true){
                             var data = { 'role_id[]' : [".$role_id."],'user_id[]':[],'ajax':'true'};
                             $('input:checked').each(function() {
@@ -241,8 +244,11 @@ class Roles_main extends CI_Controller
             $begin = ($page_id==1)?0:$page_id*$rowperpage;
             $condition=array(
                 'role_id'=>$role_id,
+                'creater_id'=>$this->frame->users()->get_user_id(),
                 'limit'=>array('rowperpage'=>$rowperpage,'begin'=>$begin)
                     );
+            if($this->frame->users()->get_user_id()==0
+                   ||$this->frame->users()->checkaccess('users_managment','all_users')->read() ){unset($condition['creater_id']);}
             $notmember=$this->user_role->get_not_role_members($condition);
             //print_r($notmember);exit;
             if((int)$notmember['num_members']>0){
@@ -250,9 +256,12 @@ class Roles_main extends CI_Controller
             $data['num_users']=$notmember['num_members'];
             $data['row_per_page']=$rowperpage;
             $user_panel=$this->load->view('users/user_list',$data,true);
-            $pattern=array('/users/','/users_main/','/page/');
-            $replacement=array('roles',"roles_main",'members/'.$role_id.'/not_member_page');
-            $user_panel=preg_replace($pattern,$replacement,$user_panel);
+            //$pattern=array("/users/users_main/page/");
+            //$replacement=array('/roles/roles_main/members/'.$role_id.'/not_member_page');
+            $find=array('users/users_main/page');
+            $replacewith=array('roles/roles_main/members/'.$role_id.'/not_member_page');
+            $user_panel=str_replace($find,$replacewith,$user_panel);
+            //$user_panel=preg_replace($pattern,$replacement,$user_panel);
             }
         }
         $this->template->content->add('<fieldset><legend>รายชื่อสมาชิกที่ยังไม่ได้อยู่ในบทบาทนี้</legend>'.(($user_panel!=null)?$user_panel:'ไม่พบรายชื่อ').'</fieldset>');

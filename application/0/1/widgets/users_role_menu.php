@@ -21,7 +21,7 @@ class Users_role_menu extends Widget{
         }*/
         if($this->frame->users()->hasPermission('roles_management')->object('revoke')->read()){
             $menu[]=array(
-                            'label'=>'ลบ',
+                            'label'=>'ออกจากบทบาท',
                             'url'=> '#',//site_url('users/users_main/delete'),
                             'icon'=>  image_path('icons/without-shadows/badge-circle-cross-16-ns.png'),
                             'type'=>'delete',

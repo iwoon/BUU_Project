@@ -10,8 +10,8 @@ class Rbac_permissions extends CI_Model
     }
     public function get_all_permission()
     {
-        return $this->db->select("r.role_id,r.name as role_name,r.locked,r.description as role_description,
-                        p.permission_id,p.permission_group_id,p.object_id,p.operation_id,p.name as permission_name,
+        return $this->db->select("r.role_id,r.name as role_name,r.locked as role_locked,r.description as role_description,
+                        p.permission_id,p.permission_group_id,p.object_id,p.operation_id,p.name as permission_name,p.locked,
                         pg.permission_group_id,pg.name as permission_group_name,pg.description as permission_group_description,
                         obj.name as object_name,
                         op._read as 'read',op._create as 'create',op._update as 'update',op._delete as 'delete'")
@@ -25,8 +25,8 @@ class Rbac_permissions extends CI_Model
     }
     public function get_permission($condition=array())
     {
-        $p=$this->db->select("r.role_id,r.name as role_name,r.locked,r.description as role_description,
-                        p.permission_id,p.name as permission_name,
+        $p=$this->db->select("r.role_id,r.name as role_name,r.locked as role_locked,r.description as role_description,
+                        p.permission_id,p.name as permission_name,p.locked,
                         pg.permission_group_id,pg.name as permission_group_name,pg.description permission_group_description,
                         p.object_id,obj.name as object_name,p.operation_id,
                         op._read as 'read',op._create as 'create',op._update as 'update',op._delete as 'delete'");
@@ -120,13 +120,22 @@ class Rbac_permissions extends CI_Model
     }
     public function updatePermission($data=null)
     {
-        if(!$this->frame->users()->checkaccess('permissions_management','permision')->create())return false;
+        if(!$this->frame->users()->checkaccess('permissions_management','permission')->update())return false;
         if($data!=null)
         {
             $permission_id=$data['permission_id'];
             unset($data['permission_id']);
-            return $this->db->update($this->table,$data)->where('permission_id',$permission_id);
+             $this->db->where('permission_id',$permission_id);
+             $this->db->update($this->table,$data);
+             $ret=$this->db->select('permission_id')->from($this->table)->where('permission_id',$permission_id)->get()->row();
+             return $ret->permission_id;
         }return false;
+    }
+    public function is_lock($permission_id)
+    {
+        $ret=$this->db->select('locked')->from($this->table)->where('permission_id',$permission_id)->get()->row();
+        return $ret->locked;
+        
     }
     public function save($data,$tablename="")
 	{

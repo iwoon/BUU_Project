@@ -224,7 +224,7 @@ class ObjOperations
     public function operation($operation=array())
     {
         //print_r($this->data);
-        
+        //return true; //hack 
         if(!is_array($operation))
         {
             if(array_key_exists($operation,$this->data))

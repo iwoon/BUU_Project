@@ -38,7 +38,7 @@ class Users_main extends CI_Controller
         $user_panel=$this->load->view('users/user_list',$data,true);
         $this->jquery_ext->add_script("
                 $('.delete').click(function(){
-                    jConfirm('ยืนยันการลบข้อมูล','คุณแน่ใจที่จะลบข้อมูล',function(r){
+                    jConfirm('คุณแน่ใจที่จะลบผู้ใช้ออก','ยืนยันการลบข้อมูล',function(r){
                         if(r==true){
                             var data = { 'user_id[]' : []};
                             $('input:checked').each(function() {
@@ -78,8 +78,9 @@ class Users_main extends CI_Controller
                     $authen=$this->input->post('authen_type');
                     $avatarpath='./asset/images/profiles/';
                     $user_id=$this->frame->users()->get_user_id();
-                    $input=$this->input->post('avatar');
-                    if(!empty($input['avatar']))
+                    $input=$this->input->post();
+                    $avatar_img='';
+                    if(array_key_exists('avatar',$input))
                     {
                         $config=array(
                             'upload_path'=>$avatarpath,
@@ -90,7 +91,7 @@ class Users_main extends CI_Controller
                             'max_height'=>250
                         );
                         $this->load->library('upload',$config);
-                        $avatar_img='';
+                        
                         if($this->upload->do_upload('avatar'))
                         {
                            // echo json_encode(array('error'=>$this->upload->display_errors()));
@@ -100,7 +101,7 @@ class Users_main extends CI_Controller
                         }else{echo $this->upload->display_errors();exit;}
                     }
                     $form_data=array(
-                        
+                        'creater_id'=>$this->frame->users()->get_user_id(),
                         'firstname'=>$this->input->post('firstname'),
                         'lastname'=>$this->input->post('lastname'),
                         'username'=>$this->input->post('username'),
@@ -415,7 +416,7 @@ class Users_main extends CI_Controller
                     $this->template->content->add('</div>');
            $this->jquery_ext->add_script("
                 $('.delete').click(function(){
-                    jConfirm('ยืนยันการลบข้อมูล','คุณแน่ใจที่จะลบข้อมูล',function(r){
+                    jConfirm('คุณแน่ใจที่จะนำสมาชิกที่เลือกออกจากบทบาท?','ยืนยันการทำรายการ',function(r){
                         if(r==true){
                             var data = { 'role_id[]' : [],'user_id[]':[".$user_id."]};
                             $('input:checked').each(function() {

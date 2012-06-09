@@ -13,14 +13,14 @@ class Roles_members_menu extends Widget
         $menu=array();
         if($this->frame->users()->hasPermission('users_management')->object('users')->delete()){
             $menu[]=array(
-                            'label'=>'เพิ่มสมาชิก',
+                            'label'=>'เพิ่มผู้ใช้เข้าสู่บทบาทนี้',
                             'url'=> '#',//site_url('users/users_main/delete'),
                             'icon'=>  image_path('icons/without-shadows/badge-circle-plus-16-ns'),
                             'type'=>'add',
                             'action'=>''
                         );
             $menu[]=array(
-                            'label'=>'ลบ',
+                            'label'=>'ลบผู้ใช้ออกจากบทบาทนี้',
                             'url'=> '#',//site_url('users/users_main/delete'),
                             'icon'=>  image_path('icons/without-shadows/badge-circle-cross-16-ns.png'),
                             'type'=>'delete',

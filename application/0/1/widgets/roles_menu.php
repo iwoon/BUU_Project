@@ -13,7 +13,7 @@ class Roles_menu extends Widget
         $menu=array();
         if($this->frame->users()->hasPermission('users_management')->object('users')->delete()){
             $menu[]=array(
-                            'label'=>'ลบ',
+                            'label'=>'ลบบทบาทที่เลือก',
                             'url'=> '#',//site_url('users/users_main/delete'),
                             'icon'=>  image_path('icons/without-shadows/badge-square-minus-16-ns.png'),
                             'type'=>'delete',

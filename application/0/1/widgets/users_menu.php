@@ -22,7 +22,7 @@ class Users_menu extends Widget
         }
         if($this->frame->users()->hasPermission('users_management')->object('users')->delete()){
             $menu[]=array(
-                            'label'=>'ลบ',
+                            'label'=>'ลบผู้ใช้',
                             'url'=> '#',//site_url('users/users_main/delete'),
                             'icon'=>  image_path('icons/with-shadows/badge-square-minus-16.png'),
                             'type'=>'delete',

@@ -6,6 +6,7 @@ class Rbac_permissions_group extends CI_Model {
 	{
 		parent::__construct();
                 $this->table=strtolower(get_class($this));
+                $this->load->database();
 	}
 	public function save($data,$tablename="")
 	{
@@ -58,6 +59,28 @@ class Rbac_permissions_group extends CI_Model {
                 }
             }
             return $q->get()->result();
+        }
+        public function saveGroup($condition)
+        {
+            $op='insert';
+            if(array_key_exists('permission_group_id',$condition))
+            {
+                $id=$condition['permission_group_id'];
+                unset($condition['permission_group_id']);
+                $op='update';
+            }
+            switch($op)
+            {
+                case 'update':
+                    $this->db->where('permission_group_id',$id);
+                    $this->db->update($this->table,$condition);
+                    $ret=$this->db->select('permission_group_id')->from($this->table)->where('permission_group_id',$id)->get()->row();
+                    return $ret->permission_group_id;
+                    break;
+                default:
+                    $this->db->insert($this->table,$condition);
+                    return $this->db->insert_id();
+            }
         }
 }
 ?>

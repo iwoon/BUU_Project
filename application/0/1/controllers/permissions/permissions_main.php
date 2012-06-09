@@ -38,7 +38,9 @@ class Permissions_main extends CI_Controller
             'delete'=>'ลบได้');
             if($role==null){
                 $this->frame->nav()->add('สิทธิของบทบาททั้งหมด');
-                if($this->frame->users()->get_user_id()==0){
+                if($this->frame->users()->get_user_id()==0
+                        ||$this->frame->users()->checkaccess('permissions_management','all_permissions')->read())
+                {
                     $permise=$this->permise->get_all_permission();
                 }else{
                     $permise=$this->permise->get_permission(array('creater_id'=>$this->frame->users()->get_user_id()));
@@ -47,11 +49,17 @@ class Permissions_main extends CI_Controller
                 $rolename=$this->roles->get_roles($role);
                 $this->frame->nav()->add('สิทธิบทบาท '.$rolename[0]->name);
                 $condition=array('role_id'=>$role,'creater_id'=>$this->frame->users()->get_user_id());
+                if($this->frame->users()->get_user_id()==0
+                        ||$this->frame->users()->checkaccess('permissions_management','all_permissions')->read())
+                {unset($condition['creater_id']);}
                 $permise=$this->permise->get_permission($condition);
                 unset($rolename);
             }
             //creat role option for move or copy to other
             $condition=array('creater_id'=>$this->frame->users()->get_user_id());
+            if($this->frame->users()->get_user_id()==0
+                        ||$this->frame->users()->checkaccess('permissions_management','all_permissions')->read())
+                {unset($condition['creater_id']);}
             $owner_role=$this->roles->get_all_roles($condition);
                 $option=array('none'=>'บทบาท');
                 foreach($owner_role['rolelist'] as $item)
@@ -79,7 +87,7 @@ class Permissions_main extends CI_Controller
                     $data.='<div id="permission_panel'.$i.'"> <fieldset><legend>'.$item->role_name.'</legend><form name="permission['.$item->role_id.']" method="post" action="'.site_url('permissions/permissions_main/edit').'">';
                     $data.='<p>'.$item->role_description.'</p>';
                     $data.='<span id="toolbar">';
-                    if(!$item->locked)
+                    if(!$item->role_locked)
                     {
                         $data.='<a href="'.site_url('permissions/permissions_add/role/'.$item->role_id).'" class="add"><img src="'.image_path('icons/without-shadows/badge-circle-plus-16-ns.png').'">&nbsp;เพิ่ม</a>&nbsp';
                         $data.='&nbsp;<a href="#'.$item->role_id.'" class="delete"><img src="'.image_path('icons/without-shadows/badge-circle-minus-16-ns.png').'">&nbsp;ลบ</a>&nbsp;';
@@ -87,14 +95,14 @@ class Permissions_main extends CI_Controller
                     
                     if($num_role>1)
                     {
-                        if(!$item->locked)
+                        if(!$item->role_locked)
                             {
                                 $data.='<a href="#'.$item->role_id.'" class="copy"><img src="'.image_path('copy.png').'" align="bottom" width="16px" hiegth="16px">&nbsp;คัดลอกมาที่นี้</a>
                                 &nbsp;<a href="#'.$item->role_id.'" class="move"><img src="'.image_path('move.gif').'" align="bottom" width="25px" height="25px">&nbsp;ย้ายมาที่นี้</a>';
                             }
                     }
                      $data.='&nbsp;<a href="#'.$item->role_id.'" class="copyTo"><img src="'.image_path('copy.png').'" align="bottom" width="16px" hiegth="16px">&nbsp;คัดลอกไปยัง</a>';
-                    if(!$item->locked)
+                    if(!$item->role_locked)
                     {
                         $data.='&nbsp;<a href="#'.$item->role_id.'" class="moveTo"><img src="'.image_path('move.gif').'" align="bottom" width="25px" height="25px">&nbsp;ย้ายไปยัง</a></span>';
                     }
@@ -116,9 +124,9 @@ class Permissions_main extends CI_Controller
                 $data.='<td style="text-align:left;">'.$item->permission_name.'</td>';
                 foreach($operation as $oper=>$desc)
                 {
-                  $data.='<td><input type="checkbox" name="permise['.$item->permission_id.'][]" value="'.$oper.'" '.(($item->{$oper}==1)?'checked':'').'/></td>';
+                  $data.='<td><input type="checkbox" name="permise['.$item->permission_id.'][]" value="'.$oper.'" '.(($item->{$oper}==1)?'checked':'').' '.(((int)$item->locked==1)?'disabled':'').'/></td>';
                 }
-                $data.='<td>'.anchor(site_url('permissions/permissions_add/permission/'.$item->permission_id),'แก้ไข').'</td>';
+                $data.='<td>'.(((int)$item->locked==1)?image('locked.png'):anchor(site_url('permissions/permissions_add/permission/'.$item->permission_id),'แก้ไข')).'</td>';
                 }
             if(!is_null($data)){
                $data.='</tr></tbody></table>';
@@ -284,7 +292,8 @@ class Permissions_main extends CI_Controller
         $select_data=array('ดูทั้งหมด');
         $role_id=$role_id;
         $condition=array('creater_id'=>$this->frame->users()->get_user_id());
-            if($this->frame->users()->get_user_id()==0)
+            if($this->frame->users()->get_user_id()==0
+                    ||$this->frame->users()->checkaccess('permissions_management','all_permissions')->read())
             {
                 unset($condition['creater_id']);
             }

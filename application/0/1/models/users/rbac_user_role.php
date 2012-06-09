@@ -71,9 +71,13 @@ class Rbac_user_role extends CI_Model
             {
                 $role_id=$condition['role_id'];
             }
+            
             $members=$this->db->select("u.user_id,u.username,u.firstname,u.lastname")->from($this->table.' ur')
                     ->join('rbac_users u','ur.user_id=u.user_id')->where(array('ur.role_id'=>$role_id,'u.user_id !='=>0));
-            
+            if(array_key_exists('creater_id',$condition))
+            {
+                $members->where('u.creater_id',$condition['creater_id']);
+            }
             if(array_key_exists('limit',$condition))
             {
                 $limit=$condition['limit'];
@@ -97,6 +101,11 @@ class Rbac_user_role extends CI_Model
             $binding=array(
               $role_id
              );
+            if(array_key_exists('creater_id',$condition))
+            {
+                $sql.=" and creater_id=?";
+                $binding[]=$condition['creater_id'];
+            }
             if(array_key_exists('limit',$condition))
             {
                 $limit=$condition['limit'];

@@ -127,8 +127,10 @@ class Permissions_add extends CI_Controller
                 }
                 if(array_key_exists('description',$group_data)||array_key_exists('name',$group_data))
                 {
-                    $group_id=$this->permise_group->save($group_data);
-                }else{$group_id=$input['permise_group'];}
+                    $group_id=$this->permise_group->saveGroup($group_data);
+                }else{
+                    $group_id=$input['permise_group'];
+                    }
                 $object_is_exists=$this->objects->get_object_by_name(trim($input['object_name']));
                 if(empty($object_is_exists))
                 {
@@ -147,7 +149,7 @@ class Permissions_add extends CI_Controller
                         'object_id'=>$object_id,
                         'name'=>$input['name']
                     );
-                    $permise_id=$this->permise->check_permission_by_value($group_id,$object_id,$operation_id);  
+                    $permise_id=$this->permise->check_permission_by_value($group_id,$object_id,$operation_id); 
                     if(empty($permise_id)){
                         $permise_id=$this->permise->createPermission($permise_data);
                     }else{$permise_id=$permise_id->permission_id;}

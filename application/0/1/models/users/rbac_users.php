@@ -166,8 +166,10 @@ class Rbac_users extends CI_Model{
 				return $this->db->affected_rows();
 			}
 		}
+                $exists_user=$this->db->select('user_id')->from($this->table)->where('username',$data['username'])->get()->num_rows();
+                if($exists_users>0)return false;
+                
 		$this->db->insert($this->table,$data);
-	 
 		return $this->db->affected_rows();
 	 
 	}
