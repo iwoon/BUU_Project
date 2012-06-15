@@ -106,7 +106,7 @@
                             $user=$user->getdata();
                         }
                         if(!empty($user)&&$user->user_id>-1){
-                                $this->frame->users()->user_id=$user->user_id;
+                                $this->frame->users()->user_id=(int)$user->user_id;
                                 $this->frame->users()->fullname=$user->firstname.' '.$user->lastname;
                                 $this->frame->users()->avatar=(!empty($user->avatar))?$user->avatar:base_url($avatar_path.$noavatar_image);
                                 $this->frame->users()->is_logedin=true;
@@ -120,7 +120,7 @@
 			//var_dump($this->frame->users()->hasPermission('login'));
                         if($this->frame->users()->hasPermission('login')->object('loginpanel')->read())
                         {
-                            
+							
                                 $data=array(
                                             'failure'=>false,
                                             'msgtitle'=>null,
@@ -128,6 +128,7 @@
                                             'redirect'=>site_url('frameapp')
                                     );
                         }else{	
+							
                             $data=array(
                                             'failure'=>false,
                                             'msgtitle'=>'ไม่สามาระเข้าสู่ระบบได้',
