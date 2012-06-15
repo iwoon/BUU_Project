@@ -37,6 +37,43 @@ class Users_main extends CI_Controller
         $data['row_per_page']=$rowperpage;
         $user_panel=$this->load->view('users/user_list',$data,true);
         $this->jquery_ext->add_script("
+                $('#search_panel').dialog('destroy');
+                    $('#search_panel').dialog({
+                        autoOpen:false,
+                        bgiframe: false,
+                        height: 170,
+                        width:400,
+                        modal: true,
+                        overlay: {
+                            backgroundColor: '#000',
+                            opacity: 0.5
+                        },
+                        buttons:{
+                              'ค้นหา':function(){
+                                var user_id=$('input[name=\"user_id\"]').val();
+                                window.location.href='".site_url('users/users_main/user_search')."/'+user_id;
+                              }
+                        }
+                    });
+                $('.search').click(function(){
+                    $('#search_panel').dialog(\"open\");
+                });
+                $('#user').autocomplete({
+			source: function(request,response) {
+				$.ajax({ url: '".site_url('users/users_main/search')."',
+                                    data: { user: $('#user').val()},
+                                    dataType: 'json',
+                                    type: 'POST',
+                                    success: function(data){
+                                        response(data);
+                                    }
+                                });
+                        },
+			minLength: 2,
+			select: function( event, ui ) {
+				$('input[name=\"user_id\"]').val(ui.item.id);
+			}
+                    });
                 $('.delete').click(function(){
                     jConfirm('คุณแน่ใจที่จะลบผู้ใช้ออก','ยืนยันการลบข้อมูล',function(r){
                         if(r==true){
@@ -56,11 +93,21 @@ class Users_main extends CI_Controller
         $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
         $this->template->content->widget('Users_menu');
         $this->template->content->add($user_panel);
+        $this->template->content->add('<div id="search_panel">ค้นหาจากชื่อ-นามสกุล');
+        $searchform=form_input(array('name'=>'user','id'=>'user','size'=>40)).form_hidden('user_id').form_close();
+        $this->template->content->add($searchform);
+        $this->template->content->add('</div>');
         $this->template->content->add('</div>');
         $this->jquery_ext->add_css(css_path('table.css'));
            $this->jquery_ext->add_css(css_path('button.css'));
            $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
            $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
+            $this->jquery_ext->add_library(js_path('jqueryUI/jquery-ui-1.8.21.custom.min.js'));
+            $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.ui.dialog.js'));
+            $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.ui.autocomplete.js'));
+            $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.effects.core.js'));
+            $this->jquery_ext->add_css(css_path('jqueryUI/themes/ui-lightness/jquery-ui-1.8.21.custom.css'));
+            $this->jquery_ext->add_css(css_path('jqueryUI/themes/base/jquery.ui.all.css'));
            $this->template->publish();
     }
     public function add($opt='view')
@@ -131,7 +178,7 @@ class Users_main extends CI_Controller
                     $left_menu=$this->load->view('left_menu','',true);
                     $this->template->content->add($left_menu);
                     $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
-                    $this->template->content->widget('Users_menu');
+                    //$this->template->content->widget('Users_menu');
                     $this->template->content->add('<div id="users_form" style="float:left;padding 1em 1em;">'.$this->gen_form().'</div>');
                     $this->template->content->add('</div>');
                     
@@ -232,7 +279,7 @@ class Users_main extends CI_Controller
                     $left_menu=$this->load->view('left_menu','',true);
                     $this->template->content->add($left_menu);
                     $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
-                    $this->template->content->widget('Users_menu');
+                    //$this->template->content->widget('Users_menu');
                     $this->template->content->add('<div id="users_form" style="float:left;padding 1em 1em;">'.$this->gen_profile($user_id).'</div>');
                     $this->template->content->add('</div>');
                 }else{
@@ -485,6 +532,99 @@ class Users_main extends CI_Controller
            //$data['value'][]=$item['fullname'];
        }
        echo json_encode($data);
+    }
+    public function user_search($user_id=null)
+    {
+        if(!is_null($user_id))
+        {
+            $condition=array(
+            'user_id'=>(int)$user_id,
+            'creater_id'=>$this->frame->users()->get_user_id(),
+                );
+            if($this->frame->users()->get_user_id()==0
+            ||$this->frame->users()->checkaccess('users_management','all_users')->read())
+            {
+                unset($condition['creater_id']);
+            }
+            $data['users_list']=$this->users->get_users_list($condition);
+            $data['num_users']=$this->users->get_num_users();
+            $data['row_per_page']=1;
+            $user_panel=$this->load->view('users/user_list',$data,true);
+        }
+            $left_menu=$this->load->view('left_menu','',true);
+            $this->template->content->add($left_menu);
+            $this->template->content->add('<div id="admin_panel" style="float:right;width:780px;">');
+            $this->template->content->widget('Users_menu');
+            $this->template->content->add((isset($user_panel))?$user_panel:'ไม่พบผู้ใช้ที่คุณกำลังมองหา');
+            $this->template->content->add('<div id="search_panel">ค้นหาจากชื่อ-นามสกุล');
+            $searchform=form_input(array('name'=>'user','id'=>'user','size'=>40)).form_hidden('user_id').form_close();
+            $this->template->content->add($searchform);
+            $this->template->content->add('</div>');
+            $this->template->content->add('</div>');
+            $this->jquery_ext->add_script("
+                $('#search_panel').dialog('destroy');
+                    $('#search_panel').dialog({
+                        autoOpen:false,
+                        bgiframe: false,
+                        height: 170,
+                        width:400,
+                        modal: true,
+                        overlay: {
+                            backgroundColor: '#000',
+                            opacity: 0.5
+                        },
+                        buttons:{
+                              'ค้นหา':function(){
+                                var user_id=$('input[name=\"user_id\"]').val();
+                                window.location.href='".site_url('users/users_main/user_search')."/'+user_id;
+                              }
+                        }
+                    });
+                $('.search').click(function(){
+                    $('#search_panel').dialog(\"open\");
+                });
+                $('#user').autocomplete({
+			source: function(request,response) {
+				$.ajax({ url: '".site_url('users/users_main/search')."',
+                                    data: { user: $('#user').val()},
+                                    dataType: 'json',
+                                    type: 'POST',
+                                    success: function(data){
+                                        response(data);
+                                    }
+                                });
+                        },
+			minLength: 2,
+			select: function( event, ui ) {
+				$('input[name=\"user_id\"]').val(ui.item.id);
+			}
+                    });
+                $('.delete').click(function(){
+                    jConfirm('คุณแน่ใจที่จะลบผู้ใช้ออก','ยืนยันการลบข้อมูล',function(r){
+                        if(r==true){
+                            var data = { 'user_id[]' : []};
+                            $('input:checked').each(function() {
+                              data['user_id[]'].push($(this).val());
+                            });
+                            $.post('users/users_main/delete', data,function(r){
+                                window.location.href='".site_url('users/')."';
+                            });
+                        }
+                    });
+                });
+            ");
+            $this->jquery_ext->add_css(css_path('table.css'));
+            $this->jquery_ext->add_css(css_path('button.css'));
+            $this->jquery_ext->add_library(js_path('jquery.alerts.js'));
+            $this->jquery_ext->add_css(css_path('jquery.alerts.css'));
+            $this->jquery_ext->add_library(js_path('jqueryUI/jquery-ui-1.8.21.custom.min.js'));
+            $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.ui.dialog.js'));
+            $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.ui.autocomplete.js'));
+            $this->jquery_ext->add_library(js_path('jqueryUI/ui/jquery.effects.core.js'));
+            $this->jquery_ext->add_css(css_path('jqueryUI/themes/ui-lightness/jquery-ui-1.8.21.custom.css'));
+            $this->jquery_ext->add_css(css_path('jqueryUI/themes/base/jquery.ui.all.css'));
+            $this->template->publish();
+        
     }
 }
 ?>

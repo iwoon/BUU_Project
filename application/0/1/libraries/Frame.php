@@ -3,12 +3,19 @@ class Frame{
         private $_ci;
         private $_user=NULL;
         private $_nav=NULL; 
-	public function __construct(){
-		$this->_ci=&get_instance();
-		$this->_ci->load->library('session');
-                $this->_user=new Usersession();
-                $this->_nav=new Navigation();
-	}
+		private $_sess=NULL;
+		public function __construct(){
+			$this->_ci=&get_instance();
+			$this->_ci->load->library('session');
+			$this->_user=new Usersession();
+			$this->_nav=new Navigation();
+			$this->_sess=new Customsession();
+		}
+		public function session()
+		{
+			$this->_sess=(($this->_sess!=NULL)?$this->_sess:new Customsession());
+            return $this->_sess;
+        }
         public function logout()
         {
             if($this->users()->logout()){
@@ -47,6 +54,10 @@ class Frame{
                     if($this->_nav!=NULL){$this->nav()->$properties=$value;}
                     else{$this->_nav=new Navigation();}
                     break;
+				case 'session':
+					if($this->_sess!=NULL){$this->session()->$properties=$value;}
+                    else{$this->_sess=new Customsession();}
+                    break;
                 default: 
                     //$this->_data[$properties]=$value;
             }
@@ -73,11 +84,65 @@ class Frame{
                         unset($data);
                     return $url;
                     break;
+				case 'session':return $this->session();
                 default:
                     //$this->_data[$properties];
             }
         }
-        
+        public function __destruct()
+        {
+            unset($this);
+        }
+}
+class Customsession extends Session
+{
+	private $data=array();
+	protected static $namespace='APP_DATA';
+		public function __construct()
+		{
+			parent::__construct();
+			$this->initialize();
+		}
+		private function initialize()
+		{
+			parent::reload();
+			if(!empty($this->_data) && array_key_exists(self::$namespace,$this->_data)){
+				$this->data=$this->_data[self::$namespace];
+			}else{
+				$this->_data[self::$namespace]=array();
+			}
+		}
+		public function __set($properties,$value)
+		{
+			$this->data[$properties]=$value;
+		}
+		public function __get($properties)
+		{
+			return $this->data[$properties];
+		}
+		public function set($key,$value)
+		{
+			$this->data[$key]=$value;
+			$this->_data[self::$namespace]=$this->data;
+			parent::save();
+		}
+		public function get($key)
+		{
+			return (array_key_exists($key,$this->data))?$this->data[$key]:'';
+		}
+		public function unset_key($key)
+		{
+			if(array_key_exists($key,$this->data)){
+				unset($this->data[$key]);
+				$this->_data[self::$namespace]=$this->data;
+				parent::save();
+			}
+		}
+		public function destroy(){
+			$this->data=array();
+			$this->_data[self::$namespace]=$this->data;
+		}
+		public function __destruct(){unset($this);}
 }
 class Session{ 
     protected $_ci;
@@ -270,37 +335,6 @@ class ObjOperations
     }
     public function __destruct(){unset($this->data);}
 }
-/*class ObjOperations
-{
-    private $data;
-    public function __construct($obj)
-    {
-        $this->data=$obj;
-    }
-    public function operation($operation)
-    {
-        //print_r($this->data);
-        if(array_key_exists($operation,$this->data))
-        {
-            return $this->data->{$operation};
-        }return false;
-    }
-    public function __call($operation,$param=null)
-    {
-        unset($param);
-        $operation=strtolower($operation);
-        switch($operation)
-        {
-            case 'create';
-            case 'read';
-            case 'update';
-            case 'delete': return $this->operation($operation);
-                break;
-            default:return false;
-        }
-    }
-    public function __destruct(){unset($this->data);}
-}*/
 class PermissionOnSession extends Session{ //reader
     private $data=array();
     public function __construct()
@@ -311,7 +345,6 @@ class PermissionOnSession extends Session{ //reader
     private function _init()
     {
         parent::reload();
-        //$this->data=$this->_data['APP'];
         if(!empty($this->_data['APP'])){
             $this->data=$this->_data['APP'];
             log_message('debug','Fetch App Permission on Session complete');
@@ -349,7 +382,7 @@ class Usersession extends Session
         if(is_null($this->p)){$this->p=new PermissionOnSession();}
         return  $this->p->permission($permission);
     }
-    public function checkaccess($permise,$object)
+    public function checkaccess($permise,$object) //alias method hasPermission
     {
         return $this->hasPermission($permise)->object($object);
     }

@@ -29,6 +29,15 @@ class Users_menu extends Widget
                             'action'=>'users/users_main/delete'
                         );
         }
+        if($this->frame->users()->hasPermission('users_management')->object('users')->read()){
+            $menu[]=array(
+                            'label'=>'ค้นผู้ใช้',
+                            'url'=> '#',//site_url('users/users_main/delete'),
+                            'icon'=>  image_path('icons/without-shadows/search-16-ns.png'),
+                            'type'=>'search',
+                            'action'=>''
+                        );
+        }
         return $menu;
     }
 }

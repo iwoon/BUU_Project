@@ -82,7 +82,7 @@ class Rbac_users extends CI_Model{
                     ->where('user_id !=',0);
          if(array_key_exists('user_id',$condition))
             {
-                $user->where_in('user_id',$users_id);
+                $user->where_in('user_id',$condition['user_id']);
             }
          if(array_key_exists('creater_id',$condition))
          {
@@ -93,7 +93,7 @@ class Rbac_users extends CI_Model{
                 $user->limit($condition['limit']['rowperpage'],$condition['limit']['begin']);
             }
             $query=$user->get();
-            $this->_data['num_users']=$this->db->count_all($this->table)-1;
+            $this->_data['num_users']= $query->num_rows();//$this->db->count_all($this->table)-1;
         return $query->result();
     }
     public function delete($user_id)
